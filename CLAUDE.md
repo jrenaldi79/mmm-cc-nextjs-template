@@ -132,7 +132,8 @@ lib/
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
 ├── zep/
-│   └── client.ts  # Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat
+│   ├── client.ts  # Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat
+│   └── identity.ts  # Map a Supabase user to the fields Zep's user.add expects.
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
 ├── n8n-stream.ts  # Normalize an n8n AI Agent streaming response into a plain text token stream.
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
@@ -205,6 +206,7 @@ types/
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
 | `lib/zep/client.ts` | Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat | `getZepClient` |
+| `lib/zep/identity.ts` | Map a Supabase user to the fields Zep's user.add expects. | `ZepUserFields`, `toZepUser`, `displayName` |
 | `types/index.ts` |  | `ApiError` |
 | `types/supabase.ts` |  | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
 <!-- /AUTO:modules -->
