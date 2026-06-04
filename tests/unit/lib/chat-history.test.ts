@@ -65,4 +65,48 @@ describe('historyToUiMessages', () => {
   it('returns an empty array for no rows', () => {
     expect(historyToUiMessages([])).toEqual([]);
   });
+
+  it('skips intermediate agent tool-call steps (ai with non-empty tool_calls)', () => {
+    // A tool-using agent stores its scratchpad: the user turn, an `ai` message
+    // that *invokes* a tool (non-empty tool_calls), the `tool` result, then the
+    // final `ai` answer. Only the user turn and the final answer should render.
+    const rows = [
+      row(1, { type: 'human', content: 'Question?' }),
+      row(2, {
+        type: 'ai',
+        content: 'Calling Think1 with input: {...}',
+        tool_calls: [{ name: 'Think1', args: {} }],
+      }),
+      row(3, { type: 'tool', content: '[{"response":"..."}]' }),
+      row(4, { type: 'ai', content: 'Final answer', tool_calls: [] }),
+    ];
+    const result = historyToUiMessages(rows);
+    expect(result).toEqual([
+      {
+        id: 'history-1',
+        role: 'user',
+        parts: [{ type: 'text', text: 'Question?' }],
+      },
+      {
+        id: 'history-4',
+        role: 'assistant',
+        parts: [{ type: 'text', text: 'Final answer' }],
+      },
+    ]);
+  });
+
+  it('skips messages whose content is blank or whitespace-only', () => {
+    const rows = [
+      row(1, { type: 'ai', content: '   ' }),
+      row(2, { type: 'human', content: 'real' }),
+    ];
+    const result = historyToUiMessages(rows);
+    expect(result).toEqual([
+      {
+        id: 'history-2',
+        role: 'user',
+        parts: [{ type: 'text', text: 'real' }],
+      },
+    ]);
+  });
 });
