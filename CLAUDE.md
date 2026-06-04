@@ -294,8 +294,14 @@ Intentional adaptations for this Next.js stack — not gaps to "fix":
 - **`import/no-default-export` is OFF** — App Router entrypoints require default exports.
 - **Centralized `tests/` tree** (not colocated beside source) — preserves the 80% Jest
   coverage setup; `scripts/check-test-colocation.js` validates the mirror instead.
-- **No plan-before-build framework (BMAD/Superpowers)** — intentionally omitted to keep this
-  student starter template lean.
+- **Superpowers skills auto-synced in cloud sessions** — Claude Code on the web can't use the
+  interactive `/plugin` installer, so the SessionStart hook (`.claude/hooks/session-start.sh`)
+  fetches the latest [Superpowers](https://github.com/obra/superpowers) skills into
+  `.claude/skills/` (gitignored) and reproduces its `using-superpowers` context injection. Local
+  CLI users instead get it via the registered marketplace (`extraKnownMarketplaces` +
+  `enabledPlugins` in `.claude/settings.json`) plus `/plugin install`. We deliberately reproduce
+  only the data-only context-injection hook inline — we do **not** auto-execute upstream hook
+  scripts each session (supply-chain safety for a student template).
 
 ## Working in this repo
 

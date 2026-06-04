@@ -131,3 +131,6 @@ dist
 
 # Pre-push test cache (SHA of last commit whose tests passed)
 .test-passed
+
+# Superpowers skill sync cache (cloned by the SessionStart hook)
+.claude/.cache/

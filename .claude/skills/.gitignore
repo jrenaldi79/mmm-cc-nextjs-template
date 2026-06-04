@@ -1,0 +1,8 @@
+# Superpowers skills are auto-synced here by the SessionStart hook
+# (.claude/hooks/session-start.sh) on every Claude Code on the web session, so
+# they always reflect the latest upstream. They are intentionally NOT committed.
+#
+# To change what's synced, edit the hook — not these files (your edits would be
+# overwritten on the next session start).
+*
+!.gitignore
