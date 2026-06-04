@@ -61,6 +61,33 @@ afterEach(() => {
 });
 
 describe('POST /api/chat — Zep memory', () => {
+  it('forwards the full payload to n8n: prompt, Zep context, sessionId, userId, and messages', async () => {
+    (getZepClient as jest.Mock).mockReturnValue({ __zep: true });
+    (retrieveUserContext as jest.Mock).mockResolvedValue(
+      '<USER_SUMMARY>frequent buyer</USER_SUMMARY>'
+    );
+    (recordChatTurn as jest.Mock).mockResolvedValue(undefined);
+    const fetchMock = streamingFetchMock('reply');
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await POST(makeRequest(body));
+
+    const sentBody = JSON.parse(
+      (fetchMock.mock.calls[0][1] as RequestInit).body as string
+    );
+
+    // Everything n8n needs in one envelope.
+    expect(sentBody).toEqual(
+      expect.objectContaining({
+        message: 'ping', // the user prompt
+        context: '<USER_SUMMARY>frequent buyer</USER_SUMMARY>', // Zep user context
+        sessionId: 'sess-1',
+        userId: 'user-123',
+        messages: body.messages, // full UI message history
+      })
+    );
+  });
+
   it('retrieves context, includes it in the n8n body, and records the turn', async () => {
     (getZepClient as jest.Mock).mockReturnValue({ __zep: true });
     (retrieveUserContext as jest.Mock).mockResolvedValue('USER CONTEXT BLOCK');
