@@ -49,6 +49,18 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        gold: {
+          DEFAULT: 'hsl(var(--gold))',
+          foreground: 'hsl(var(--gold-foreground))',
+        },
+        coral: {
+          DEFAULT: 'hsl(var(--coral))',
+          foreground: 'hsl(var(--coral-foreground))',
+        },
+        teal: {
+          DEFAULT: 'hsl(var(--teal))',
+          foreground: 'hsl(var(--teal-foreground))',
+        },
         chart: {
           1: 'hsl(var(--chart-1))',
           2: 'hsl(var(--chart-2))',
@@ -56,6 +68,17 @@ module.exports = {
           4: 'hsl(var(--chart-4))',
           5: 'hsl(var(--chart-5))',
         },
+      },
+      fontFamily: {
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],
+        serif: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
+      },
+      boxShadow: {
+        // Studio Bauhaus hard offset shadows — adapt to the ink/foreground token.
+        'hard-sm': '2px 2px 0 0 hsl(var(--foreground))',
+        hard: '4px 4px 0 0 hsl(var(--foreground))',
+        'hard-lg': '6px 6px 0 0 hsl(var(--foreground))',
       },
       borderRadius: {
         lg: 'var(--radius)',

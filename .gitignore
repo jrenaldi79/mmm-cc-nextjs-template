@@ -135,3 +135,11 @@ dist
 # Superpowers skills are materialized here on the web at session start from
 # .claude/vendor/superpowers/ (see .claude/hooks/session-start.sh). Not committed.
 .claude/skills/
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+
+# Local design exploration / scratch mockups (not part of the app)
+design-proposals/

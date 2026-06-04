@@ -2,115 +2,113 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
+const phases = [
+  {
+    dot: 'bg-coral',
+    title: '🔴 Red — write failing tests',
+    blurb: 'Start with tests that define what success looks like.',
+    lines: [
+      ['c', '# create the test file first'],
+      ['p', 'tests/unit/app/api/users/route.test.ts'],
+      ['bad', 'npm test → ❌ FAIL (0 passing, 3 failing)'],
+    ],
+  },
+  {
+    dot: 'bg-teal',
+    title: '🟢 Green — make tests pass',
+    blurb: 'Write the simplest code that turns the suite green.',
+    lines: [
+      ['c', '# now create the implementation'],
+      ['p', 'app/api/users/route.ts'],
+      ['ok', 'npm test → ✓ PASS (3 passing)'],
+    ],
+  },
+  {
+    dot: 'bg-primary',
+    title: '🔵 Refactor — optimize',
+    blurb: 'Clean up while keeping the suite green.',
+    lines: [
+      ['c', '# refactor, re-run after each change'],
+      ['ok', 'npm test → ✓ still passing'],
+      ['p', 'npm run test:coverage → 85% ✓'],
+    ],
+  },
+];
+
+const lineColor: Record<string, string> = {
+  c: 'text-muted-foreground',
+  p: 'text-primary',
+  ok: 'text-teal',
+  bad: 'text-coral',
+};
+
 export function TddFrameworkCard() {
   return (
-    <Card>
+    <Card className="rounded-2xl border-2 border-foreground bg-card shadow-hard">
       <CardHeader>
-        <CardTitle>🧪 Test-Driven Development (TDD) Framework</CardTitle>
+        <CardTitle className="font-display">
+          🧪 Test-Driven Development (TDD) Framework
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground mb-6">
-          This template enforces TDD methodology. Every feature must start with
-          tests!
+        <p className="mb-6 text-muted-foreground">
+          This template enforces TDD. Every feature starts with a test — the git
+          hooks make sure of it.
         </p>
 
-        <div className="space-y-4">
-          <div className="border-l-4 border-red-500 pl-4">
-            <h4 className="font-bold text-red-700 mb-1">
-              🔴 Red Phase - Write Failing Tests
-            </h4>
-            <p className="text-muted-foreground text-sm mb-2">
-              Start by writing tests that define what success looks like.
-            </p>
-            <div className="bg-muted/50 p-3 rounded text-sm font-mono">
-              <div className="text-muted-foreground">
-                # Create test file first
+        <div className="grid gap-4 lg:grid-cols-3">
+          {phases.map((phase) => (
+            <div
+              key={phase.title}
+              className="rounded-xl border-2 border-foreground bg-background p-4"
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <span className={`h-3 w-3 rounded-full ${phase.dot}`} />
+                <h4 className="font-display text-sm font-bold">
+                  {phase.title}
+                </h4>
               </div>
-              <div className="text-blue-600">
-                tests/unit/app/api/users/route.test.ts
-              </div>
-              <div className="text-muted-foreground mt-2">
-                # Run tests - they should fail!
-              </div>
-              <div className="text-red-600">
-                npm test -- ❌ FAIL (0 passing, 3 failing)
-              </div>
-            </div>
-          </div>
-
-          <div className="border-l-4 border-green-500 pl-4">
-            <h4 className="font-bold text-green-700 mb-1">
-              🟢 Green Phase - Make Tests Pass
-            </h4>
-            <p className="text-muted-foreground text-sm mb-2">
-              Write the simplest code to make your tests pass.
-            </p>
-            <div className="bg-muted/50 p-3 rounded text-sm font-mono">
-              <div className="text-muted-foreground">
-                # Now create implementation
-              </div>
-              <div className="text-blue-600">app/api/users/route.ts</div>
-              <div className="text-muted-foreground mt-2">
-                # Run tests again
-              </div>
-              <div className="text-green-600">
-                npm test -- ✓ PASS (3 passing)
+              <p className="mb-3 text-sm text-muted-foreground">
+                {phase.blurb}
+              </p>
+              <div className="space-y-1 rounded-lg bg-foreground/5 p-3 font-mono text-xs">
+                {phase.lines.map((line, i) => (
+                  <div key={i} className={lineColor[line[0]]}>
+                    {line[1]}
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-
-          <div className="border-l-4 border-blue-500 pl-4">
-            <h4 className="font-bold text-blue-700 mb-1">
-              🔵 Refactor Phase - Optimize Code
-            </h4>
-            <p className="text-muted-foreground text-sm mb-2">
-              Clean up and optimize while keeping tests green.
-            </p>
-            <div className="bg-muted/50 p-3 rounded text-sm font-mono">
-              <div className="text-muted-foreground">
-                # Refactor implementation
-              </div>
-              <div className="text-muted-foreground">
-                # Run tests after each change
-              </div>
-              <div className="text-green-600">npm test -- ✓ Still passing!</div>
-              <div className="text-muted-foreground mt-2"># Check coverage</div>
-              <div className="text-purple-600">
-                npm run test:coverage -- 85% coverage ✓
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            <strong>⚠️ Important:</strong> The AI assistant will refuse to write
-            implementation code until tests are written first. This ensures you
-            always have a safety net and clear specifications for your features.
+        <div className="mt-6 rounded-xl border-l-4 border-coral bg-coral/10 p-4">
+          <p className="text-sm text-foreground">
+            <strong>⚠️ Important:</strong> the AI assistant refuses to write
+            implementation code until tests exist first — so you always have a
+            safety net and a clear spec.
           </p>
         </div>
 
-        <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
-          <p className="text-blue-800 font-semibold mb-2">
-            🎯 Visual Test Dashboard
-          </p>
-          <p className="text-blue-700 mb-4">
-            Not comfortable with the command line? Use the Test Dashboard to run
-            tests and see results in a friendly interface!
-          </p>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Button
+            asChild
+            className="rounded-full border-2 border-foreground font-bold shadow-hard-sm"
+          >
             <Link href="/test-dashboard">Open Test Dashboard →</Link>
           </Button>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Button variant="secondary" size="sm">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="rounded-full font-mono"
+          >
             npm test
           </Button>
-          <Button variant="secondary" size="sm">
-            npm run test:watch
-          </Button>
-          <Button variant="secondary" size="sm">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="rounded-full font-mono"
+          >
             npm run test:coverage
           </Button>
         </div>

@@ -2,62 +2,69 @@
 name: Northwestern MMM & MPD2 Starter
 colors:
   # Light theme — these mirror the :root values in app/globals.css.
-  background: '#FFFFFF'
-  foreground: '#020817'
-  card: '#FFFFFF'
-  cardForeground: '#020817'
-  popover: '#FFFFFF'
-  popoverForeground: '#020817'
-  primary: '#7C3AED'
-  primaryForeground: '#F8FAFC'
-  secondary: '#F1F5F9'
-  secondaryForeground: '#0F172A'
-  muted: '#F1F5F9'
-  mutedForeground: '#64748B'
-  accent: '#F1F5F9'
-  accentForeground: '#0F172A'
-  destructive: '#EF4444'
-  destructiveForeground: '#F8FAFC'
-  border: '#E2E8F0'
-  input: '#E2E8F0'
-  ring: '#7C3AED'
-  chart1: '#7C3AED'
-  chart2: '#2A9D90'
-  chart3: '#264754'
-  chart4: '#E8C468'
-  chart5: '#F4A462'
+  background: '#F1EDE4'
+  foreground: '#1B1713'
+  card: '#F9F6F1'
+  cardForeground: '#1B1713'
+  popover: '#F9F6F1'
+  popoverForeground: '#1B1713'
+  primary: '#4E2A84' # Northwestern Purple
+  primaryForeground: '#FAF8F4'
+  secondary: '#E4DCCE'
+  secondaryForeground: '#2B241D'
+  muted: '#E6E1D5'
+  mutedForeground: '#696159'
+  accent: '#E4DCCE'
+  accentForeground: '#2B241D'
+  destructive: '#DC2828'
+  destructiveForeground: '#FAF8F4'
+  border: '#D7CEC1'
+  input: '#D7CEC1'
+  ring: '#4E2A84'
+  # Studio accent palette (each paired with a *-foreground for contrast).
+  gold: '#F2B32C'
+  goldForeground: '#28201A'
+  coral: '#EB5E33'
+  coralForeground: '#28201A'
+  teal: '#1E8A73'
+  tealForeground: '#FAF8F4'
+  chart1: '#4E2A84'
+  chart2: '#1E8A73'
+  chart3: '#F2B32C'
+  chart4: '#EB5E33'
+  chart5: '#886BB3'
 typography:
   h1:
-    fontFamily: Inter
+    fontFamily: Bricolage Grotesque
     fontSize: '2.25rem'
     fontWeight: 700
     lineHeight: '2.5rem'
     letterSpacing: '-0.02em'
   h2:
-    fontFamily: Inter
+    fontFamily: Bricolage Grotesque
     fontSize: '1.5rem'
     fontWeight: 600
     lineHeight: '2rem'
     letterSpacing: '-0.01em'
   body:
-    fontFamily: Inter
+    fontFamily: Hanken Grotesk
     fontSize: '1rem'
     fontWeight: 400
     lineHeight: '1.5rem'
   label:
-    fontFamily: Inter
+    fontFamily: Hanken Grotesk
     fontSize: '0.875rem'
     fontWeight: 500
     lineHeight: '1.25rem'
   small:
-    fontFamily: Inter
+    fontFamily: Hanken Grotesk
     fontSize: '0.75rem'
     fontWeight: 400
     lineHeight: '1rem'
 rounded:
-  sm: '4px'
-  md: '6px'
-  lg: '0.5rem'
+  sm: '6px'
+  md: '8px'
+  lg: '0.75rem'
 spacing:
   xs: '4px'
   sm: '8px'
@@ -124,22 +131,28 @@ Each color token maps 1:1 to a CSS variable (drop the `--`, e.g. `primaryForegro
 
 ## Overview
 
-A clean, modern starter identity built on **shadcn/ui (new-york style)**. The feel is
-neutral and professional — slate grays for surfaces and text, with a single vivid
-**violet** as the brand/action color. It should read as calm and trustworthy, with
-plenty of whitespace, so that student projects layered on top look polished by
-default. When a specific token isn't defined, prefer restraint: neutral surfaces,
-one accent, generous spacing.
+A bold, design-forward **"Studio Bauhaus"** identity built on **shadcn/ui**. The feel
+is warm and confident — cream paper surfaces and near-black ink, anchored by
+**Northwestern Purple** (`#4E2A84`) as the brand/action color and punctuated by a
+geometric accent trio (gold, coral, teal). Hierarchy comes from **thick ink borders
+and hard offset shadows** rather than soft elevation, with friendly rounded corners.
+It should read as crafted and energetic — the kind of polish design-innovation
+students recognize. A full **dark theme** (warm charcoal surfaces, a brighter purple)
+ships alongside and is toggled in the navigation. When a specific token isn't defined,
+lead with the purple, reach for one accent, and keep the border-and-shadow language
+consistent.
 
 ## Colors
 
-The palette is **slate neutrals + a violet primary**. `primary` (`#7C3AED`) drives
-buttons, links, focus rings, and the first chart series. Neutrals (`background`,
-`foreground`, `secondary`, `muted`, `accent`, `border`) come from the slate scale.
-`destructive` (`#EF4444`) is reserved for errors and destructive actions only. Every
-color has a paired `*Foreground` for accessible text on that surface. The app ships
-with a full **dark theme** (the `.dark` block in `app/globals.css`) using the same
-token names with darker surfaces and a slightly brighter violet.
+The palette is **warm cream neutrals + a Northwestern Purple primary + a geometric
+accent trio**. `primary` (`#4E2A84`) drives buttons, links, focus rings, and the
+first chart series. Neutrals (`background`, `foreground`, `secondary`, `muted`,
+`accent`, `border`) are warm off-whites and ink rather than cool slate. Three
+accents — `gold` (`#F2B32C`), `coral` (`#EB5E33`), and `teal` (`#1E8A73`) — carry the
+Bauhaus character on feature badges, callouts, and the logo mark; each has a paired
+`*Foreground` tuned for WCAG AA. `destructive` (`#DC2828`) is reserved for errors and
+destructive actions only. The app ships with a full **dark theme** (the `.dark` block
+in `app/globals.css`): warm charcoal surfaces and a brighter purple, same token names.
 
 ## Typography
 

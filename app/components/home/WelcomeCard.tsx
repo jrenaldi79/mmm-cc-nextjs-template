@@ -2,96 +2,65 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
+const quickStart = [
+  <>Replace this page with your app&rsquo;s home in app/page.tsx.</>,
+  <>
+    Add components under{' '}
+    <code className="rounded bg-muted px-1">app/components</code>.
+  </>,
+  <>
+    Compose UI from <code className="rounded bg-muted px-1">components/ui</code>{' '}
+    primitives.
+  </>,
+  <>
+    Create API routes in <code className="rounded bg-muted px-1">app/api</code>.
+  </>,
+  <>
+    Tune <code className="rounded bg-muted px-1">CLAUDE.md</code> to steer your
+    AI assistant.
+  </>,
+];
+
 export function WelcomeCard() {
   return (
-    <Card>
+    <Card className="rounded-2xl border-2 border-foreground bg-card shadow-hard">
       <CardContent className="pt-8">
-        <h2 className="text-3xl font-bold mb-4">
-          🚀 Northwestern MMM &amp; MPD2 Starter Template
+        <span className="mb-4 inline-flex rounded-full bg-gold px-3 py-1 text-xs font-bold uppercase tracking-wider text-gold-foreground">
+          Quick start
+        </span>
+        <h2 className="font-display text-3xl font-extrabold tracking-tight">
+          Northwestern MMM &amp; MPD2 Starter Template
         </h2>
-        <p className="text-muted-foreground mb-6">
-          Welcome to your Next.js starter project! This is a &quot;shell&quot;
-          app that you&apos;ll replace with your own amazing idea.
+        <p className="mb-6 mt-3 text-muted-foreground">
+          Welcome to your Next.js starter project! This is a &ldquo;shell&rdquo;
+          app that you&rsquo;ll replace with your own amazing idea.
         </p>
 
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-          <p className="text-blue-800 font-semibold mb-2">
-            💡 Quick Start Guide:
-          </p>
-          <ol className="list-decimal list-inside text-blue-700 space-y-1">
-            <li>Replace this page with your app&apos;s home page</li>
-            <li>
-              Add your components in the{' '}
-              <code className="bg-blue-100 px-1 rounded">app/components</code>{' '}
-              folder
+        <ol className="mb-8 space-y-px overflow-hidden rounded-xl border-2 border-foreground">
+          {quickStart.map((step, i) => (
+            <li key={i} className="flex gap-4 bg-background px-4 py-3 text-sm">
+              <span className="font-display font-extrabold text-primary">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>{step}</span>
             </li>
-            <li>
-              Build your UI with{' '}
-              <code className="bg-blue-100 px-1 rounded">shadcn/ui</code>{' '}
-              components in{' '}
-              <code className="bg-blue-100 px-1 rounded">components/ui</code>
-            </li>
-            <li>
-              Create API routes in{' '}
-              <code className="bg-blue-100 px-1 rounded">app/api</code>
-            </li>
-            <li>
-              Customize{' '}
-              <code className="bg-blue-100 px-1 rounded">CLAUDE.md</code> to
-              guide your AI coding assistant
-            </li>
-          </ol>
-        </div>
+          ))}
+        </ol>
 
-        <div className="flex flex-wrap gap-4 mb-6">
-          <Button variant="secondary" asChild>
-            <a
-              href="https://nextjs.org/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Next.js Docs →
-            </a>
-          </Button>
-        </div>
-
-        <div className="bg-green-50 border-l-4 border-green-500 p-4">
-          <p className="text-green-800 font-semibold mb-2">
-            🗄️ Database Integration Example:
+        <div className="rounded-xl border-2 border-foreground bg-teal/10 p-5">
+          <p className="font-display font-bold text-foreground">
+            🗄️ Database integration example
           </p>
-          <p className="text-green-700 mb-3">
+          <p className="mb-4 mt-1 text-sm text-muted-foreground">
             This template includes a working{' '}
             <strong>Supabase database example</strong> showing full CRUD
-            operations.
+            operations with row-level security.
           </p>
-          <Button asChild className="bg-green-600 hover:bg-green-700">
+          <Button
+            asChild
+            className="rounded-full border-2 border-foreground bg-teal font-bold text-teal-foreground shadow-hard-sm hover:bg-teal/90"
+          >
             <Link href="/tasks">View Tasks Example →</Link>
-          </Button>
-        </div>
-
-        <div className="bg-purple-50 border-l-4 border-purple-500 p-4 mt-4">
-          <p className="text-purple-800 font-semibold mb-2">
-            📊 Charting Example:
-          </p>
-          <p className="text-purple-700 mb-3">
-            Visualize data with <strong>Recharts</strong> wrapped in shadcn/ui
-            chart components.
-          </p>
-          <Button asChild>
-            <Link href="/charts">View Charts Example →</Link>
-          </Button>
-        </div>
-
-        <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 mt-4">
-          <p className="text-indigo-800 font-semibold mb-2">
-            💬 Streaming LLM Agent:
-          </p>
-          <p className="text-indigo-700 mb-3">
-            A chat UI that streams an <strong>n8n</strong> LLM agent response
-            token-by-token (with a placeholder until you connect your webhook).
-          </p>
-          <Button asChild className="bg-indigo-600 hover:bg-indigo-700">
-            <Link href="/chat">Try the Chat Example →</Link>
           </Button>
         </div>
       </CardContent>

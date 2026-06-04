@@ -25,7 +25,7 @@ export default function ExampleComponent() {
   };
 
   return (
-    <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+    <Card className="rounded-2xl border-2 border-foreground bg-primary/5">
       <CardContent className="pt-6 text-center">
         <p className="text-muted-foreground mb-4">
           This is an example interactive component. Click the button to see it
@@ -36,7 +36,7 @@ export default function ExampleComponent() {
         <div className="mb-6">
           <p className="text-4xl font-bold text-primary mb-2">{count}</p>
           {message && (
-            <p className="text-lg text-blue-600 font-semibold animate-pulse">
+            <p className="text-lg text-teal font-semibold animate-pulse">
               {message}
             </p>
           )}

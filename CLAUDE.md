@@ -82,7 +82,8 @@ app/
 │   │   └── TaskItem.tsx
 │   ├── ExampleComponent.tsx
 │   ├── Navigation.tsx
-│   └── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
+│   ├── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
+│   └── ThemeToggle.tsx
 ├── design/
 │   ├── components/
 │   │   ├── AddComponentGuide.tsx  # A friendly, visual walkthrough of how a new component enters the project via
@@ -156,6 +157,7 @@ types/
 | `app/components/ExampleComponent.tsx` |  | `ExampleComponent` |
 | `app/components/Navigation.tsx` |  | `Navigation` |
 | `app/components/OAuthButtons.tsx` | Social sign-in buttons. OAuth must be initiated from the browser because it | `OAuthButtons` |
+| `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
 | `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
