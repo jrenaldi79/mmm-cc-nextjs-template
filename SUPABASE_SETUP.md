@@ -109,6 +109,94 @@ CREATE POLICY "Users can delete their own tasks" ON tasks
 > `supabase/migrations/`, re-apply it, then regenerate `types/supabase.ts` (MCP
 > `generate_typescript_types`, or the Supabase CLI) so the types stay in sync.
 
+### 2a. Create the n8n Chat Tables (optional — for the chat history sidebar)
+
+The n8n streaming chat (see [docs/integrations/n8n.md](docs/integrations/n8n.md))
+can persist conversations so the chat page can show a **session sidebar**. That
+feature is backed by a second migration:
+
+```
+supabase/migrations/20260604000000_n8n_chat_sessions_and_history.sql
+```
+
+Apply it the same way as the tasks migration (MCP `apply_migration`, the
+Supabase CLI, or the SQL Editor). It creates two tables:
+
+- **`n8n_chat_sessions`** — one row per conversation, tying a persistent
+  `session_id` (text, unique) to its owner `user_id` and a descriptive `name`
+  shown in the sidebar (plus `created_at` / `updated_at`). The n8n workflow
+  **inserts** these rows via its service-role connection (so it bypasses RLS);
+  the app only reads them. RLS ships with the same four per-user policies as
+  `tasks` (`auth.uid() = user_id` for select/insert/update/delete). The table is
+  added to the **`supabase_realtime`** publication so the sidebar updates live as
+  new sessions appear.
+- **`n8n_chat_histories`** — the standard LangChain **Postgres Chat Memory**
+  table n8n's AI Agent memory node reads and writes (`id` serial, `session_id`
+  varchar, `message` jsonb). RLS here uses an **ownership-scoped read policy**:
+  a user may `SELECT` a history row only if they own the matching
+  `n8n_chat_sessions.session_id`. n8n writes the rows; the app reads them through
+  the RLS-scoped browser client.
+
+> **Naming note:** a Supabase project may also have its own unrelated
+> `chat_sessions` / `chat_messages` tables. This feature does **not** use them —
+> the `n8n_`-prefixed names exist precisely to avoid that collision.
+
+### 2b. Connect n8n to Postgres (session pooler)
+
+For the chat history sidebar to have anything to show, **n8n must write the
+conversation into these tables**. n8n's AI Agent stores memory with a **Postgres
+Chat Memory** node (which reads/writes `n8n_chat_histories`), and your workflow
+upserts a row into `n8n_chat_sessions` on the first message of a session. Both
+need a Postgres credential in n8n that points at your Supabase database.
+
+Use the **Session pooler** connection (it is IPv4-proxied for free — n8n Cloud
+connects over IPv4, whereas Supabase's _Direct connection_ is IPv6-only).
+
+**Get the connection details from Supabase:**
+
+1. In your project dashboard, click **Connect** (top bar).
+2. Choose **Direct → Connection string**.
+3. Under **Connection Method**, select **Session pooler**.
+4. Supabase shows the `host`, `port`, `database`, and `user`. Copy _your_ values
+   — the host prefix (`aws-0` vs `aws-1`) and region differ per project.
+
+It looks like this (example project ref `iylnmehjvvtrgvobtglx`, region
+`us-east-1`):
+
+```
+postgresql://postgres.<project-ref>:[YOUR-PASSWORD]@aws-1-us-east-1.pooler.supabase.com:5432/postgres
+```
+
+**Create a Postgres credential in n8n** with these fields (map the values above):
+
+| n8n field                         | Value                                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Host**                          | `aws-<n>-<region>.pooler.supabase.com` (yours from step 4)                                                                                              |
+| **Database**                      | `postgres`                                                                                                                                              |
+| **User**                          | `postgres.<project-ref>`                                                                                                                                |
+| **Password**                      | your **database password** (Dashboard → **Settings → Database**; reset it there if you don't have it — note that resetting breaks existing connections) |
+| **Port**                          | **`5432`** (session pooler)                                                                                                                             |
+| **Maximum Number of Connections** | `100`                                                                                                                                                   |
+| **SSL**                           | `Disable` (tick **Ignore SSL Issues** if your n8n requires it)                                                                                          |
+| **SSH Tunnel**                    | off                                                                                                                                                     |
+
+> **Port gotcha:** the **session pooler is `5432`**. Supabase also offers a
+> **transaction pooler on port `6543`** (same host); that works too, but stick to
+> the session pooler (`5432`) here unless you have a specific reason. If you see
+> `6543` in an example, that's the transaction pooler — same database, different
+> pooling mode.
+
+**Wire it into the agent:** in your n8n AI Agent, attach the **Postgres Chat
+Memory** node using this credential and key it on the session id the app sends —
+`{{ $json.body.sessionId }}`. That makes the agent persist each turn into
+`n8n_chat_histories` under the same `session_id` the sidebar reads back. See
+[docs/integrations/n8n.md](docs/integrations/n8n.md) for the full chat/session
+contract (including the `n8n_chat_sessions` upsert and the forwarded `userId`).
+
+> **Security:** this database password lives **only** in the n8n credential
+> (server-side). Never put it in the Next.js app, `.env.local`, or the browser —
+> the app talks to Supabase through the anon key + RLS, not this connection.
+
 ### 3. Configure Environment Variables
 
 1. In your Supabase project dashboard, click on **Settings** (gear icon)

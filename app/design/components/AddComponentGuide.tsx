@@ -8,6 +8,27 @@ import {
   ArrowDown,
   Bot,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+
+/**
+ * A taste of the wider shadcn registry — components that aren't installed yet
+ * but are one `add` command away. Not exhaustive; the full catalog lives at
+ * ui.shadcn.com/docs/components.
+ */
+const CATALOG = [
+  'Dialog',
+  'Table',
+  'Tabs',
+  'Accordion',
+  'Tooltip',
+  'Dropdown Menu',
+  'Sheet',
+  'Popover',
+  'Sonner (toast)',
+  'Skeleton',
+  'Avatar',
+  'Switch',
+];
 
 /**
  * A friendly, visual walkthrough of how a new component enters the project via
@@ -79,6 +100,44 @@ export function AddComponentGuide() {
             {i < STEPS.length - 1 && <Connector />}
           </div>
         ))}
+      </div>
+
+      <div className="space-y-3 rounded-2xl border-2 border-foreground bg-card p-5 shadow-hard">
+        <div>
+          <h3 className="font-semibold">What else you can add</h3>
+          <p className="text-sm text-muted-foreground">
+            The four components in your gallery are just the start. These are a
+            few of the most useful ones you can pull in with the steps above —
+            each lands in{' '}
+            <code className="rounded bg-muted px-1 py-0.5 text-foreground">
+              components/ui/
+            </code>{' '}
+            already matching your colors.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {CATALOG.map((name) => (
+            <Badge key={name} variant="secondary">
+              {name}
+            </Badge>
+          ))}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Not sure what exists? Search the catalog from the terminal —{' '}
+          <code className="rounded bg-muted px-1 py-0.5 text-foreground">
+            npx shadcn@latest search @shadcn -q table
+          </code>{' '}
+          — or{' '}
+          <a
+            href="https://ui.shadcn.com/docs/components"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-foreground underline decoration-dotted underline-offset-2 hover:text-primary"
+          >
+            browse all components
+          </a>{' '}
+          on the shadcn site.
+        </p>
       </div>
 
       <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-4">

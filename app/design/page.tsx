@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { PageShell } from '../components/PageShell';
 import { PageHero } from '../components/PageHero';
+import { WhyDesignSystemsSection } from './components/WhyDesignSystemsSection';
 import { ConceptsSection } from './components/ConceptsSection';
+import { DesignMdSection } from './components/DesignMdSection';
 import { ColorTokens } from './components/ColorTokens';
 import { TypeAndShapeSection } from './components/TypeAndShapeSection';
 import { ComponentGallery } from './components/ComponentGallery';
@@ -31,7 +33,9 @@ export default function DesignPage() {
         subtitle="A guided tour of how this app stays good-looking and consistent — what a design system is, the colors and building blocks you have, how new components get added, and how it's all kept on-brand automatically. No experience needed."
       />
 
+      <WhyDesignSystemsSection />
       <ConceptsSection />
+      <DesignMdSection />
       <ColorTokens />
       <TypeAndShapeSection />
       <ComponentGallery />

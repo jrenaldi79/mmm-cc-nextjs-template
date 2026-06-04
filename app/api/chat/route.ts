@@ -64,18 +64,20 @@ interface N8nProxyArgs {
 }
 
 /**
- * Proxy the request to the n8n workflow and stream its reply back. When Zep is
- * active, the user's long-term context is retrieved and included in the n8n
- * body, and the streamed reply is captured to log the turn to the user graph
- * once it finishes (the retrieved context is never re-ingested).
+ * Proxy the request to the n8n workflow and stream its reply back.
+ *
+ * Resolves the signed-in user once: its id is forwarded to n8n (so the workflow
+ * can stamp `n8n_chat_sessions` ownership on insert) and, when Zep is active, it
+ * scopes the user-node summary lookup and the recorded turn. With Zep active the
+ * user's long-term context is retrieved and included in the n8n body, and the
+ * streamed reply is captured to log the turn to the user graph once it finishes
+ * (the retrieved context is never re-ingested). `getSignedInUser` is try/caught
+ * and returns null on failure, so none of this can break or stall the request.
  */
 async function proxyToN8n(args: N8nProxyArgs): Promise<Response> {
   const { webhookUrl, userText, sessionId, messages } = args;
   const zep = getZepClient();
-  // Resolve the user up front: its id scopes the user-node summary lookup, and
-  // the same value is reused to record the turn. getSignedInUser is try/caught
-  // and returns null on failure, so this can't break or stall the request.
-  const user = zep ? await getSignedInUser() : null;
+  const user = await getSignedInUser();
   const context = zep
     ? await retrieveUserContext(
         zep,
@@ -101,6 +103,7 @@ async function proxyToN8n(args: N8nProxyArgs): Promise<Response> {
         message: userText,
         context,
         sessionId,
+        userId: user?.id,
         messages,
       }),
     });

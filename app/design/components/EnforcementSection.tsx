@@ -12,14 +12,14 @@ export function EnforcementSection() {
     <section className="space-y-6">
       <div className="space-y-2">
         <h2 className="font-display text-2xl font-bold">
-          Avoiding &ldquo;Frankenstein&rdquo; UI
+          Guardrails that keep it consistent
         </h2>
         <p className="max-w-3xl text-muted-foreground">
-          When different parts of an app use slightly different colors,
-          spacings, and one-off buttons, it looks stitched together — like
-          Frankenstein&apos;s monster. The fix is simple: always use a{' '}
-          <strong>token</strong>, never a raw value. This template checks that
-          for you automatically.
+          Knowing the rules isn&apos;t enough — the &ldquo;Frankenstein&rdquo;
+          drift from the top of this page creeps back the moment someone (you or
+          the AI) pastes a one-off color. So this template enforces the one rule
+          that matters automatically: always use a <strong>token</strong>, never
+          a raw value.
         </p>
       </div>
 

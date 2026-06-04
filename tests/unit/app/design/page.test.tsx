@@ -33,6 +33,20 @@ describe('Design System page', () => {
     expect(screen.getAllByText('bg-primary').length).toBeGreaterThan(0);
   });
 
+  it('reads each color value live from the rendered theme', () => {
+    expect(screen.getByText(/read live from your/i)).toBeInTheDocument();
+  });
+
+  it('points to more shadcn components you can add', () => {
+    expect(screen.getByText(/what else you can add/i)).toBeInTheDocument();
+    expect(screen.getByText('Dialog')).toBeInTheDocument();
+    const browse = screen.getByRole('link', { name: /browse all components/i });
+    expect(browse).toHaveAttribute(
+      'href',
+      expect.stringContaining('ui.shadcn.com')
+    );
+  });
+
   it('shows the typography & shape section', () => {
     expect(
       screen.getByRole('heading', { name: /typography/i })
@@ -49,8 +63,28 @@ describe('Design System page', () => {
     ).toBeInTheDocument();
   });
 
-  it('explains how enforcement prevents Frankenstein UI', () => {
+  it('frames the problem first — "Frankenstein" UI without a system', () => {
+    expect(
+      screen.getByRole('heading', { name: /without a design system/i })
+    ).toBeInTheDocument();
     expect(screen.getAllByText(/frankenstein/i).length).toBeGreaterThan(0);
+  });
+
+  it('credits the open DESIGN.md format from Google Labs and links to it', () => {
+    expect(
+      screen.getByRole('heading', { name: /design\.md/i })
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/google labs/i).length).toBeGreaterThan(0);
+    const repoLink = screen.getByRole('link', {
+      name: /design\.md on github/i,
+    });
+    expect(repoLink).toHaveAttribute(
+      'href',
+      expect.stringContaining('github.com/google-labs-code/design.md')
+    );
+  });
+
+  it('explains how enforcement prevents Frankenstein UI', () => {
     expect(screen.getAllByText(/eslint/i).length).toBeGreaterThan(0);
   });
 

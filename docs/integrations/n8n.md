@@ -35,6 +35,45 @@ token-by-token. Files: `app/api/chat/route.ts` (server) and `app/chat/page.tsx`
   request body; the route forwards it to n8n. Wire it into your AI Agent's
   **memory** node (e.g. keyed by `{{ $json.body.sessionId }}`) so the agent
   remembers earlier turns in the same conversation.
+
+## Chat sessions (history sidebar)
+
+The chat page has a sidebar that lists past conversations and lets the user
+switch between them. It is backed by two Supabase tables that the migration
+`supabase/migrations/20260604000000_n8n_chat_sessions_and_history.sql` creates
+(see [SUPABASE_SETUP.md](../../SUPABASE_SETUP.md)). The boundary is simple:
+**n8n writes these tables, the app only reads them.**
+
+- **Webhook body now includes `userId`**: in addition to `message`,
+  `sessionId`, and `messages`, `app/api/chat/route.ts` forwards `userId` — the
+  signed-in user's id — so the n8n workflow can attribute a session to its
+  owner. Read it in n8n as `{{ $json.body.userId }}`.
+- **Upsert a session row (n8n's job)**: on the **first** message of a new
+  `sessionId`, the workflow must **upsert** a row into **`n8n_chat_sessions`**
+  with:
+  - `session_id` — from `{{ $json.body.sessionId }}`
+  - `user_id` — from `{{ $json.body.userId }}`
+  - `name` — a short, descriptive title (e.g. an LLM-generated summary of the
+    first message) shown in the sidebar.
+
+  Do this insert with the **service-role / Postgres connection** so it bypasses
+  RLS (the row's `user_id` is supplied explicitly from the body, not from a
+  session). Use an upsert keyed on the unique `session_id` so re-runs don't
+  duplicate the row.
+
+- **History is the standard LangChain memory table**: conversation messages live
+  in **`n8n_chat_histories`** — the table n8n's **Postgres Chat Memory** node
+  reads and writes, keyed by `session_id`. Each row is one LangChain message
+  (`message` jsonb, `{type, content}`). Point the memory node at this table and
+  it fills automatically as the agent runs. The Postgres Chat Memory node needs a
+  **Postgres credential pointing at your Supabase database via the session
+  pooler** — see [SUPABASE_SETUP.md → 2b. Connect n8n to Postgres](../../SUPABASE_SETUP.md)
+  for the exact host/port/user fields.
+- **The app reads, never writes**: the sidebar list comes from
+  **`n8n_chat_sessions`** (live via **Supabase Realtime** — that table is in the
+  `supabase_realtime` publication), and selecting a session loads its messages
+  from **`n8n_chat_histories`**. Both reads go through the **RLS-scoped browser
+  client**, so a student only ever sees their own sessions and history.
 - **Response format — NDJSON (handled for you)**: n8n's AI Agent streams
   **newline-delimited JSON**, one record per line:
   `{"type":"begin",...}` / `{"type":"item","content":"…"}` / `{"type":"end",...}`.

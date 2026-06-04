@@ -54,7 +54,7 @@ denies `rm -rf /`, force-push, hard reset, `npm publish`, and pipe-to-shell.
 app/
 ├── api/
 │   ├── chat/
-│   │   └── route.ts  # Proxy the request to the n8n workflow and stream its reply back. When Zep is
+│   │   └── route.ts  # Proxy the request to the n8n workflow and stream its reply back.
 │   ├── tasks/
 │   │   ├── [id]/
 │   │   │   └── route.ts
@@ -73,6 +73,9 @@ app/
 ├── chat/
 │   └── page.tsx
 ├── components/
+│   ├── chat/
+│   │   ├── ChatMessages.tsx
+│   │   └── ChatSessionSidebar.tsx
 │   ├── home/
 │   │   ├── AiInstructionsCard.tsx
 │   │   ├── TddFrameworkCard.tsx
@@ -88,12 +91,14 @@ app/
 │   └── ThemeToggle.tsx
 ├── design/
 │   ├── components/
-│   │   ├── AddComponentGuide.tsx  # A friendly, visual walkthrough of how a new component enters the project via
+│   │   ├── AddComponentGuide.tsx  # A taste of the wider shadcn registry — components that aren't installed yet
 │   │   ├── ColorTokens.tsx  # The living color palette. Each swatch renders with its real token class
 │   │   ├── ComponentGallery.tsx  # Live gallery of the shadcn/ui primitives that ship with this template. These
 │   │   ├── ConceptsSection.tsx  # Plain-language explanation of what a design system is, what shadcn/ui is, and
+│   │   ├── DesignMdSection.tsx  # Explains the open DESIGN.md format that this template's design system is
 │   │   ├── EnforcementSection.tsx  # Explains, for non-technical students, why hard-coded styles create
-│   │   └── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the three real
+│   │   ├── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the three real
+│   │   └── WhyDesignSystemsSection.tsx  # Frames the *problem* before any solution: what an interface looks like with no
 │   └── page.tsx
 ├── login/
 │   ├── actions.ts  # Email/password sign-in. Called as a form action from /login.
@@ -136,12 +141,13 @@ lib/
 │   ├── client.ts  # Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat
 │   ├── identity.ts  # Map a Supabase user to the fields Zep's user.add expects.
 │   └── stream-capture.ts  # A pass-through transform that accumulates the streamed assistant text and,
+├── chat-history.ts  # Map stored n8n LangChain history rows into the UI message shape used by the
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
 ├── n8n-stream.ts  # Normalize an n8n AI Agent streaming response into a plain text token stream.
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
 types/
 ├── index.ts
-└── supabase.ts
+└── supabase.ts  # A single LangChain message as stored in n8n_chat_histories.message.
 <!-- /AUTO:tree -->
 
 ---
@@ -153,7 +159,7 @@ types/
 |--------|---------|-------------|
 | `app/layout.tsx` |  | `metadata`, `RootLayout` |
 | `app/page.tsx` |  | `HomePage` |
-| `app/api/chat/route.ts` | Proxy the request to the n8n workflow and stream its reply back. When Zep is | `maxDuration`, `POST` |
+| `app/api/chat/route.ts` | Proxy the request to the n8n workflow and stream its reply back. | `maxDuration`, `POST` |
 | `app/api/tasks/route.ts` |  | `GET`, `POST` |
 | `app/api/tasks/[id]/route.ts` |  | `PATCH`, `DELETE` |
 | `app/api/test-runner/route.ts` |  | `POST` |
@@ -168,18 +174,22 @@ types/
 | `app/components/PageHero.tsx` | The shared page header used at the top of every top-level page (Design, Charts, | `PageHero` |
 | `app/components/PageShell.tsx` | The standard page frame for every top-level content page (Design, Charts, Chat, | `PageShell` |
 | `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
+| `app/components/chat/ChatMessages.tsx` |  | `ChatMessages` |
+| `app/components/chat/ChatSessionSidebar.tsx` |  | `ChatSessionSidebar` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
 | `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
 | `app/components/tasks/StudentsInfoCard.tsx` |  | `StudentsInfoCard` |
 | `app/components/tasks/TaskItem.tsx` |  | `TaskItem` |
 | `app/design/page.tsx` |  | `metadata`, `DesignPage` |
-| `app/design/components/AddComponentGuide.tsx` | A friendly, visual walkthrough of how a new component enters the project via | `AddComponentGuide` |
+| `app/design/components/AddComponentGuide.tsx` | A taste of the wider shadcn registry — components that aren't installed yet | `AddComponentGuide` |
 | `app/design/components/ColorTokens.tsx` | The living color palette. Each swatch renders with its real token class | `ColorTokens` |
 | `app/design/components/ComponentGallery.tsx` | Live gallery of the shadcn/ui primitives that ship with this template. These | `ComponentGallery` |
 | `app/design/components/ConceptsSection.tsx` | Plain-language explanation of what a design system is, what shadcn/ui is, and | `ConceptsSection` |
+| `app/design/components/DesignMdSection.tsx` | Explains the open DESIGN.md format that this template's design system is | `DesignMdSection` |
 | `app/design/components/EnforcementSection.tsx` | Explains, for non-technical students, why hard-coded styles create | `EnforcementSection` |
 | `app/design/components/TypeAndShapeSection.tsx` | Typography scale and shape (corner radius) reference. Shows the three real | `TypeAndShapeSection` |
+| `app/design/components/WhyDesignSystemsSection.tsx` | Frames the *problem* before any solution: what an interface looks like with no | `WhyDesignSystemsSection` |
 | `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
 | `app/login/page.tsx` |  | `LoginPage`, `default` |
 | `app/signup/page.tsx` |  | `SignupPage`, `default` |
@@ -201,9 +211,10 @@ types/
 | `components/ui/input.tsx` |  | `Input` |
 | `components/ui/label.tsx` |  | `Label` |
 | `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
+| `lib/chat-history.ts` | Map stored n8n LangChain history rows into the UI message shape used by the | `UiMessage`, `historyToUiMessages` |
 | `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
 | `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `N8N_RUN_SEPARATOR`, `createN8nTextStream` |
-| `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `studioCard`, `studioCardHover` |
+| `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `generateId`, `studioCard`, `studioCardHover` |
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
@@ -212,7 +223,7 @@ types/
 | `lib/zep/identity.ts` | Map a Supabase user to the fields Zep's user.add expects. | `ZepUserFields`, `toZepUser`, `displayName` |
 | `lib/zep/stream-capture.ts` | A pass-through transform that accumulates the streamed assistant text and, | `createCaptureStream` |
 | `types/index.ts` |  | `ApiError` |
-| `types/supabase.ts` |  | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
+| `types/supabase.ts` | A single LangChain message as stored in n8n_chat_histories.message. | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
 <!-- /AUTO:modules -->
 
 ---
