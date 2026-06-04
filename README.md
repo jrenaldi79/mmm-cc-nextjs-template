@@ -1,6 +1,6 @@
-# Northwestern MPD2 — Next.js Starter Template
+# Northwestern MMM & MPD2 — Next.js Starter Template
 
-A production-ready **Next.js 16** starter for Northwestern MPD2 master's students. It comes
+A production-ready **Next.js 16** starter for Northwestern MMM and MPD2 master's students. It comes
 pre-wired with TypeScript, Tailwind CSS + shadcn/ui, Supabase (auth + database), an n8n LLM
 chat scaffold, and a Test-Driven Development framework with quality gates enforced by git
 hooks — so you can spend your time building your idea, not your toolchain.
@@ -242,4 +242,4 @@ ISC — this is your starter template to build upon.
 your creative vision and build something amazing. 🌟
 
 **Happy coding!**
-_Northwestern MPD2 Program_
+_Northwestern MMM & MPD2 Programs_

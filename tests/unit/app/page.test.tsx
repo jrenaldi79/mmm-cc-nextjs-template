@@ -21,7 +21,7 @@ describe('HomePage', () => {
   it('renders the main heading', () => {
     render(<HomePage />);
     const heading = screen.getByRole('heading', {
-      name: /northwestern mpd2 starter template/i,
+      name: /northwestern mmm & mpd2 starter template/i,
     });
     expect(heading).toBeInTheDocument();
   });

@@ -1,4 +1,4 @@
-# Northwestern MPD2 Starter Template
+# Northwestern MMM & MPD2 Starter Template
 
 This file is the lean entry point for agents. Detailed, path-scoped guidance lives in
 `.claude/rules/` (auto-loaded when editing matching files) and longer references in `docs/`.
@@ -7,7 +7,7 @@ hooks enforce.
 
 ## Project Overview
 
-A **Next.js 16** starter template for Northwestern MPD2 students: TypeScript, Tailwind CSS +
+A **Next.js 16** starter template for Northwestern MMM and MPD2 students: TypeScript, Tailwind CSS +
 shadcn/ui, Supabase (auth + data, `@supabase/ssr`), a TDD framework, and an n8n LLM streaming
 chat scaffold. The app is **login-controlled** (everything outside `/login`, `/signup`,
 `/auth/*` requires a session). The `/` route is a shell that students replace with their own

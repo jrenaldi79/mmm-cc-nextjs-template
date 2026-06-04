@@ -7,7 +7,7 @@ export function WelcomeCard() {
     <Card>
       <CardContent className="pt-8">
         <h2 className="text-3xl font-bold mb-4">
-          🚀 Northwestern MPD2 Starter Template
+          🚀 Northwestern MMM &amp; MPD2 Starter Template
         </h2>
         <p className="text-muted-foreground mb-6">
           Welcome to your Next.js starter project! This is a &quot;shell&quot;

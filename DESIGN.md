@@ -1,5 +1,5 @@
 ---
-name: Northwestern MPD2 Starter
+name: Northwestern MMM & MPD2 Starter
 colors:
   # Light theme — these mirror the :root values in app/globals.css.
   background: '#FFFFFF'
