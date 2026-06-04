@@ -89,7 +89,7 @@ export default function ChatPage() {
                         }`}
                       >
                         <div
-                          className={`prose prose-sm max-w-none prose-p:my-1 prose-pre:my-2 ${
+                          className={`prose prose-sm max-w-none prose-p:my-1 prose-pre:my-2 prose-hr:my-3 prose-headings:mt-3 prose-headings:mb-2 ${
                             isUser ? 'prose-invert' : ''
                           }`}
                         >

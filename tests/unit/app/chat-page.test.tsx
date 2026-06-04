@@ -144,6 +144,28 @@ describe('ChatPage', () => {
     expect(assistantProse).not.toHaveClass('prose-invert');
   });
 
+  it('tightens spacing around rules and headings so replies have no large gaps', () => {
+    // Agent markdown often contains `---` (an <hr>) and `##` headings; Tailwind's
+    // default prose gives those ~3em margins, producing big vertical gaps.
+    mockChatState = {
+      messages: [
+        {
+          id: '1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'Reply body' }],
+        },
+      ],
+      status: 'ready',
+      error: undefined,
+    };
+
+    render(<ChatPage />);
+
+    const prose = screen.getByText('Reply body').closest('.prose');
+    expect(prose?.className).toMatch(/prose-hr:my-/);
+    expect(prose?.className).toMatch(/prose-headings:mt-/);
+  });
+
   it('renders each agent run as its own bubble when a message has a run separator', () => {
     mockChatState = {
       messages: [
