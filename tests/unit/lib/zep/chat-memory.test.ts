@@ -160,6 +160,21 @@ describe('recordChatTurn', () => {
     ]);
   });
 
+  it('keeps assistant turns in history but excludes them from graph ingestion (ignoreRoles)', async () => {
+    const { client, addMessages } = fakeWriteClient();
+    await recordChatTurn(client, {
+      supabaseUser,
+      threadId: 'thread-1',
+      userText: 'hi',
+      assistantText: 'hello',
+    });
+    const payload = addMessages.mock.calls[0][1];
+    // both messages are still sent (kept in thread history)...
+    expect(payload.messages).toHaveLength(2);
+    // ...but assistant role is excluded from graph extraction.
+    expect(payload.ignoreRoles).toEqual(['assistant']);
+  });
+
   it('does NOT include any retrieved context — only the raw turn text (no feedback loop)', async () => {
     const { client, addMessages } = fakeWriteClient();
     await recordChatTurn(client, {

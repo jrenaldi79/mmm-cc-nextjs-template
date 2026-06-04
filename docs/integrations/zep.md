@@ -111,11 +111,17 @@ When `ZEP_API_KEY` is set, the chat scaffold (`app/api/chat/route.ts`) uses Zep 
 the **n8n-connected path** (not placeholder mode):
 
 - **Before** calling n8n it fetches the signed-in user's long-term context with
-  `thread.getUserContext(sessionId)` and adds it to the n8n request body as
-  `context`. Wire it into your agent prompt with `{{ $json.body.context }}`.
+  `thread.getUserContext(sessionId)` **and** prepends a `<USER_SUMMARY>` block built
+  from the user node (`user.getNode`), so the summary is included even when the Zep
+  project's context-block summary toggle is off. The combined block is added to the
+  n8n request body as `context` — wire it into your agent prompt with
+  `{{ $json.body.context }}`.
 - **After** the reply streams back it records the turn (user message + assistant
-  reply) to the user's Zep thread (`sessionId`), ingesting both into the
-  user-level knowledge graph.
+  reply) to the user's Zep thread (`sessionId`). Assistant replies are **kept in
+  thread history** but **excluded from graph ingestion** (`ignoreRoles: ['assistant']`),
+  so extracted facts are attributed to the user, not the assistant. (The n8n agent
+  paraphrases the user; ingesting its replies mis-attributed facts to the assistant
+  entity, e.g. "Assistant has a CS degree".)
 
 The retrieved `context` is passed to n8n only — it is **never** written back to
 Zep, so already-extracted facts aren't re-ingested. Every Zep call is best-effort:

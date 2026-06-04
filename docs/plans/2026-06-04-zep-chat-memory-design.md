@@ -24,8 +24,11 @@ or break the chat stream.
 
 - **Scope:** reusable template feature, gated on `ZEP_API_KEY`. Chat works unchanged
   when the key is absent. Tests + docs required.
-- **Graph ingestion:** both user and assistant messages are ingested into the graph
-  (no `ignoreRoles`).
+- **Graph ingestion:** user messages feed the graph; assistant replies are kept in
+  thread history but **excluded** from graph extraction via `ignoreRoles: ['assistant']`.
+  (Reversed from the initial "ingest both" decision after live testing showed the
+  agent's paraphrases created facts mis-attributed to the assistant entity, e.g.
+  "Assistant has a CS degree".)
 - **When active:** only in the n8n-connected branch. Placeholder/mock turns are never
   written to Zep.
 - **Retrieval ordering:** low-latency — retrieve, call n8n, then write both messages

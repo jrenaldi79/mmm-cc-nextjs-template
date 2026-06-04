@@ -144,7 +144,14 @@ export async function recordChatTurn(
         content: cleanAssistantText(turn.assistantText),
       },
     ];
-    await client.thread.addMessages(turn.threadId, { messages });
+    // Assistant turns are kept in thread history but excluded from graph
+    // extraction (ignoreRoles): the n8n agent paraphrases the user, so
+    // ingesting its replies mis-attributed facts to the assistant entity
+    // (e.g. "Assistant has a CS degree"). Extracted facts stay on the user.
+    await client.thread.addMessages(turn.threadId, {
+      messages,
+      ignoreRoles: ['assistant'],
+    });
   } catch (error) {
     logger.error('Zep recordChatTurn failed', { error: String(error) });
   }
