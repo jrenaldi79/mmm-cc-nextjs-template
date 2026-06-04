@@ -3,12 +3,12 @@
  */
 import { POST } from '../../../../app/api/test-runner/route';
 import { NextRequest } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 
 jest.mock('child_process');
 
 describe('POST /api/test-runner', () => {
-  const mockExec = exec as unknown as jest.Mock;
+  const mockExecFile = execFile as unknown as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -48,8 +48,8 @@ describe('POST /api/test-runner', () => {
       },
     });
 
-    mockExec.mockImplementation(
-      (_cmd: string, _opts: any, callback: Function) => {
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
         callback(null, mockJestOutput, '');
       }
     );
@@ -94,8 +94,8 @@ describe('POST /api/test-runner', () => {
       coverageMap: {},
     });
 
-    mockExec.mockImplementation(
-      (_cmd: string, _opts: any, callback: Function) => {
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
         callback(null, mockJestOutput, '');
       }
     );
@@ -134,8 +134,8 @@ describe('POST /api/test-runner', () => {
       },
     });
 
-    mockExec.mockImplementation(
-      (_cmd: string, _opts: any, callback: Function) => {
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
         callback(null, mockJestOutput, '');
       }
     );
@@ -151,8 +151,8 @@ describe('POST /api/test-runner', () => {
   });
 
   it('handles parse errors gracefully', async () => {
-    mockExec.mockImplementation(
-      (_cmd: string, _opts: any, callback: Function) => {
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
         callback(null, 'Invalid JSON output from Jest', '');
       }
     );
@@ -182,8 +182,8 @@ ${JSON.stringify({
 Some text after JSON
     `;
 
-    mockExec.mockImplementation(
-      (_cmd: string, _opts: any, callback: Function) => {
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
         callback(null, mockJestOutput, '');
       }
     );
@@ -194,5 +194,40 @@ Some text after JSON
 
     expect(data.success).toBe(true);
     expect(data.summary.totalTests).toBe(1);
+  });
+
+  // Regression: `npm test` brackets the Jest JSON with lifecycle banners. The
+  // trailing `posttest` banner contains braces (`try{...}catch(e){}`), so a
+  // greedy "first `{` … last `}`" match swallows non-JSON text and the parse
+  // fails — surfacing in the UI as a false "tests failed" error.
+  it('parses Jest JSON wrapped in npm test/posttest banners', async () => {
+    const jestJson = JSON.stringify({
+      success: true,
+      numTotalTests: 3,
+      numPassedTests: 3,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      testResults: [],
+      coverageMap: {},
+    });
+    const mockNpmOutput =
+      '\n> nextjs-app@1.0.0 test\n> jest --json --coverage --verbose\n\n' +
+      jestJson +
+      '\n\n> nextjs-app@1.0.0 posttest\n' +
+      "> node -e \"try{require('fs').writeFileSync('.test-passed','x')}catch(e){}\"\n\n";
+
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
+        callback(null, mockNpmOutput, '');
+      }
+    );
+
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
+    const response = (await POST(request)) as Response;
+    const data = await response.json();
+
+    expect(data.success).toBe(true);
+    expect(data.summary.totalTests).toBe(3);
+    expect(data.summary.passedTests).toBe(3);
   });
 });

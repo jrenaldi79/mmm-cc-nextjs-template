@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 
 function sanitizeFailureMessage(msg: string): string {
   const lines = msg.split('\n');
@@ -15,25 +15,59 @@ function sanitizeFailureMessage(msg: string): string {
   return relevantLines.join('\n');
 }
 
-function parseTestResults(stdout: string) {
-  let testResults;
-  try {
-    testResults = JSON.parse(stdout);
-  } catch (parseError) {
-    const jsonMatch = stdout.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      testResults = JSON.parse(jsonMatch[0]);
-    } else {
-      throw new Error('Failed to parse Jest output');
+// Extract the first complete, brace-balanced JSON object from `text`.
+// Jest's `--json` report is a single object, but stdout may be bracketed by
+// noise (npm lifecycle banners, posttest output) — some of which contains
+// braces. A greedy "first `{` … last `}`" match would swallow that trailing
+// noise and fail to parse, so we scan for the matching closing brace instead,
+// ignoring braces inside string literals.
+function extractJsonObject(text: string): string | null {
+  const start = text.indexOf('{');
+  if (start === -1) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < text.length; i++) {
+    const char = text[i];
+
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (char === '\\') escaped = true;
+      else if (char === '"') inString = false;
+      continue;
     }
+
+    if (char === '"') inString = true;
+    else if (char === '{') depth++;
+    else if (char === '}' && --depth === 0) return text.slice(start, i + 1);
   }
-  return testResults;
+
+  return null;
+}
+
+function parseTestResults(stdout: string) {
+  try {
+    return JSON.parse(stdout);
+  } catch {
+    const json = extractJsonObject(stdout);
+    if (json) return JSON.parse(json);
+    throw new Error('Failed to parse Jest output');
+  }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   return new Promise((resolve) => {
-    exec(
-      'npm test -- --json --coverage --verbose',
+    // Invoke Jest directly (not `npm test`) via execFile with an argument
+    // array — no shell, so no command-injection surface. Going through npm
+    // would print lifecycle banners and run the `posttest` hook, which both
+    // pollute stdout AND write `.test-passed` for the current commit, letting
+    // a UI click make the pre-push hook skip tests. Running the local Jest
+    // entrypoint with `node` is cross-platform.
+    execFile(
+      'node',
+      ['node_modules/jest/bin/jest.js', '--json', '--coverage', '--verbose'],
       {
         maxBuffer: 1024 * 1024 * 10,
         cwd: process.cwd(),
