@@ -1,9 +1,9 @@
 ---
 description: Supabase @supabase/ssr clients, RLS, auth/middleware
-globs: 'lib/supabase/**,app/auth/**,app/api/**,middleware.ts'
+globs: 'lib/supabase/**,app/auth/**,app/api/**,proxy.ts'
 ---
 
-# Database & Auth — Supabase (applies to `lib/supabase/**`, `app/auth/**`, `app/api/**`, `middleware.ts`)
+# Database & Auth — Supabase (applies to `lib/supabase/**`, `app/auth/**`, `app/api/**`, `proxy.ts`)
 
 ## Clients (`@supabase/ssr`)
 
@@ -28,7 +28,7 @@ instantiation) so the app still builds without credentials.
 
 ## Authentication
 
-- **Protected by default**: `middleware.ts` (via `lib/supabase/middleware.ts`) refreshes the
+- **Protected by default**: `proxy.ts` (via `lib/supabase/middleware.ts`) refreshes the
   session on every request and redirects unauthenticated users to `/login`. Public paths:
   `/login`, `/signup`, `/auth/*`, and static assets.
 - **Methods**: email/password via **server actions** (`app/login/actions.ts`) and **OAuth**

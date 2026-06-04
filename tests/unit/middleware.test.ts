@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 function request(path: string) {
-  return new NextRequest(`http://localhost:5000${path}`);
+  return new NextRequest(`http://localhost:3000${path}`);
 }
 
 describe('updateSession', () => {

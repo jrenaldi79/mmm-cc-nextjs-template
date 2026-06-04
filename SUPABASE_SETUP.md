@@ -8,7 +8,7 @@ protected routes, and per-user database CRUD operations.
 
 - **Auth clients** (`lib/supabase/{client,server,middleware}.ts`) - Cookie-aware
   Supabase clients for the browser, the server, and the auth middleware (`@supabase/ssr`)
-- **Route protection** (`middleware.ts`) - Redirects unauthenticated users to `/login`
+- **Route protection** (`proxy.ts`) - Redirects unauthenticated users to `/login`
 - **Auth pages & routes** (`app/login`, `app/signup`, `app/auth/*`) - Email/password +
   Google/GitHub sign-in, sign-out, and OAuth/email callbacks
 - **TypeScript Types** (`types/supabase.ts`) - Type-safe database schema definitions
@@ -107,8 +107,8 @@ to `/login`. Set up the sign-in methods in your Supabase dashboard.
 2. Create an OAuth app with each provider and paste the **Client ID** and
    **Client Secret** into Supabase.
 3. Go to **Authentication → URL Configuration** and add these **Redirect URLs**:
-   - `http://localhost:5000/auth/callback`
-   - `http://localhost:5000/auth/confirm`
+   - `http://localhost:3000/auth/callback`
+   - `http://localhost:3000/auth/confirm`
    - your production equivalents (e.g. `https://your-app.com/auth/callback`)
 
 > Don't want OAuth yet? Email/password works on its own — the Google/GitHub
@@ -117,11 +117,11 @@ to `/login`. Set up the sign-in methods in your Supabase dashboard.
 ### 5. Test the Integration
 
 1. Restart your Next.js development server.
-2. Navigate to [http://localhost:5000](http://localhost:5000) — you'll be
+2. Navigate to [http://localhost:3000](http://localhost:3000) — you'll be
    redirected to `/login`.
 3. Go to `/signup`, create an account, and you'll land on the home page with
    your email shown in the nav.
-4. Visit [http://localhost:5000/tasks](http://localhost:5000/tasks) and:
+4. Visit [http://localhost:3000/tasks](http://localhost:3000/tasks) and:
    - ✅ Create new tasks
    - ✅ Mark tasks as complete/incomplete
    - ✅ Delete tasks
@@ -152,12 +152,12 @@ the public anon key. This is the correct, safe pattern: never ship a permissive
 
 ```
 .
-├── middleware.ts                # Refreshes the session & protects routes
+├── proxy.ts                     # Refreshes the session & protects routes
 ├── lib/
 │   └── supabase/
 │       ├── client.ts            # Browser client (Client Components)
 │       ├── server.ts            # Server client (Server Components/Actions/Routes)
-│       └── middleware.ts        # updateSession() used by middleware.ts
+│       └── middleware.ts        # updateSession() used by proxy.ts
 ├── types/
 │   └── supabase.ts              # Database type definitions (incl. user_id)
 ├── app/

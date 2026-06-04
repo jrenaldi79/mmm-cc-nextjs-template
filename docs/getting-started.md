@@ -64,11 +64,11 @@ Guide the user through these steps:
   _Configure Authentication_:
   - Enable the **Email** provider; **disable "Confirm email"** for local dev.
   - (Optional) Enable **Google**/**GitHub** providers and add the redirect URLs
-    (`http://localhost:5000/auth/callback`, `/auth/confirm`).
+    (`http://localhost:3000/auth/callback`, `/auth/confirm`).
 
 ## 6. Verify everything works
 
-- Run `npm run dev` and open http://localhost:5000 → you should be redirected
+- Run `npm run dev` and open http://localhost:3000 → you should be redirected
   to `/login`.
 - Sign up at `/signup`, confirm the nav shows your email, and that `/tasks`
   create/toggle/delete works. Sign out and confirm you're sent back to `/login`.

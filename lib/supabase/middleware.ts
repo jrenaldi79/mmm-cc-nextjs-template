@@ -15,7 +15,7 @@ function isPublicPath(pathname: string): boolean {
 /**
  * Refreshes the Supabase auth session on every request and gates access.
  *
- * Called from the root `middleware.ts`. It must:
+ * Called from the root `proxy.ts`. It must:
  *  1. Refresh the session token by calling `auth.getUser()`.
  *  2. Return the exact response object that carries the refreshed cookies.
  *  3. Redirect unauthenticated users away from protected pages.

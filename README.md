@@ -48,10 +48,10 @@ step-by-step in **[docs/getting-started.md](docs/getting-started.md)** — start
 ### 3. Run it
 
 ```bash
-npm run dev      # starts the dev server on http://localhost:5000
+npm run dev      # starts the dev server on http://localhost:3000
 ```
 
-> The app is login-controlled, so visiting `http://localhost:5000` redirects you to `/login`.
+> The app is login-controlled, so visiting `http://localhost:3000` redirects you to `/login`.
 > Create an account at `/signup` to get in. (Full auth + database setup is in
 > [SUPABASE_SETUP.md](SUPABASE_SETUP.md).)
 
@@ -134,7 +134,7 @@ npm test
 ### Everyday commands
 
 ```bash
-npm run dev            # dev server on http://localhost:5000
+npm run dev            # dev server on http://localhost:3000
 npm run validate       # type-check + lint (run before committing)
 npm test               # run the test suite
 npm run test:coverage  # coverage report (80% gate)
@@ -182,7 +182,7 @@ codebase.
 
 ## 🔒 Security (built in)
 
-- **Login-controlled by default** — `middleware.ts` refreshes the session on every request and
+- **Login-controlled by default** — `proxy.ts` refreshes the session on every request and
   redirects anonymous users to `/login`.
 - **Row-Level Security (RLS)** — database access is scoped to the signed-in user; the server
   Supabase client carries the session so RLS applies. Never trust the client for authorization.

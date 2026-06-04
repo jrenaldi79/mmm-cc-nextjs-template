@@ -60,8 +60,9 @@ pillar_scores:
 
 ## Remaining Gaps
 
-1. **Pillar 1 · `import/no-default-export` OFF** — _deliberate._ Next.js `page.tsx`/`layout.tsx`/
-   `middleware.ts` require default exports. Documented under "Deliberate Deviations" in CLAUDE.md.
+1. **Pillar 1 · `import/no-default-export` OFF** — _deliberate._ Next.js `page.tsx`/`layout.tsx`
+   require default exports (and `proxy.ts` uses a named `proxy` export). Documented under
+   "Deliberate Deviations" in CLAUDE.md.
 2. **Pillar 8 · Plan-before-build system** — _deliberate._ BMAD/Superpowers intentionally omitted to
    keep this student starter template lean. (Session-start validation is now wired up:
    `.claude/hooks/session-start.sh` is registered in `.claude/settings.json`.)

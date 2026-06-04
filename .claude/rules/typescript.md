@@ -29,6 +29,7 @@ globs: '**/*.ts,**/*.tsx'
 Prefer **named exports** in `lib/` and `components/` (greppable, refactor-friendly; avoid
 default exports there). **Exception — Next.js App Router entrypoints** require a **default
 export** and must keep it: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`,
-`not-found.tsx`, `template.tsx`, `default.tsx`, and `middleware.ts`. Route handlers
+`not-found.tsx`, `template.tsx`, and `default.tsx`. The root `proxy.ts` (Next.js 16, formerly
+`middleware.ts`) uses a named `proxy` export. Route handlers
 (`route.ts`) use named method exports (`GET`, `POST`, …). The ESLint config is intentionally
 Next.js-aware and does **not** ban default exports.

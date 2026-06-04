@@ -54,7 +54,7 @@ describe('POST /api/test-runner', () => {
       }
     );
 
-    const request = new NextRequest('http://localhost:5000/api/test-runner');
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
     const response = (await POST(request)) as Response;
     const data = await response.json();
 
@@ -100,7 +100,7 @@ describe('POST /api/test-runner', () => {
       }
     );
 
-    const request = new NextRequest('http://localhost:5000/api/test-runner');
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
     const response = (await POST(request)) as Response;
     const data = await response.json();
 
@@ -140,7 +140,7 @@ describe('POST /api/test-runner', () => {
       }
     );
 
-    const request = new NextRequest('http://localhost:5000/api/test-runner');
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
     const response = (await POST(request)) as Response;
     const data = await response.json();
 
@@ -157,7 +157,7 @@ describe('POST /api/test-runner', () => {
       }
     );
 
-    const request = new NextRequest('http://localhost:5000/api/test-runner');
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
     const response = (await POST(request)) as Response;
     const data = await response.json();
 
@@ -188,7 +188,7 @@ Some text after JSON
       }
     );
 
-    const request = new NextRequest('http://localhost:5000/api/test-runner');
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
     const response = (await POST(request)) as Response;
     const data = await response.json();
 

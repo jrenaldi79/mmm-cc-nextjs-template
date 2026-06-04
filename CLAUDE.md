@@ -22,7 +22,7 @@ project.
 ## Essential Commands
 
 ```bash
-npm run dev            # Dev server (http://localhost:5000)
+npm run dev            # Dev server (http://localhost:3000)
 npm run build          # Production build
 npm run lint           # ESLint
 npm run type-check     # tsc --noEmit
@@ -206,13 +206,13 @@ Next.js 16 App Router. A request flows:
 
 ```
 Browser
-  -> middleware.ts          # refreshes the Supabase session, redirects anon users to /login
+  -> proxy.ts               # refreshes the Supabase session, redirects anon users to /login
   -> app/**/page.tsx (RSC)  # Server Components render using the server Supabase client
   -> app/api/**/route.ts    # Route Handlers (REST) validate input with Zod, run as the user
   -> Supabase (RLS)         # row-level security scopes every query to the signed-in user
 ```
 
-- **Auth gate**: `middleware.ts` → `lib/supabase/middleware.ts` runs on every request; only
+- **Auth gate**: `proxy.ts` → `lib/supabase/middleware.ts` runs on every request; only
   `/login`, `/signup`, `/auth/*`, and static assets are public.
 - **Two Supabase clients**: the **server** client (`lib/supabase/server.ts`, carries the
   session → RLS) for RSC / route handlers / server actions; the **browser** client
@@ -234,7 +234,7 @@ Browser
 | `**/*.ts(x)` | [typescript.md](.claude/rules/typescript.md) — strict, naming, default-export exemptions |
 | `app/**`, `components/**` (tsx) | [react.md](.claude/rules/react.md) · [ui-styling.md](.claude/rules/ui-styling.md) |
 | `app/api/**` | [api.md](.claude/rules/api.md) — REST, Zod, server client |
-| `lib/supabase/**`, `app/auth/**`, `middleware.ts` | [database.md](.claude/rules/database.md) — Supabase + auth |
+| `lib/supabase/**`, `app/auth/**`, `proxy.ts` | [database.md](.claude/rules/database.md) — Supabase + auth |
 | Anything sensitive | [security.md](.claude/rules/security.md) — RLS, secrets, input validation |
 
 ## Docs Map
@@ -279,12 +279,15 @@ Full rule: [.claude/rules/tdd.md](.claude/rules/tdd.md).
   `await createClient()`. Dynamic route params are `Promise<{ id }>` — `await` them too.
 - **Supabase clients are factory functions** (no module-level instantiation), so the app
   builds without credentials; a missing-env error only surfaces on first use.
-- **Default exports are required** for Next.js `page.tsx`/`layout.tsx`/`middleware.ts` — do
-  NOT enable ESLint `import/no-default-export`. Use named exports everywhere else.
-- **Dev server runs on port 5000**, host `0.0.0.0` (not 3000) — see the `dev` script.
+- **Default exports are required** for Next.js `page.tsx`/`layout.tsx` — do NOT enable ESLint
+  `import/no-default-export`. Use named exports everywhere else. (`proxy.ts` exports a named
+  `proxy` function, which Next.js 16 also accepts.)
+- **Dev server runs on port 3000**, host `0.0.0.0` — see the `dev` script. (Port 5000 was avoided because macOS reserves it for the AirPlay Receiver.)
 - **Tailwind is pinned to v3.4.x** — do not upgrade to v4 (breaking PostCSS/config changes).
-- **Google Fonts behind a TLS-intercepting proxy**: `next.config.js` enables the system cert
-  store; fonts fail to fetch at build time without it.
+- **Google Fonts behind a TLS-intercepting proxy**: `next/font/google` fetches fonts at build
+  time, which fails behind a TLS-intercepting proxy. Next.js 16 removed the
+  `turbopackUseSystemTlsCerts` flag — point Node at the proxy CA instead:
+  `NODE_EXTRA_CA_CERTS=/path/to/ca.pem`.
 - **AUTO sections in CLAUDE.md are generated** by `scripts/generate-docs.js` (pre-commit) —
   never hand-edit between `<!-- AUTO:* -->` markers (CLAUDE.md is Prettier-ignored for this).
 - **pre-push test cache**: tests are skipped if `.test-passed` already holds the current HEAD

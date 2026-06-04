@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 function siteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:5000';
+  return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 }
 
 /**
