@@ -17,9 +17,9 @@ first time coding or you're already comfortable with React, the guardrails meet 
 1. **A blank canvas** — the home page (`/`) is a shell you replace with your own project.
 2. **A login-controlled app** — Supabase email/password + OAuth auth is already wired up; every
    page except `/login`, `/signup`, and `/auth/*` requires a signed-in user.
-3. **Working examples to learn from** — a full Supabase CRUD feature, a streaming AI chat, a
-   charts page, an interactive design-system page, and a live test dashboard. Study them, then
-   delete what you don't need.
+3. **Working examples to learn from** — a full Supabase CRUD feature, a streaming AI chat with
+   optional long-term memory, a charts page, an interactive design-system page, a knowledge-graph
+   memory explorer, and a live test dashboard. Study them, then delete what you don't need.
 4. **Guardrails that teach good habits** — a TDD workflow, an 80% test-coverage gate, a
    300-line file limit, secret scanning, and auto-generated docs, all enforced automatically
    when you commit and push.
@@ -61,7 +61,9 @@ npm run dev      # starts the dev server on http://localhost:3000
 
 > 💬 The `/chat` page works out of the box in **placeholder mode** — no external setup needed to
 > demo it. To wire it to a real LLM agent, point it at your own n8n webhook
-> (see [docs/integrations/n8n.md](docs/integrations/n8n.md)).
+> (see [docs/integrations/n8n.md](docs/integrations/n8n.md)). Optionally add **Zep** to give the
+> chat **long-term memory** that persists across sessions
+> (see [docs/integrations/zep.md](docs/integrations/zep.md)) — explore it on the `/memory` page.
 
 ---
 
@@ -81,11 +83,17 @@ toggle** (your choice is remembered across visits).
 | `/chat`             | A **streaming LLM chat** that proxies to an n8n agent webhook       |
 | `/charts`           | A **Recharts** data-visualization example using the shadcn chart UI |
 | `/design`           | An interactive **design-system guide** — tokens, type, components   |
+| `/memory`           | A **knowledge-graph memory** guide (Zep) + live memory tools        |
 | `/test-dashboard`   | A live view of your test suite + coverage                           |
 
 > 📚 `/design` is a learning tool, not part of your final app — it shows the live color tokens,
 > typography, and component gallery, plus how to add new shadcn/ui components. Browse it to stay
 > on-brand, then remove it when you no longer need the reference.
+
+> 🧠 `/memory` explains, in plain language, how an AI gets **long-term memory** with **Zep**
+> knowledge graphs — then lets you fetch your own user summary and search your memory graph live
+> (Zep's auto search). The tools light up once `ZEP_API_KEY` is set
+> (see [docs/integrations/zep.md](docs/integrations/zep.md)); the page renders fine without it.
 
 ---
 
@@ -96,12 +104,15 @@ toggle** (your choice is remembered across visits).
 ├── app/                       # App Router: routes, pages, API handlers, UI
 │   ├── page.tsx               # 👈 Start here — replace with your app
 │   ├── components/            # 👈 Your app-specific components (Navigation, ThemeToggle…)
-│   ├── api/                   # Route handlers (REST) — e.g. tasks, chat, test-runner
+│   ├── api/                   # Route handlers (REST) — e.g. tasks, chat, memory, test-runner
+│   ├── memory/                # /memory learning page + live Zep memory tools
+│   ├── error.tsx · global-error.tsx  # error boundaries (graceful failure UI)
 │   ├── login/ · signup/       # Auth pages + server actions
 │   └── auth/                  # OAuth / email-confirmation / sign-out callbacks
 ├── components/ui/             # shadcn/ui primitives (Button, Card, Input, Chart…)
 ├── lib/
 │   ├── supabase/              # client.ts (browser) · server.ts (RSC/API) · middleware.ts
+│   ├── zep/                   # Zep long-term memory (client, chat memory, graph search)
 │   ├── logger.ts              # structured logger — use instead of console.log
 │   └── utils.ts              # cn() Tailwind class merger
 ├── types/                     # Shared TypeScript types (incl. generated Supabase types)
@@ -117,15 +128,16 @@ toggle** (your choice is remembered across visits).
 
 ## 🛠️ Pre-Configured Tech Stack
 
-| Category      | Technology                    | Why it's here                             |
-| ------------- | ----------------------------- | ----------------------------------------- |
-| **Framework** | Next.js 16 (App Router, RSC)  | Industry-standard React framework         |
-| **Language**  | TypeScript (strict)           | Type safety and better editor support     |
-| **Styling**   | Tailwind CSS v3.4 + shadcn/ui | Rapid, accessible, on-brand UI            |
-| **Auth + DB** | Supabase (`@supabase/ssr`)    | Login, row-level security, Postgres       |
-| **AI Chat**   | n8n webhook (streamed)        | LLM agent scaffold, proxied server-side   |
-| **Charts**    | Recharts (shadcn wrapper)     | Data visualization                        |
-| **Testing**   | Jest + React Testing Library  | TDD methodology with an 80% coverage gate |
+| Category      | Technology                    | Why it's here                                   |
+| ------------- | ----------------------------- | ----------------------------------------------- |
+| **Framework** | Next.js 16 (App Router, RSC)  | Industry-standard React framework               |
+| **Language**  | TypeScript (strict)           | Type safety and better editor support           |
+| **Styling**   | Tailwind CSS v3.4 + shadcn/ui | Rapid, accessible, on-brand UI                  |
+| **Auth + DB** | Supabase (`@supabase/ssr`)    | Login, row-level security, Postgres             |
+| **AI Chat**   | n8n webhook (streamed)        | LLM agent scaffold, proxied server-side         |
+| **AI Memory** | Zep (`@getzep/zep-cloud`)     | Optional long-term memory via a knowledge graph |
+| **Charts**    | Recharts (shadcn wrapper)     | Data visualization                              |
+| **Testing**   | Jest + React Testing Library  | TDD methodology with an 80% coverage gate       |
 
 ---
 
@@ -226,7 +238,7 @@ Before submitting your project:
 - [ ] Test coverage ≥ 80% (`npm run test:coverage`)
 - [ ] `npm run validate` is clean (no type or lint errors)
 - [ ] No hardcoded secrets (use `.env.local`)
-- [ ] Deleted the example pages you don't need (`/tasks`, `/chat`, `/charts`, `/design`, `/test-dashboard`)
+- [ ] Deleted the example pages you don't need (`/tasks`, `/chat`, `/charts`, `/design`, `/memory`, `/test-dashboard`)
 - [ ] `CLAUDE.md` / `.claude/rules/` updated if you changed the architecture
 
 ---
@@ -236,6 +248,7 @@ Before submitting your project:
 - **First-time setup**: [docs/getting-started.md](docs/getting-started.md)
 - **Supabase + auth setup**: [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
 - **AI chat integration**: [docs/integrations/n8n.md](docs/integrations/n8n.md)
+- **AI long-term memory (Zep)**: [docs/integrations/zep.md](docs/integrations/zep.md)
 - **Project rules**: [CLAUDE.md](CLAUDE.md)
 - **Docs**: [Next.js](https://nextjs.org/docs) ·
   [Tailwind](https://tailwindcss.com/docs) · [shadcn/ui](https://ui.shadcn.com) ·
