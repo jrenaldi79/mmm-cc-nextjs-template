@@ -109,6 +109,38 @@ CREATE POLICY "Users can delete their own tasks" ON tasks
 > `supabase/migrations/`, re-apply it, then regenerate `types/supabase.ts` (MCP
 > `generate_typescript_types`, or the Supabase CLI) so the types stay in sync.
 
+### 2a. Create the n8n Chat Tables (optional — for the chat history sidebar)
+
+The n8n streaming chat (see [docs/integrations/n8n.md](docs/integrations/n8n.md))
+can persist conversations so the chat page can show a **session sidebar**. That
+feature is backed by a second migration:
+
+```
+supabase/migrations/20260604000000_n8n_chat_sessions_and_history.sql
+```
+
+Apply it the same way as the tasks migration (MCP `apply_migration`, the
+Supabase CLI, or the SQL Editor). It creates two tables:
+
+- **`n8n_chat_sessions`** — one row per conversation, tying a persistent
+  `session_id` (text, unique) to its owner `user_id` and a descriptive `name`
+  shown in the sidebar (plus `created_at` / `updated_at`). The n8n workflow
+  **inserts** these rows via its service-role connection (so it bypasses RLS);
+  the app only reads them. RLS ships with the same four per-user policies as
+  `tasks` (`auth.uid() = user_id` for select/insert/update/delete). The table is
+  added to the **`supabase_realtime`** publication so the sidebar updates live as
+  new sessions appear.
+- **`n8n_chat_histories`** — the standard LangChain **Postgres Chat Memory**
+  table n8n's AI Agent memory node reads and writes (`id` serial, `session_id`
+  varchar, `message` jsonb). RLS here uses an **ownership-scoped read policy**:
+  a user may `SELECT` a history row only if they own the matching
+  `n8n_chat_sessions.session_id`. n8n writes the rows; the app reads them through
+  the RLS-scoped browser client.
+
+> **Naming note:** a Supabase project may also have its own unrelated
+> `chat_sessions` / `chat_messages` tables. This feature does **not** use them —
+> the `n8n_`-prefixed names exist precisely to avoid that collision.
+
 ### 3. Configure Environment Variables
 
 1. In your Supabase project dashboard, click on **Settings** (gear icon)
