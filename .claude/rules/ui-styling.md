@@ -33,6 +33,12 @@ globs: 'app/**/*.tsx,components/**/*.tsx,app/globals.css'
 - **Design tokens**: colors are CSS variables (HSL) in `app/globals.css`, mapped in
   `tailwind.config.js` (`bg-primary`, `text-muted-foreground`, `border-border`). Use tokens,
   not hard-coded colors, so light/dark theming stays consistent.
+- **Enforced (ESLint, pre-commit + CI)**: hard-coded colors in `app/**`/`components/**` are a
+  **build error** — raw hex (`#7c3aed`), `bg-[#fff]`-style arbitrary values, and
+  `text-[rgb(...)]`/`[hsl(...)]`. Arbitrary values (`p-[13px]`) and off-theme class names
+  **warn**. `jsx-a11y` accessibility rules also run. Token-source files (`app/globals.css`,
+  `tailwind.config.js`, `DESIGN.md`) and the vendored `components/ui/**` primitives are exempt
+  from the nudge rules. Fix: use a token utility (`bg-primary`) or add the value to the theme.
 - **Design system (`DESIGN.md`)**: the repo-root [`DESIGN.md`](../../DESIGN.md) describes the
   app's visual identity (colors, typography, components) in Google's DESIGN.md format. **Read
   it before generating UI** so output stays on-brand. The **live** tokens are the HSL vars in
