@@ -16,7 +16,9 @@ export function ConceptsSection() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Start here: the big idea</h2>
+        <h2 className="font-display text-2xl font-bold">
+          Start here: the big idea
+        </h2>
         <p className="max-w-3xl text-muted-foreground">
           You don&apos;t need to be a designer to build a good-looking app. This
           template comes with a <strong>design system</strong> — a small set of
@@ -26,9 +28,11 @@ export function ConceptsSection() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="border-2 border-foreground rounded-2xl shadow-hard">
           <CardHeader>
-            <CardTitle>What is a design system?</CardTitle>
+            <CardTitle className="font-display">
+              What is a design system?
+            </CardTitle>
             <CardDescription>
               The rulebook for how your app looks
             </CardDescription>
@@ -41,9 +45,9 @@ export function ConceptsSection() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-foreground rounded-2xl shadow-hard">
           <CardHeader>
-            <CardTitle>What is shadcn/ui?</CardTitle>
+            <CardTitle className="font-display">What is shadcn/ui?</CardTitle>
             <CardDescription>Your ready-made building blocks</CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
@@ -54,9 +58,9 @@ export function ConceptsSection() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-2 border-foreground rounded-2xl shadow-hard">
           <CardHeader>
-            <CardTitle>What is a token?</CardTitle>
+            <CardTitle className="font-display">What is a token?</CardTitle>
             <CardDescription>A named design decision</CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
@@ -74,9 +78,11 @@ export function ConceptsSection() {
         </Card>
       </div>
 
-      <Card className="bg-muted/40">
+      <Card className="bg-muted/40 border-2 border-foreground rounded-2xl shadow-hard">
         <CardHeader>
-          <CardTitle className="text-base">How it all fits together</CardTitle>
+          <CardTitle className="font-display text-base">
+            How it all fits together
+          </CardTitle>
           <CardDescription>
             Each piece feeds the next — your colors flow from one source out to
             every screen.

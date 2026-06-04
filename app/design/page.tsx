@@ -17,12 +17,19 @@ export default function DesignPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container mx-auto space-y-14 px-6 py-10">
-        <header className="space-y-3">
-          <h1 className="text-4xl font-bold tracking-tight">
-            Your Design System
+      <main className="mx-auto w-full max-w-content space-y-16 px-6 py-12 md:px-9">
+        <header className="space-y-4">
+          <span className="inline-flex rounded-full bg-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-background">
+            ● Design System
+          </span>
+          <h1 className="font-display text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl">
+            The{' '}
+            <span className="font-serif font-normal italic text-primary">
+              living
+            </span>{' '}
+            design system.
           </h1>
-          <p className="max-w-3xl text-muted-foreground">
+          <p className="max-w-3xl text-lg text-muted-foreground">
             A guided tour of how this app stays good-looking and consistent —
             what a design system is, the colors and building blocks you have,
             how new components get added, and how it&apos;s all kept on-brand

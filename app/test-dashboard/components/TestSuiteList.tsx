@@ -20,14 +20,17 @@ export function TestSuiteList({ testSuites }: { testSuites: TestSuite[] }) {
   };
 
   return (
-    <Card>
+    <Card className="border-2 border-foreground rounded-2xl shadow-hard">
       <CardHeader>
-        <CardTitle>Test Details</CardTitle>
+        <CardTitle className="font-display">Test Details</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {testSuites.map((suite, idx) => (
-            <div key={idx} className="border rounded-lg overflow-hidden">
+            <div
+              key={idx}
+              className="overflow-hidden rounded-xl border-2 border-foreground"
+            >
               <Button
                 variant="ghost"
                 onClick={() => toggleSuite(suite.name)}
@@ -44,8 +47,8 @@ export function TestSuiteList({ testSuites }: { testSuites: TestSuite[] }) {
                     variant="outline"
                     className={
                       suite.status === 'passed'
-                        ? 'bg-green-100 text-green-800 border-green-200'
-                        : 'bg-red-100 text-red-800 border-red-200'
+                        ? 'bg-teal/15 text-teal border-2 border-teal/40'
+                        : 'bg-destructive/15 text-destructive border-2 border-destructive/40'
                     }
                   >
                     {suite.status === 'passed' ? '✓ Passed' : '✗ Failed'}
@@ -65,10 +68,10 @@ export function TestSuiteList({ testSuites }: { testSuites: TestSuite[] }) {
                           <span
                             className={`mt-1 ${
                               test.status === 'passed'
-                                ? 'text-green-600'
+                                ? 'text-teal'
                                 : test.status === 'failed'
-                                  ? 'text-red-600'
-                                  : 'text-yellow-600'
+                                  ? 'text-destructive'
+                                  : 'text-gold'
                             }`}
                           >
                             {test.status === 'passed'
@@ -81,14 +84,14 @@ export function TestSuiteList({ testSuites }: { testSuites: TestSuite[] }) {
                             <p className="text-foreground">{test.title}</p>
                             {test.failureMessages &&
                               test.failureMessages.length > 0 && (
-                                <div className="mt-2 p-3 bg-red-50 rounded text-sm">
-                                  <p className="font-semibold text-red-800 mb-1">
+                                <div className="mt-2 rounded-lg border-2 border-destructive/40 bg-destructive/10 p-3 text-sm">
+                                  <p className="font-semibold text-destructive mb-1">
                                     Error:
                                   </p>
                                   {test.failureMessages.map((msg, msgIdx) => (
                                     <pre
                                       key={msgIdx}
-                                      className="text-red-700 whitespace-pre-wrap font-mono text-xs"
+                                      className="text-destructive/80 whitespace-pre-wrap font-mono text-xs"
                                     >
                                       {msg}
                                     </pre>

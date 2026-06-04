@@ -2,14 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function StudentsInfoCard() {
   return (
-    <Card className="mt-8 shadow-xl">
+    <Card className="mt-8 border-2 border-foreground rounded-2xl shadow-hard">
       <CardHeader>
-        <CardTitle className="text-xl">📚 For Students</CardTitle>
+        <CardTitle className="font-display text-xl">📚 For Students</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="prose prose-sm max-w-none">
-          <p className="text-gray-700 mb-4">This example demonstrates:</p>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
+          <p className="text-muted-foreground mb-4">
+            This example demonstrates:
+          </p>
+          <ul className="list-disc list-inside text-muted-foreground space-y-2">
             <li>
               <strong>Environment Variables:</strong> Supabase credentials
               stored in environment variables (e.g. a{' '}
@@ -36,7 +38,7 @@ export function StudentsInfoCard() {
               state
             </li>
           </ul>
-          <p className="text-gray-700 mt-4">
+          <p className="text-muted-foreground mt-4">
             Study the code in{' '}
             <code className="bg-muted px-2 py-1 rounded">app/tasks/</code>,
             <code className="bg-muted px-2 py-1 rounded">app/api/tasks/</code>,
@@ -46,7 +48,7 @@ export function StudentsInfoCard() {
             </code>{' '}
             to understand how it works!
           </p>
-          <p className="text-gray-700 mt-4">
+          <p className="text-muted-foreground mt-4">
             See{' '}
             <code className="bg-muted px-2 py-1 rounded">
               SUPABASE_SETUP.md

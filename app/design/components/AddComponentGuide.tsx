@@ -61,7 +61,9 @@ export function AddComponentGuide() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Adding a new component</h2>
+        <h2 className="font-display text-2xl font-bold">
+          Adding a new component
+        </h2>
         <p className="max-w-3xl text-muted-foreground">
           Need something we don&apos;t have yet — a dialog, a table, tabs? You
           don&apos;t build it from scratch. You ask <strong>shadcn</strong> to
@@ -96,7 +98,7 @@ export function AddComponentGuide() {
 
 function StepCard({ step }: { step: Step }) {
   return (
-    <div className="flex-1 space-y-2 rounded-lg border bg-card p-4">
+    <div className="flex-1 space-y-2 rounded-2xl border-2 border-foreground bg-card p-4 shadow-hard">
       <div
         className={`flex h-11 w-11 items-center justify-center rounded-md ${
           step.isResult

@@ -49,12 +49,14 @@ const chartConfig = {
 
 export default function ChartsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
+        <div className="space-y-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2">📊 Charts Example</h1>
+            <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">
+              📊 Charts Example
+            </h1>
             <p className="text-muted-foreground">
               Built with <strong>Recharts</strong> and shadcn/ui chart
               components. Edit{' '}
@@ -65,9 +67,9 @@ export default function ChartsPage() {
             </p>
           </div>
 
-          <Card>
+          <Card className="border-2 border-foreground rounded-2xl shadow-hard">
             <CardHeader>
-              <CardTitle>Monthly Sign-ups</CardTitle>
+              <CardTitle className="font-display">Monthly Sign-ups</CardTitle>
               <CardDescription>
                 A bar chart comparing two series
               </CardDescription>
@@ -99,9 +101,9 @@ export default function ChartsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 border-foreground rounded-2xl shadow-hard">
             <CardHeader>
-              <CardTitle>Growth Trend</CardTitle>
+              <CardTitle className="font-display">Growth Trend</CardTitle>
               <CardDescription>A line chart over time</CardDescription>
             </CardHeader>
             <CardContent>
@@ -143,9 +145,9 @@ export default function ChartsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-2 border-foreground rounded-2xl shadow-hard">
             <CardHeader>
-              <CardTitle>Why Recharts?</CardTitle>
+              <CardTitle className="font-display">Why Recharts?</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2">
               <p>

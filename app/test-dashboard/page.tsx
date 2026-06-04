@@ -39,18 +39,20 @@ export default function TestDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-6 py-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="mx-auto w-full max-w-content px-6 py-8 md:px-9">
+        <div className="space-y-6">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Test Dashboard</h1>
+            <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">
+              Test Dashboard
+            </h1>
             <p className="text-muted-foreground">
               Run your tests and see the results in a friendly format
             </p>
           </div>
 
-          <Card className="mb-6">
+          <Card className="mb-6 border-2 border-foreground rounded-2xl shadow-hard">
             <CardContent className="pt-6">
               <Button
                 onClick={runTests}
@@ -81,13 +83,13 @@ export default function TestDashboard() {
               )}
 
               {results.error && (
-                <Card>
+                <Card className="border-2 border-foreground rounded-2xl shadow-hard">
                   <CardContent className="pt-6">
-                    <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded">
-                      <p className="text-red-800 font-semibold">
+                    <div className="rounded-xl border-l-4 border-destructive bg-destructive/10 p-4">
+                      <p className="text-destructive font-semibold">
                         Error running tests
                       </p>
-                      <p className="text-red-700 text-sm mt-2">
+                      <p className="text-destructive/80 text-sm mt-2">
                         {results.error}
                       </p>
                     </div>
@@ -98,10 +100,10 @@ export default function TestDashboard() {
           )}
 
           {!results && !isRunning && (
-            <Card>
+            <Card className="border-2 border-foreground rounded-2xl shadow-hard">
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-4">🧪</div>
-                <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+                <h2 className="font-display text-2xl font-semibold text-foreground mb-2">
                   Ready to test your code?
                 </h2>
                 <p className="text-muted-foreground">

@@ -22,7 +22,9 @@ export function ComponentGallery() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Your building blocks</h2>
+        <h2 className="font-display text-2xl font-bold">
+          Your building blocks
+        </h2>
         <p className="max-w-3xl text-muted-foreground">
           These are the real shadcn/ui components already installed in{' '}
           <code className="rounded bg-muted px-1 py-0.5 text-foreground">
@@ -113,7 +115,7 @@ function GalleryCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-3 rounded-lg border bg-card p-5">
+    <div className="space-y-3 rounded-2xl border-2 border-foreground bg-card p-5 shadow-hard">
       <div>
         <h3 className="font-semibold">{title}</h3>
         <p className="text-sm text-muted-foreground">{description}</p>

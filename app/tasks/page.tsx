@@ -120,13 +120,15 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-4xl mx-auto">
-          <Card className="shadow-xl">
+      <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
+        <div className="space-y-8">
+          <Card className="border-2 border-foreground rounded-2xl shadow-hard">
             <CardHeader>
-              <CardTitle className="text-4xl">Supabase Tasks Example</CardTitle>
+              <CardTitle className="font-display text-4xl font-extrabold tracking-tight">
+                Supabase Tasks Example
+              </CardTitle>
               <CardDescription>
                 This is a sample integration showing how to connect to Supabase
                 and perform CRUD operations.
@@ -134,16 +136,18 @@ export default function TasksPage() {
             </CardHeader>
             <CardContent>
               {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <div className="mb-6 rounded-xl border-2 border-destructive/40 bg-destructive/10 p-4 text-destructive">
                   <strong>Error:</strong> {error}
                 </div>
               )}
 
               <form
                 onSubmit={handleCreateTask}
-                className="mb-8 p-6 bg-muted/50 rounded-lg"
+                className="mb-8 rounded-2xl border-2 border-foreground bg-muted/50 p-6"
               >
-                <h2 className="text-xl font-semibold mb-4">Create New Task</h2>
+                <h2 className="font-display text-xl font-semibold mb-4">
+                  Create New Task
+                </h2>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Input
                     type="text"
@@ -170,7 +174,7 @@ export default function TasksPage() {
               </form>
 
               <div>
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="font-display text-xl font-semibold mb-4">
                   Tasks ({tasks.length})
                 </h2>
 
@@ -182,7 +186,7 @@ export default function TasksPage() {
                     </p>
                   </div>
                 ) : tasks.length === 0 ? (
-                  <div className="text-center py-12 bg-muted/50 rounded-lg">
+                  <div className="text-center py-12 rounded-2xl border-2 border-foreground bg-muted/50">
                     <p className="text-muted-foreground text-lg">
                       No tasks yet. Create one above!
                     </p>

@@ -69,6 +69,10 @@ module.exports = {
           5: 'hsl(var(--chart-5))',
         },
       },
+      maxWidth: {
+        // Shared page content width — matches the design mockup (1200px).
+        content: '75rem',
+      },
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'var(--font-sans)', 'sans-serif'],

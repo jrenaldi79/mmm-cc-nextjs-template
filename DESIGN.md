@@ -156,11 +156,14 @@ in `app/globals.css`): warm charcoal surfaces and a brighter purple, same token 
 
 ## Typography
 
-A single typeface — **Inter** — loaded via `next/font/google` in `app/layout.tsx`.
-The scale follows Tailwind's defaults: `h1` for page titles, `h2` for sections,
-`body` for prose, `label` for UI/controls, and `small` for captions and metadata.
-Headings use tight letter-spacing and heavier weights; body stays at weight 400 for
-readability.
+Three typefaces, all loaded via `next/font/google` in `app/layout.tsx` and exposed as
+CSS variables: **Bricolage Grotesque** (`--font-display`) for headlines — an
+expressive grotesque with an optical-size axis that stays crisp at large sizes;
+**Hanken Grotesk** (`--font-sans`) for body, labels, and UI; and **Instrument Serif**
+(`--font-serif`) for the occasional italic editorial accent (e.g. the word _worth_ in
+the hero). Use `font-display` for headings, the default sans for prose, and
+`font-serif italic` sparingly for emphasis. Headings run heavy (700–800) with tight
+letter-spacing; body stays at weight 400 for readability.
 
 ## Layout
 
@@ -171,16 +174,22 @@ responsively. Keep generous breathing room — prefer more whitespace over dense
 
 ## Elevation & Depth
 
-Depth is **subtle**. Separate surfaces primarily with the `border` color and the
-`card`/`background` contrast rather than heavy shadows. Use light shadows only to
-lift transient surfaces (popovers, dropdowns, dialogs). Avoid stacking multiple
-strong shadows.
+Depth is **graphic, not soft**. The signature move is a **hard offset shadow** —
+`shadow-hard` (`4px 4px 0` of the `foreground` ink), with `shadow-hard-sm` and
+`shadow-hard-lg` variants — paired with a **2px ink border** (`border-2
+border-foreground`). On hover, cards nudge up-and-left and the shadow grows, giving a
+tactile "sticker" feel. The shadow is token-driven, so it flips to a light offset in
+dark mode automatically. Reserve soft/blurred shadows for transient surfaces
+(popovers, dropdowns, dialogs); don't mix the two languages on the same element.
 
 ## Shapes
 
-Corners are **moderately rounded**. `rounded.lg` (`0.5rem`, the `--radius` value) is
-the base; `md` and `sm` derive from it for smaller controls. Keep radii consistent
-across a component family — don't mix sharp and pill shapes arbitrarily.
+Corners are **friendly and generous**. `rounded.lg` (`0.75rem`, the `--radius` value)
+is the base; `md` and `sm` derive from it for smaller controls. Cards use `rounded-2xl`
+for a soft, approachable feel, while interactive chips and buttons go fully `rounded-full`
+— the pill shape is part of the Bauhaus character. Keep radii consistent across a
+component family; the one deliberate exception is the geometric logo mark, which mixes a
+half-circle and a hard corner on purpose.
 
 ## Components
 

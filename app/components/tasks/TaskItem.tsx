@@ -5,15 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 
 function getPriorityClasses(priority: string) {
+  const base = 'border-2 border-foreground';
   switch (priority) {
     case 'high':
-      return 'bg-red-100 text-red-800 border-red-300';
+      return `${base} bg-coral text-coral-foreground`;
     case 'medium':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      return `${base} bg-gold text-gold-foreground`;
     case 'low':
-      return 'bg-green-100 text-green-800 border-green-300';
+      return `${base} bg-teal text-teal-foreground`;
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-300';
+      return `${base} bg-muted text-muted-foreground`;
   }
 }
 
@@ -27,7 +28,7 @@ export function TaskItem({
   onDelete: (taskId: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-4 p-4 bg-card border rounded-lg hover:shadow-md transition-shadow">
+    <div className="flex items-center gap-4 rounded-2xl border-2 border-foreground bg-card p-4 transition-transform hover:-translate-y-0.5 hover:shadow-hard-sm">
       <Checkbox
         checked={task.completed}
         onCheckedChange={() => onToggle(task)}
@@ -50,7 +51,7 @@ export function TaskItem({
         variant="ghost"
         size="icon"
         onClick={() => onDelete(task.id)}
-        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
         aria-label={`Delete "${task.title}"`}
       >
         <Trash2 />

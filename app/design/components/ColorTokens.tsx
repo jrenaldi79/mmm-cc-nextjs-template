@@ -49,6 +49,27 @@ const SURFACE_TOKENS: ColorToken[] = [
     use: 'Errors & delete',
   },
   {
+    name: 'gold',
+    swatch: 'bg-gold',
+    text: 'text-gold-foreground',
+    cssVar: '--gold',
+    use: 'Accent — warnings & highlights',
+  },
+  {
+    name: 'coral',
+    swatch: 'bg-coral',
+    text: 'text-coral-foreground',
+    cssVar: '--coral',
+    use: 'Accent — high priority',
+  },
+  {
+    name: 'teal',
+    swatch: 'bg-teal',
+    text: 'text-teal-foreground',
+    cssVar: '--teal',
+    use: 'Accent — success & low priority',
+  },
+  {
     name: 'card',
     swatch: 'bg-card',
     text: 'text-card-foreground',
@@ -69,7 +90,7 @@ export function ColorTokens() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Your color tokens</h2>
+        <h2 className="font-display text-2xl font-bold">Your color tokens</h2>
         <p className="max-w-3xl text-muted-foreground">
           These are your app&apos;s colors. Use the <em>name</em> (the Tailwind
           class), never a raw color code — that&apos;s what keeps the whole app
@@ -85,7 +106,7 @@ export function ColorTokens() {
         {SURFACE_TOKENS.map((token) => (
           <div
             key={token.name}
-            className="overflow-hidden rounded-lg border bg-card"
+            className="overflow-hidden rounded-2xl border-2 border-foreground bg-card shadow-hard"
           >
             <div
               className={`flex h-20 items-end p-3 ${token.swatch} ${token.text}`}
@@ -105,7 +126,7 @@ export function ColorTokens() {
         ))}
       </div>
 
-      <div className="rounded-lg border bg-card p-4">
+      <div className="rounded-2xl border-2 border-foreground bg-card p-5 shadow-hard">
         <p className="mb-3 text-sm font-medium">
           Chart palette{' '}
           <span className="font-normal text-muted-foreground">

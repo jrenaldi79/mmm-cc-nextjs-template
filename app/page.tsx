@@ -7,6 +7,7 @@ import { AiInstructionsCard } from './components/home/AiInstructionsCard';
 import { TddFrameworkCard } from './components/home/TddFrameworkCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { studioCardHover } from '@/lib/utils';
 
 const features = [
   {
@@ -79,15 +80,12 @@ const resources = [
   },
 ];
 
-const studioCard =
-  'border-2 border-foreground rounded-2xl shadow-hard transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-lg';
-
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Navigation />
 
-      <main className="container mx-auto flex-1 px-6">
+      <main className="mx-auto w-full max-w-content flex-1 px-6 md:px-9">
         {/* Hero */}
         <section className="relative overflow-hidden py-20">
           <span className="pointer-events-none absolute right-6 top-10 -z-0 hidden h-44 w-44 rounded-full bg-gold md:block" />
@@ -158,7 +156,7 @@ export default function HomePage() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {features.map((f) => (
               <Link key={f.href} href={f.href} className="group block">
-                <div className={`h-full bg-card p-7 ${studioCard}`}>
+                <div className={`h-full bg-card p-7 ${studioCardHover}`}>
                   <span
                     className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl border-2 border-foreground text-xl ${f.accent}`}
                   >
@@ -185,7 +183,7 @@ export default function HomePage() {
           <AiInstructionsCard />
           <TddFrameworkCard />
 
-          <Card className={`bg-card ${studioCard}`}>
+          <Card className={`bg-card ${studioCardHover}`}>
             <CardHeader>
               <CardTitle className="font-display">Example component</CardTitle>
             </CardHeader>
@@ -198,7 +196,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className={`bg-card ${studioCard}`}>
+          <Card className={`bg-card ${studioCardHover}`}>
             <CardHeader>
               <CardTitle className="font-display">Helpful resources</CardTitle>
             </CardHeader>
@@ -225,7 +223,7 @@ export default function HomePage() {
       </main>
 
       <footer className="border-t-2 border-foreground bg-card">
-        <div className="container mx-auto flex flex-col gap-2 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex w-full max-w-content flex-col gap-2 px-6 py-8 sm:flex-row sm:items-center sm:justify-between md:px-9">
           <p className="text-sm font-semibold text-muted-foreground">
             Northwestern MMM &amp; MPD² Starter
           </p>

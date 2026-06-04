@@ -3,23 +3,23 @@ import type { Coverage } from '../types';
 
 function getCoverageColor(percentage: string) {
   const pct = parseFloat(percentage);
-  if (pct >= 80) return 'text-green-600';
-  if (pct >= 60) return 'text-yellow-600';
-  return 'text-red-600';
+  if (pct >= 80) return 'text-teal';
+  if (pct >= 60) return 'text-gold';
+  return 'text-destructive';
 }
 
 function getCoverageBarColor(percentage: string) {
   const pct = parseFloat(percentage);
-  if (pct >= 80) return 'bg-green-500';
-  if (pct >= 60) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (pct >= 80) return 'bg-teal';
+  if (pct >= 60) return 'bg-gold';
+  return 'bg-destructive';
 }
 
 export function CoverageCard({ coverage }: { coverage: Coverage }) {
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 border-2 border-foreground rounded-2xl shadow-hard">
       <CardHeader>
-        <CardTitle>Code Coverage</CardTitle>
+        <CardTitle className="font-display">Code Coverage</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground mb-6">
@@ -72,22 +72,22 @@ export function CoverageCard({ coverage }: { coverage: Coverage }) {
           ))}
         </div>
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h3 className="font-semibold text-blue-900 mb-2">
+        <div className="mt-6 rounded-xl border-2 border-foreground bg-primary/5 p-4">
+          <h3 className="font-display font-semibold text-foreground mb-2">
             What does coverage mean?
           </h3>
-          <ul className="text-sm text-blue-800 space-y-1">
+          <ul className="text-sm text-muted-foreground space-y-1">
             <li>
-              • <strong>Green (80%+)</strong> - Excellent! Your code is well
+              • <strong>Teal (80%+)</strong> - Excellent! Your code is well
               tested
             </li>
             <li>
-              • <strong>Yellow (60-79%)</strong> - Good, but there&apos;s room
-              for improvement
+              • <strong>Gold (60-79%)</strong> - Good, but there&apos;s room for
+              improvement
             </li>
             <li>
-              • <strong>Red (&lt;60%)</strong> - More tests needed to ensure
-              code quality
+              • <strong>Coral/red (&lt;60%)</strong> - More tests needed to
+              ensure code quality
             </li>
           </ul>
         </div>

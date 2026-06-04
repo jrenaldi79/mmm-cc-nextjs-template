@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
 
 const NAV_LINKS = [
-  { href: '/', label: '🏠 Home' },
-  { href: '/tasks', label: '✅ Tasks Example' },
-  { href: '/charts', label: '📊 Charts' },
-  { href: '/chat', label: '💬 Chat' },
-  { href: '/test-dashboard', label: '🧪 Test Dashboard' },
-  { href: '/design', label: '🎨 Design System' },
+  { href: '/', label: 'Home' },
+  { href: '/tasks', label: 'Tasks' },
+  { href: '/charts', label: 'Charts' },
+  { href: '/chat', label: 'Chat' },
+  { href: '/test-dashboard', label: 'Tests' },
+  { href: '/design', label: 'Design' },
 ];
 
 function LogoMark() {
@@ -44,7 +44,7 @@ export default function Navigation() {
 
   return (
     <header className="sticky top-0 z-30 border-b-2 border-foreground bg-background/85 backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-6">
+      <div className="mx-auto flex h-16 w-full max-w-content items-center justify-between gap-4 px-6 md:px-9">
         <Link
           href="/"
           className="flex items-center gap-3 font-display text-lg font-extrabold tracking-tight transition-opacity hover:opacity-80"

@@ -91,7 +91,7 @@ app/
 │   │   ├── ComponentGallery.tsx  # Live gallery of the shadcn/ui primitives that ship with this template. These
 │   │   ├── ConceptsSection.tsx  # Plain-language explanation of what a design system is, what shadcn/ui is, and
 │   │   ├── EnforcementSection.tsx  # Explains, for non-technical students, why hard-coded styles create
-│   │   └── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the real font
+│   │   └── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the three real
 │   └── page.tsx
 ├── login/
 │   ├── actions.ts  # Email/password sign-in. Called as a form action from /login.
@@ -130,6 +130,7 @@ lib/
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
+├── n8n-stream.ts  # Normalize an n8n AI Agent streaming response into a plain text token stream.
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
 types/
 ├── index.ts
@@ -169,7 +170,7 @@ types/
 | `app/design/components/ComponentGallery.tsx` | Live gallery of the shadcn/ui primitives that ship with this template. These | `ComponentGallery` |
 | `app/design/components/ConceptsSection.tsx` | Plain-language explanation of what a design system is, what shadcn/ui is, and | `ConceptsSection` |
 | `app/design/components/EnforcementSection.tsx` | Explains, for non-technical students, why hard-coded styles create | `EnforcementSection` |
-| `app/design/components/TypeAndShapeSection.tsx` | Typography scale and shape (corner radius) reference. Shows the real font | `TypeAndShapeSection` |
+| `app/design/components/TypeAndShapeSection.tsx` | Typography scale and shape (corner radius) reference. Shows the three real | `TypeAndShapeSection` |
 | `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
 | `app/login/page.tsx` |  | `LoginPage`, `default` |
 | `app/signup/page.tsx` |  | `SignupPage`, `default` |
@@ -192,7 +193,8 @@ types/
 | `components/ui/label.tsx` |  | `Label` |
 | `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
 | `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
-| `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn` |
+| `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `createN8nTextStream` |
+| `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `studioCard`, `studioCardHover` |
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |

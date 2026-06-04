@@ -18,9 +18,11 @@ import {
 } from '@/components/ui/card';
 
 export default function ChatPage() {
+  // Stable id for this chat session so the n8n agent can keep memory across turns.
+  const [sessionId] = useState(() => crypto.randomUUID());
   // Created once; consumes the plain text stream from /api/chat.
   const [transport] = useState(
-    () => new TextStreamChatTransport({ api: '/api/chat' })
+    () => new TextStreamChatTransport({ api: '/api/chat', body: { sessionId } })
   );
   const { messages, sendMessage, status, error } = useChat({ transport });
   const [input, setInput] = useState('');
@@ -36,13 +38,13 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-3xl mx-auto">
-          <Card className="flex flex-col h-[70vh]">
+      <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
+        <div className="mx-auto max-w-3xl">
+          <Card className="flex h-[70vh] flex-col border-2 border-foreground rounded-2xl shadow-hard">
             <CardHeader>
-              <CardTitle>🤖 LLM Agent Chat</CardTitle>
+              <CardTitle className="font-display">🤖 LLM Agent Chat</CardTitle>
               <CardDescription>
                 Streams a response from{' '}
                 <code className="bg-muted px-1 rounded">/api/chat</code>.

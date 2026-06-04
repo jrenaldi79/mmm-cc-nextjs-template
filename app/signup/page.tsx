@@ -20,15 +20,22 @@ export default async function SignupPage({
   const { error } = await searchParams;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 px-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Create an account</CardTitle>
+    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+      <Card className="w-full max-w-md border-2 border-foreground rounded-2xl shadow-hard">
+        <CardHeader className="space-y-3">
+          <span className="relative block h-8 w-8" aria-hidden="true">
+            <span className="absolute left-0 h-8 w-4 rounded-l-full bg-primary" />
+            <span className="absolute right-0 top-0 h-4 w-4 bg-coral" />
+            <span className="absolute bottom-0 right-0 h-4 w-4 rounded-br-full bg-gold" />
+          </span>
+          <CardTitle className="font-display text-2xl font-extrabold tracking-tight">
+            Create an account
+          </CardTitle>
           <CardDescription>Sign up to get started.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-800">
+            <div className="rounded-xl border-2 border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
           )}

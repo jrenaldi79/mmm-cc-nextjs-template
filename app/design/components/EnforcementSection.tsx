@@ -11,7 +11,7 @@ export function EnforcementSection() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">
+        <h2 className="font-display text-2xl font-bold">
           Avoiding &ldquo;Frankenstein&rdquo; UI
         </h2>
         <p className="max-w-3xl text-muted-foreground">
@@ -93,7 +93,7 @@ function Layer({
   body: string;
 }) {
   return (
-    <div className="space-y-2 rounded-lg border bg-card p-4">
+    <div className="space-y-2 rounded-2xl border-2 border-foreground bg-card p-4 shadow-hard">
       <div className="flex items-center gap-2">
         {icon}
         <p className="font-medium">{title}</p>
