@@ -7,6 +7,7 @@ import '@testing-library/jest-dom';
 // transform from node_modules. Mock them so the test stays focused on the
 // chat shell rendering (streaming behavior is covered by the route handler test).
 const mockSendMessage = jest.fn();
+const mockSetMessages = jest.fn();
 let mockChatState: {
   messages: Array<{
     id: string;
@@ -21,6 +22,7 @@ jest.mock('@ai-sdk/react', () => ({
   useChat: () => ({
     messages: mockChatState.messages,
     sendMessage: mockSendMessage,
+    setMessages: mockSetMessages,
     status: mockChatState.status,
     error: mockChatState.error,
   }),
@@ -36,16 +38,29 @@ jest.mock('react-markdown', () => ({
 }));
 jest.mock('remark-gfm', () => ({ __esModule: true, default: () => {} }));
 
-// Navigation (rendered by this page) reads auth state from the Supabase
-// browser client — stub it so it doesn't create a real client.
+// Navigation, the session sidebar, and history loading all read from the
+// Supabase browser client — stub it so they don't create a real client.
+const mockOrder = jest.fn().mockResolvedValue({ data: [], error: null });
+const mockHistoryOrder = jest.fn().mockResolvedValue({ data: [], error: null });
 jest.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: {
-      getUser: jest.fn().mockResolvedValue({ data: { user: null } }),
+      getUser: jest.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }),
       onAuthStateChange: () => ({
         data: { subscription: { unsubscribe: jest.fn() } },
       }),
     },
+    from: (table: string) => ({
+      select: () => ({
+        order: table === 'n8n_chat_sessions' ? mockOrder : mockHistoryOrder,
+        eq: () => ({ order: mockHistoryOrder }),
+      }),
+    }),
+    channel: () => ({
+      on: () => ({ subscribe: () => ({}) }),
+      subscribe: () => ({}),
+    }),
+    removeChannel: jest.fn(),
   }),
 }));
 
@@ -194,6 +209,13 @@ describe('ChatPage', () => {
     expect(
       screen.queryByText(`First response${N8N_RUN_SEPARATOR}Final answer`)
     ).not.toBeInTheDocument();
+  });
+
+  it('renders the session sidebar with a New chat button', async () => {
+    render(<ChatPage />);
+    expect(
+      await screen.findByRole('button', { name: /new chat/i })
+    ).toBeInTheDocument();
   });
 
   it('sends a message on submit', async () => {
