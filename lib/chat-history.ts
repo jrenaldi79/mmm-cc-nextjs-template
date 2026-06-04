@@ -1,4 +1,4 @@
-import type { N8nChatHistory } from '@/types/supabase';
+import type { N8nChatHistory, N8nStoredMessage } from '@/types/supabase';
 
 /**
  * Map stored n8n LangChain history rows into the UI message shape used by the
@@ -32,7 +32,7 @@ function toUiMessage(row: N8nChatHistory): UiMessage | null {
   if (!message || typeof message !== 'object' || Array.isArray(message)) {
     return null;
   }
-  const { type, content } = message as { type?: unknown; content?: unknown };
+  const { type, content } = message as Partial<N8nStoredMessage>;
   if (typeof type !== 'string' || typeof content !== 'string') return null;
   const role = ROLE_BY_TYPE[type];
   if (!role) return null;

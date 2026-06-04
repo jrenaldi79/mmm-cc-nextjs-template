@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
 import { historyToUiMessages } from '@/lib/chat-history';
+import { logger } from '@/lib/logger';
 import { PageHero } from '../components/PageHero';
 import { PageShell } from '../components/PageShell';
 import { ChatMessages } from '../components/chat/ChatMessages';
@@ -43,11 +44,17 @@ export default function ChatPage() {
   async function handleSelectSession(id: string) {
     setSessionId(id);
     const supabase = createClient();
-    const { data } = await supabase
+    // No `.order()` here — historyToUiMessages sorts rows by their serial id.
+    const { data, error } = await supabase
       .from('n8n_chat_histories')
       .select('*')
-      .eq('session_id', id)
-      .order('id', { ascending: true });
+      .eq('session_id', id);
+    if (error) {
+      logger.warn('Failed to load chat history', {
+        sessionId: id,
+        error: error.message,
+      });
+    }
     setMessages(historyToUiMessages(data ?? []));
   }
 
