@@ -83,6 +83,7 @@ app/
 │   ├── ExampleComponent.tsx
 │   ├── Navigation.tsx
 │   ├── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
+│   ├── PageHero.tsx  # The shared page header used at the top of every top-level page (Design, Charts,
 │   └── ThemeToggle.tsx
 ├── design/
 │   ├── components/
@@ -158,6 +159,7 @@ types/
 | `app/components/ExampleComponent.tsx` |  | `ExampleComponent` |
 | `app/components/Navigation.tsx` |  | `Navigation` |
 | `app/components/OAuthButtons.tsx` | Social sign-in buttons. OAuth must be initiated from the browser because it | `OAuthButtons` |
+| `app/components/PageHero.tsx` | The shared page header used at the top of every top-level page (Design, Charts, | `PageHero` |
 | `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |

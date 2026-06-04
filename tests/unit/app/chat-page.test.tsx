@@ -63,7 +63,9 @@ describe('ChatPage', () => {
   it('renders the empty chat shell', () => {
     render(<ChatPage />);
 
-    expect(screen.getByText('🤖 LLM Agent Chat')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: /llm agent chat/i })
+    ).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Type a message…')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument();
     expect(
@@ -98,6 +100,47 @@ describe('ChatPage', () => {
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
     // While busy the send button is disabled.
     expect(screen.getByRole('button', { name: /send/i })).toBeDisabled();
+  });
+
+  it('shows an animated thinking indicator while waiting for a response', () => {
+    mockChatState = {
+      messages: [
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'Hi there' }] },
+      ],
+      status: 'submitted',
+      error: undefined,
+    };
+
+    render(<ChatPage />);
+
+    // The indicator is an accessible status region (not just muted text).
+    const indicator = screen.getByRole('status', { name: /thinking/i });
+    expect(indicator).toBeInTheDocument();
+    // It contains animated dots so students see a clear "waiting" graphic.
+    expect(indicator.querySelectorAll('.animate-bounce').length).toBe(3);
+  });
+
+  it('renders the user bubble with inverted prose so text is readable on the primary background', () => {
+    mockChatState = {
+      messages: [
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'Hi there' }] },
+        {
+          id: '2',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'Hello!' }],
+        },
+      ],
+      status: 'ready',
+      error: undefined,
+    };
+
+    render(<ChatPage />);
+
+    const userProse = screen.getByText('Hi there').closest('.prose');
+    expect(userProse).toHaveClass('prose-invert');
+
+    const assistantProse = screen.getByText('Hello!').closest('.prose');
+    expect(assistantProse).not.toHaveClass('prose-invert');
   });
 
   it('sends a message on submit', async () => {

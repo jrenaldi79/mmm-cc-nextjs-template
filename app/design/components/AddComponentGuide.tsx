@@ -98,7 +98,7 @@ export function AddComponentGuide() {
 
 function StepCard({ step }: { step: Step }) {
   return (
-    <div className="flex-1 space-y-2 rounded-2xl border-2 border-foreground bg-card p-4 shadow-hard">
+    <div className="min-w-0 flex-1 space-y-2 rounded-2xl border-2 border-foreground bg-card p-4 shadow-hard">
       <div
         className={`flex h-11 w-11 items-center justify-center rounded-md ${
           step.isResult

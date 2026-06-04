@@ -9,13 +9,8 @@ import { Send } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { PageHero } from '../components/PageHero';
 
 export default function ChatPage() {
   // Stable id for this chat session so the n8n agent can keep memory across turns.
@@ -41,20 +36,29 @@ export default function ChatPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
-        <div className="mx-auto max-w-3xl">
-          <Card className="flex h-[70vh] flex-col border-2 border-foreground rounded-2xl shadow-hard">
-            <CardHeader>
-              <CardTitle className="font-display">🤖 LLM Agent Chat</CardTitle>
-              <CardDescription>
+        <div className="mx-auto max-w-3xl space-y-8">
+          <PageHero
+            eyebrow="AI Chat"
+            title={
+              <>
+                LLM Agent{' '}
+                <span className="font-serif font-normal italic text-primary">
+                  Chat
+                </span>
+              </>
+            }
+            subtitle={
+              <>
                 Streams a response from{' '}
-                <code className="bg-muted px-1 rounded">/api/chat</code>.
+                <code className="rounded bg-muted px-1">/api/chat</code>.
                 Connect your n8n agent via{' '}
-                <code className="bg-muted px-1 rounded">N8N_WEBHOOK_URL</code> —
+                <code className="rounded bg-muted px-1">N8N_WEBHOOK_URL</code> —
                 until then a placeholder reply streams back.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="flex-1 overflow-y-auto space-y-4">
+              </>
+            }
+          />
+          <Card className="flex h-[70vh] flex-col border-2 border-foreground rounded-2xl shadow-hard">
+            <CardContent className="flex-1 overflow-y-auto space-y-4 pt-6">
               {messages.length === 0 ? (
                 <p className="text-muted-foreground text-center py-12">
                   Ask anything to see a streamed response.
@@ -74,7 +78,11 @@ export default function ChatPage() {
                           : 'bg-muted'
                       }`}
                     >
-                      <div className="prose prose-sm max-w-none prose-p:my-1 prose-pre:my-2">
+                      <div
+                        className={`prose prose-sm max-w-none prose-p:my-1 prose-pre:my-2 ${
+                          message.role === 'user' ? 'prose-invert' : ''
+                        }`}
+                      >
                         <Markdown remarkPlugins={[remarkGfm]}>
                           {message.parts
                             .map((p) => (p.type === 'text' ? p.text : ''))
@@ -87,7 +95,22 @@ export default function ChatPage() {
               )}
 
               {status === 'submitted' && (
-                <p className="text-muted-foreground text-sm">Thinking…</p>
+                <div
+                  role="status"
+                  aria-label="Thinking"
+                  className="flex items-center gap-1 px-1"
+                >
+                  <span
+                    className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+                    style={{ animationDelay: '-0.3s' }}
+                  />
+                  <span
+                    className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+                    style={{ animationDelay: '-0.15s' }}
+                  />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" />
+                  <span className="sr-only">Thinking…</span>
+                </div>
               )}
               {error && (
                 <p className="text-destructive text-sm">

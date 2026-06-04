@@ -10,6 +10,7 @@ import {
   YAxis,
 } from 'recharts';
 import Navigation from '../components/Navigation';
+import { PageHero } from '../components/PageHero';
 import {
   Card,
   CardContent,
@@ -53,19 +54,27 @@ export default function ChartsPage() {
       <Navigation />
       <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
         <div className="space-y-8">
-          <div>
-            <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">
-              📊 Charts Example
-            </h1>
-            <p className="text-muted-foreground">
-              Built with <strong>Recharts</strong> and shadcn/ui chart
-              components. Edit{' '}
-              <code className="bg-muted px-1.5 py-0.5 rounded">
-                app/charts/page.tsx
-              </code>{' '}
-              to use your own data.
-            </p>
-          </div>
+          <PageHero
+            eyebrow="Charts"
+            title={
+              <>
+                Charts{' '}
+                <span className="font-serif font-normal italic text-primary">
+                  Example
+                </span>
+              </>
+            }
+            subtitle={
+              <>
+                Built with <strong>Recharts</strong> and shadcn/ui chart
+                components. Edit{' '}
+                <code className="rounded bg-muted px-1.5 py-0.5">
+                  app/charts/page.tsx
+                </code>{' '}
+                to use your own data.
+              </>
+            }
+          />
 
           <Card className="border-2 border-foreground rounded-2xl shadow-hard">
             <CardHeader>

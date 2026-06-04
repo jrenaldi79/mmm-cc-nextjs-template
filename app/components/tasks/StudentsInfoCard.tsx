@@ -4,7 +4,7 @@ export function StudentsInfoCard() {
   return (
     <Card className="mt-8 border-2 border-foreground rounded-2xl shadow-hard">
       <CardHeader>
-        <CardTitle className="font-display text-xl">📚 For Students</CardTitle>
+        <CardTitle className="font-display text-xl">For Students</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="prose prose-sm max-w-none">

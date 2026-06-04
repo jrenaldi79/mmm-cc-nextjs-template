@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageHero } from '../components/PageHero';
 import type { TestRunResult } from './types';
 import { TestSummaryCard } from './components/TestSummaryCard';
 import { CoverageCard } from './components/CoverageCard';
@@ -43,14 +44,18 @@ export default function TestDashboard() {
       <Navigation />
       <div className="mx-auto w-full max-w-content px-6 py-8 md:px-9">
         <div className="space-y-6">
-          <div className="mb-8">
-            <h1 className="font-display text-4xl font-extrabold tracking-tight mb-2">
-              Test Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Run your tests and see the results in a friendly format
-            </p>
-          </div>
+          <PageHero
+            eyebrow="Testing"
+            title={
+              <>
+                Test{' '}
+                <span className="font-serif font-normal italic text-primary">
+                  Dashboard
+                </span>
+              </>
+            }
+            subtitle="Run your tests and see the results in a friendly format"
+          />
 
           <Card className="mb-6 border-2 border-foreground rounded-2xl shadow-hard">
             <CardContent className="pt-6">
@@ -102,7 +107,9 @@ export default function TestDashboard() {
           {!results && !isRunning && (
             <Card className="border-2 border-foreground rounded-2xl shadow-hard">
               <CardContent className="p-12 text-center">
-                <div className="text-6xl mb-4">🧪</div>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-foreground bg-primary text-primary-foreground text-3xl">
+                  ✓
+                </div>
                 <h2 className="font-display text-2xl font-semibold text-foreground mb-2">
                   Ready to test your code?
                 </h2>

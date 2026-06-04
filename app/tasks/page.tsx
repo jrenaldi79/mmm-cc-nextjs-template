@@ -8,13 +8,8 @@ import { StudentsInfoCard } from '../components/tasks/StudentsInfoCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
+import { PageHero } from '../components/PageHero';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -124,17 +119,20 @@ export default function TasksPage() {
       <Navigation />
       <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
         <div className="space-y-8">
+          <PageHero
+            eyebrow="Supabase · CRUD"
+            title={
+              <>
+                Supabase{' '}
+                <span className="font-serif font-normal italic text-primary">
+                  Tasks
+                </span>
+              </>
+            }
+            subtitle="This is a sample integration showing how to connect to Supabase and perform CRUD operations."
+          />
           <Card className="border-2 border-foreground rounded-2xl shadow-hard">
-            <CardHeader>
-              <CardTitle className="font-display text-4xl font-extrabold tracking-tight">
-                Supabase Tasks Example
-              </CardTitle>
-              <CardDescription>
-                This is a sample integration showing how to connect to Supabase
-                and perform CRUD operations.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {error && (
                 <div className="mb-6 rounded-xl border-2 border-destructive/40 bg-destructive/10 p-4 text-destructive">
                   <strong>Error:</strong> {error}

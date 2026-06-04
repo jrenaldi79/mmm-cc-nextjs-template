@@ -31,7 +31,9 @@ describe('TestDashboard', () => {
   it('renders dashboard with initial state', () => {
     render(<TestDashboard />);
 
-    expect(screen.getByText('Test Dashboard')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: /test dashboard/i })
+    ).toBeInTheDocument();
     expect(
       screen.getByText(/run your tests and see the results/i)
     ).toBeInTheDocument();

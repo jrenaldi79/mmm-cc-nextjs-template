@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const phases = [
   {
     dot: 'bg-coral',
-    title: '🔴 Red — write failing tests',
+    title: 'Red — write failing tests',
     blurb: 'Start with tests that define what success looks like.',
     lines: [
       ['c', '# create the test file first'],
@@ -15,7 +15,7 @@ const phases = [
   },
   {
     dot: 'bg-teal',
-    title: '🟢 Green — make tests pass',
+    title: 'Green — make tests pass',
     blurb: 'Write the simplest code that turns the suite green.',
     lines: [
       ['c', '# now create the implementation'],
@@ -25,7 +25,7 @@ const phases = [
   },
   {
     dot: 'bg-primary',
-    title: '🔵 Refactor — optimize',
+    title: 'Refactor — optimize',
     blurb: 'Clean up while keeping the suite green.',
     lines: [
       ['c', '# refactor, re-run after each change'],
@@ -47,7 +47,7 @@ export function TddFrameworkCard() {
     <Card className="rounded-2xl border-2 border-foreground bg-card shadow-hard">
       <CardHeader>
         <CardTitle className="font-display">
-          🧪 Test-Driven Development (TDD) Framework
+          Test-Driven Development (TDD) Framework
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -84,7 +84,7 @@ export function TddFrameworkCard() {
 
         <div className="mt-6 rounded-xl border-l-4 border-coral bg-coral/10 p-4">
           <p className="text-sm text-foreground">
-            <strong>⚠️ Important:</strong> the AI assistant refuses to write
+            <strong>Important:</strong> the AI assistant refuses to write
             implementation code until tests exist first — so you always have a
             safety net and a clear spec.
           </p>

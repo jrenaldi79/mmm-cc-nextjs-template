@@ -544,7 +544,7 @@ describe('Tasks Page', () => {
       render(<TasksPage />);
 
       await waitFor(() => {
-        expect(screen.getByText('📚 For Students')).toBeInTheDocument();
+        expect(screen.getByText('For Students')).toBeInTheDocument();
         expect(
           screen.getByText(/This example demonstrates:/)
         ).toBeInTheDocument();

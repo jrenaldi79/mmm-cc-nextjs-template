@@ -49,7 +49,7 @@ export function WelcomeCard() {
 
         <div className="rounded-xl border-2 border-foreground bg-teal/10 p-5">
           <p className="font-display font-bold text-foreground">
-            🗄️ Database integration example
+            Database integration example
           </p>
           <p className="mb-4 mt-1 text-sm text-muted-foreground">
             This template includes a working{' '}

@@ -14,7 +14,7 @@ export function AiInstructionsCard() {
     <Card className="rounded-2xl border-2 border-foreground bg-card shadow-hard">
       <CardHeader>
         <CardTitle className="font-display">
-          🤖 AI Coding Assistant Instructions
+          AI Coding Assistant Instructions
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -41,7 +41,7 @@ export function AiInstructionsCard() {
 
         <div className="mt-6 rounded-xl border-l-4 border-gold bg-gold/10 p-4">
           <p className="text-sm text-foreground">
-            <strong>💡 Pro tip:</strong> as you build, keep{' '}
+            <strong>Pro tip:</strong> as you build, keep{' '}
             <code className="rounded bg-muted px-1">CLAUDE.md</code> current
             with your API endpoints, business logic, schema decisions, and UI
             conventions.
