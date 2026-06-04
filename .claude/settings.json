@@ -27,6 +27,8 @@
       "Bash(npx jest*)",
       "Bash(npx eslint*)",
       "Bash(npx prettier*)",
+      "Bash(npx shadcn@latest *)",
+      "Bash(npx shadcn *)",
       "Bash(git status)",
       "Bash(git diff*)",
       "Bash(git log*)",

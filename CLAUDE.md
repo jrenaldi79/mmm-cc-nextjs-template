@@ -83,6 +83,15 @@ app/
 │   ├── ExampleComponent.tsx
 │   ├── Navigation.tsx
 │   └── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
+├── design/
+│   ├── components/
+│   │   ├── AddComponentGuide.tsx  # A friendly, visual walkthrough of how a new component enters the project via
+│   │   ├── ColorTokens.tsx  # The living color palette. Each swatch renders with its real token class
+│   │   ├── ComponentGallery.tsx  # Live gallery of the shadcn/ui primitives that ship with this template. These
+│   │   ├── ConceptsSection.tsx  # Plain-language explanation of what a design system is, what shadcn/ui is, and
+│   │   ├── EnforcementSection.tsx  # Explains, for non-technical students, why hard-coded styles create
+│   │   └── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the real font
+│   └── page.tsx
 ├── login/
 │   ├── actions.ts  # Email/password sign-in. Called as a form action from /login.
 │   └── page.tsx
@@ -152,6 +161,13 @@ types/
 | `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
 | `app/components/tasks/StudentsInfoCard.tsx` |  | `StudentsInfoCard` |
 | `app/components/tasks/TaskItem.tsx` |  | `TaskItem` |
+| `app/design/page.tsx` |  | `metadata`, `DesignPage` |
+| `app/design/components/AddComponentGuide.tsx` | A friendly, visual walkthrough of how a new component enters the project via | `AddComponentGuide` |
+| `app/design/components/ColorTokens.tsx` | The living color palette. Each swatch renders with its real token class | `ColorTokens` |
+| `app/design/components/ComponentGallery.tsx` | Live gallery of the shadcn/ui primitives that ship with this template. These | `ComponentGallery` |
+| `app/design/components/ConceptsSection.tsx` | Plain-language explanation of what a design system is, what shadcn/ui is, and | `ConceptsSection` |
+| `app/design/components/EnforcementSection.tsx` | Explains, for non-technical students, why hard-coded styles create | `EnforcementSection` |
+| `app/design/components/TypeAndShapeSection.tsx` | Typography scale and shape (corner radius) reference. Shows the real font | `TypeAndShapeSection` |
 | `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
 | `app/login/page.tsx` |  | `LoginPage`, `default` |
 | `app/signup/page.tsx` |  | `SignupPage`, `default` |
@@ -253,7 +269,7 @@ Full rule: [.claude/rules/tdd.md](.claude/rules/tdd.md).
 | Hook | Steps |
 |------|-------|
 | **pre-commit** | `lint-staged` (eslint + prettier on staged) → `check-secrets` → `check-file-sizes` → `check-test-colocation` → `generate-docs` → `validate-docs` |
-| **pre-push** | `validate` + `test` (SHA-cached via `.test-passed`, skipped if HEAD already passed) → `npm audit` (warn-only) |
+| **pre-push** | `validate` + `test` (SHA-cached via `.test-passed`, skipped if HEAD already passed) → `npm audit` (warn-only) → `design:lint` (warn-only) |
 
 ---
 
