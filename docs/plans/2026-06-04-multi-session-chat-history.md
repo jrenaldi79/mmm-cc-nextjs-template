@@ -2,9 +2,11 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Let students see a sidebar of their past chat sessions on `/chat` and reload any conversation's history, backed by a new `chat_sessions` table and the existing n8n LangChain memory table.
+**Goal:** Let students see a sidebar of their past chat sessions on `/chat` and reload any conversation's history, backed by a new `n8n_chat_sessions` table and the n8n LangChain `n8n_chat_histories` memory table.
 
-**Architecture:** A new RLS-scoped `chat_sessions` table (populated by n8n) ties a persistent `session_id` to a `user_id` + descriptive `name`. The browser Supabase client reads the session list (and subscribes to it via Realtime) and reads message history from `n8n_chat_histories` — both gated by RLS. The `/api/chat` route forwards the signed-in `user_id` to n8n so it can stamp ownership when it inserts the session row.
+**Architecture:** A new RLS-scoped `n8n_chat_sessions` table (populated by n8n) ties a persistent `session_id` to a `user_id` + descriptive `name`. The browser Supabase client reads the session list (and subscribes to it via Realtime) and reads message history from `n8n_chat_histories` — both gated by RLS. The `/api/chat` route forwards the signed-in `user_id` to n8n so it can stamp ownership when it inserts the session row.
+
+> **Target DB note (presto-clients, `iylnmehjvvtrgvobtglx`):** This project already has its *own* unrelated `chat_sessions` + `chat_messages` tables, and does **not** have `n8n_chat_histories`. So (a) the new sessions table is named **`n8n_chat_sessions`** to avoid colliding with the existing `chat_sessions`, and (b) the migration **CREATEs** `n8n_chat_histories` (it isn't present) rather than altering it. The existing `chat_sessions`/`chat_messages` tables are left untouched.
 
 **Tech Stack:** Next.js 16 App Router, TypeScript (strict), Supabase (`@supabase/ssr` browser client + Realtime + RLS), AI SDK (`useChat` + `TextStreamChatTransport`), Jest + React Testing Library.
 
@@ -24,27 +26,33 @@
 
 ---
 
-## Task 1: Database migration — `chat_sessions` + history RLS
+## Task 1: Database migration — `n8n_chat_sessions` + `n8n_chat_histories`
 
 **Files:**
-- Create: `supabase/migrations/20260604000000_chat_sessions_and_history_rls.sql`
+- Create: `supabase/migrations/20260604000000_n8n_chat_sessions_and_history.sql`
 
-This is an infrastructure/SQL task. The "test" is applying it to a dev Supabase project and confirming the advisor's "RLS disabled on n8n_chat_histories" finding clears and the policies exist. Do **not** apply to any production data.
+This is an infrastructure/SQL task. The "test" is applying it to the **presto-clients** Supabase project (`iylnmehjvvtrgvobtglx`) and confirming both tables exist with RLS enabled and the policies are present.
 
 **Step 1: Write the migration file**
 
 ```sql
--- Migration: persistent chat sessions + secure the n8n chat history table.
+-- Migration: persistent n8n chat sessions + the n8n chat history memory table.
 --
--- chat_sessions ties a persistent session_id to a user and a descriptive name.
--- Rows are INSERTED by the n8n workflow (service-role connection, which bypasses
--- RLS); the app only reads them. n8n_chat_histories already exists (written by
--- n8n's LangChain Postgres Chat Memory node) but ships with RLS disabled — this
--- migration turns RLS on and adds an ownership-scoped SELECT policy so the app
--- can read history safely from the browser client.
+-- n8n_chat_sessions ties a persistent session_id to a user and a descriptive
+-- name. Rows are INSERTED by the n8n workflow (service-role connection, which
+-- bypasses RLS); the app only reads them.
+--
+-- n8n_chat_histories is the LangChain Postgres Chat Memory table that n8n's
+-- AI Agent memory node writes to. We create it here (this project does not have
+-- it yet) and add an ownership-scoped SELECT policy so the app can read history
+-- safely from the browser client.
+--
+-- NOTE: this project already has an unrelated `chat_sessions` + `chat_messages`
+-- pair; those are intentionally left untouched. The n8n-prefixed names avoid the
+-- collision.
 
 -- 1. The sessions table -------------------------------------------------------
-CREATE TABLE chat_sessions (
+CREATE TABLE n8n_chat_sessions (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id  TEXT NOT NULL UNIQUE,                       -- == n8n_chat_histories.session_id
   user_id     UUID NOT NULL DEFAULT auth.uid()
@@ -54,51 +62,61 @@ CREATE TABLE chat_sessions (
   updated_at  TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX chat_sessions_user_id_idx ON chat_sessions (user_id);
+CREATE INDEX n8n_chat_sessions_user_id_idx ON n8n_chat_sessions (user_id);
 
-ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE n8n_chat_sessions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view their own chat sessions" ON chat_sessions
+CREATE POLICY "Users can view their own chat sessions" ON n8n_chat_sessions
   FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert their own chat sessions" ON chat_sessions
+CREATE POLICY "Users can insert their own chat sessions" ON n8n_chat_sessions
   FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update their own chat sessions" ON chat_sessions
+CREATE POLICY "Users can update their own chat sessions" ON n8n_chat_sessions
   FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete their own chat sessions" ON chat_sessions
+CREATE POLICY "Users can delete their own chat sessions" ON n8n_chat_sessions
   FOR DELETE USING (auth.uid() = user_id);
 
--- 2. Secure the existing history table ---------------------------------------
+-- 2. The n8n LangChain memory table ------------------------------------------
+-- Standard schema n8n's Postgres Chat Memory node expects.
+CREATE TABLE n8n_chat_histories (
+  id          SERIAL PRIMARY KEY,
+  session_id  VARCHAR NOT NULL,
+  message     JSONB NOT NULL
+);
+
+CREATE INDEX n8n_chat_histories_session_id_idx
+  ON n8n_chat_histories (session_id);
+
 ALTER TABLE n8n_chat_histories ENABLE ROW LEVEL SECURITY;
 
 -- A user may read a history row only if they own the session it belongs to.
 CREATE POLICY "Users can read their own session history" ON n8n_chat_histories
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM chat_sessions s
+      SELECT 1 FROM n8n_chat_sessions s
       WHERE s.session_id = n8n_chat_histories.session_id
         AND s.user_id = auth.uid()
     )
   );
 
--- 3. Realtime: let the app subscribe to chat_sessions changes -----------------
-ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions;
+-- 3. Realtime: let the app subscribe to n8n_chat_sessions changes -------------
+ALTER PUBLICATION supabase_realtime ADD TABLE n8n_chat_sessions;
 ```
 
-**Step 2: Apply to a dev Supabase project and verify**
+**Step 2: Apply to the presto-clients project and verify**
 
-Ask the user which Supabase project is their dev project for this template. Apply via the Supabase MCP `apply_migration` (name: `chat_sessions_and_history_rls`), then:
-- Run `list_tables` (verbose) — confirm `chat_sessions` exists with RLS enabled and `n8n_chat_histories` now shows `rls_enabled: true`.
-- Run `get_advisors` (type `security`) — confirm the "RLS disabled on public.n8n_chat_histories" critical finding is gone.
+Apply via the Supabase MCP `apply_migration` against **project `iylnmehjvvtrgvobtglx`** (name: `n8n_chat_sessions_and_history`), then:
+- Run `list_tables` (verbose) on `iylnmehjvvtrgvobtglx` — confirm `n8n_chat_sessions` and `n8n_chat_histories` both exist with `rls_enabled: true`; confirm the pre-existing `chat_sessions`/`chat_messages` tables are unchanged.
+- Run `get_advisors` (type `security`) — confirm no new "RLS disabled" finding was introduced for these tables.
 
-Expected: `chat_sessions` present with 4 policies; `n8n_chat_histories.rls_enabled = true`; advisor finding cleared.
+Expected: both `n8n_chat_*` tables present; `n8n_chat_sessions` has 4 policies; `n8n_chat_histories` has the read policy; RLS enabled on both.
 
-> If `ALTER PUBLICATION supabase_realtime ADD TABLE chat_sessions` errors because the table is already a member, that's fine — ignore and continue.
+> If `ALTER PUBLICATION supabase_realtime ADD TABLE n8n_chat_sessions` errors because the table is already a member, that's fine — ignore and continue.
 
 **Step 3: Commit**
 
 ```bash
-git add supabase/migrations/20260604000000_chat_sessions_and_history_rls.sql
-git commit -m "feat(db): add chat_sessions table and n8n_chat_histories RLS policy"
+git add supabase/migrations/20260604000000_n8n_chat_sessions_and_history.sql
+git commit -m "feat(db): add n8n_chat_sessions and n8n_chat_histories tables with RLS"
 ```
 
 ---
@@ -113,7 +131,7 @@ git commit -m "feat(db): add chat_sessions table and n8n_chat_histories RLS poli
 Add these two entries alongside `tasks` (keep `tasks` unchanged):
 
 ```ts
-chat_sessions: {
+n8n_chat_sessions: {
   Row: {
     id: string;
     session_id: string;
@@ -163,7 +181,8 @@ n8n_chat_histories: {
 **Step 2: Export the convenience types** (append near the existing `Task` exports)
 
 ```ts
-export type ChatSession = Database['public']['Tables']['chat_sessions']['Row'];
+export type ChatSession =
+  Database['public']['Tables']['n8n_chat_sessions']['Row'];
 export type N8nChatHistory =
   Database['public']['Tables']['n8n_chat_histories']['Row'];
 
@@ -183,7 +202,7 @@ Expected: PASS (0 errors).
 
 ```bash
 git add types/supabase.ts
-git commit -m "feat(types): add chat_sessions and n8n_chat_histories types"
+git commit -m "feat(types): add n8n_chat_sessions and n8n_chat_histories types"
 ```
 
 ---
@@ -328,7 +347,7 @@ git commit -m "feat(chat): map stored n8n history rows to UI messages"
 
 ## Task 4: Forward `user_id` from `/api/chat` to n8n
 
-So n8n can stamp `chat_sessions.user_id` when it inserts a session row.
+So n8n can stamp `n8n_chat_sessions.user_id` when it inserts a session row.
 
 **Files:**
 - Modify: `app/api/chat/route.ts`
@@ -384,7 +403,7 @@ Inside `POST`, after computing `sessionId` and before the webhook block, fetch t
 
 ```ts
 // The route is login-gated by proxy.ts, so there is a session here. We read the
-// user id and forward it to n8n so it can stamp chat_sessions ownership on insert.
+// user id and forward it to n8n so it can stamp n8n_chat_sessions ownership on insert.
 const supabase = await createClient();
 const {
   data: { user },
@@ -557,7 +576,7 @@ interface ChatSessionSidebarProps {
   onNewChat: () => void;
 }
 ```
-Internally: on mount, `select('*').order('updated_at', { ascending: false })` from `chat_sessions`; store rows in state; open a Realtime channel filtered to the signed-in user and re-fetch (or upsert into state) on any change; clean up the channel on unmount.
+Internally: on mount, `select('*').order('updated_at', { ascending: false })` from `n8n_chat_sessions`; store rows in state; open a Realtime channel filtered to the signed-in user and re-fetch (or upsert into state) on any change; clean up the channel on unmount.
 
 **Step 1: Write the failing test**
 
@@ -755,7 +774,7 @@ export function ChatSessionSidebar({
 
     async function load() {
       const { data } = await supabase
-        .from('chat_sessions')
+        .from('n8n_chat_sessions')
         .select('*')
         .order('updated_at', { ascending: false });
       setSessions(data ?? []);
@@ -766,13 +785,13 @@ export function ChatSessionSidebar({
         data: { user },
       } = await supabase.auth.getUser();
       channel = supabase
-        .channel('chat_sessions_changes')
+        .channel('n8n_chat_sessions_changes')
         .on(
           'postgres_changes',
           {
             event: '*',
             schema: 'public',
-            table: 'chat_sessions',
+            table: 'n8n_chat_sessions',
             filter: user ? `user_id=eq.${user.id}` : undefined,
           },
           () => {
@@ -884,7 +903,7 @@ jest.mock('@/lib/supabase/client', () => ({
     },
     from: (table: string) => ({
       select: () => ({
-        order: table === 'chat_sessions' ? mockOrder : mockHistoryOrder,
+        order: table === 'n8n_chat_sessions' ? mockOrder : mockHistoryOrder,
         eq: () => ({ order: mockHistoryOrder }),
       }),
     }),
@@ -1039,18 +1058,18 @@ git commit -m "feat(chat): multi-session sidebar and history loading on /chat"
 
 Add a "Chat sessions (history sidebar)" section covering:
 - The route now forwards `userId` in the webhook body (alongside `message`, `sessionId`, `messages`).
-- On the first message of a new `sessionId`, the n8n workflow must **upsert** a row into `chat_sessions` with: `session_id` (from `{{ $json.body.sessionId }}`), `user_id` (from `{{ $json.body.userId }}`), and a descriptive `name` (e.g. an LLM-generated title from the first message). Insert with the service-role/Postgres connection so it bypasses RLS.
-- The app reads `chat_sessions` (list) and `n8n_chat_histories` (history) directly via the RLS-scoped browser client; n8n only writes.
+- On the first message of a new `sessionId`, the n8n workflow must **upsert** a row into `n8n_chat_sessions` with: `session_id` (from `{{ $json.body.sessionId }}`), `user_id` (from `{{ $json.body.userId }}`), and a descriptive `name` (e.g. an LLM-generated title from the first message). Insert with the service-role/Postgres connection so it bypasses RLS.
+- The app reads `n8n_chat_sessions` (list) and `n8n_chat_histories` (history) directly via the RLS-scoped browser client; n8n only writes.
 
 **Step 2: Document the schema change** in `SUPABASE_SETUP.md`
 
-Note the new migration (`20260604000000_chat_sessions_and_history_rls.sql`): the `chat_sessions` table, and that RLS is now enabled on `n8n_chat_histories` with an ownership-scoped read policy + the table added to the `supabase_realtime` publication.
+Note the new migration (`20260604000000_n8n_chat_sessions_and_history.sql`): the `n8n_chat_sessions` and `n8n_chat_histories` tables, both with RLS (history has an ownership-scoped read policy), and `n8n_chat_sessions` added to the `supabase_realtime` publication. Mention that this project also keeps its pre-existing unrelated `chat_sessions`/`chat_messages` tables, which this feature does not use.
 
 **Step 3: Commit**
 
 ```bash
 git add docs/integrations/n8n.md SUPABASE_SETUP.md
-git commit -m "docs: document chat_sessions contract and history RLS"
+git commit -m "docs: document n8n_chat_sessions contract and history RLS"
 ```
 
 ---
@@ -1063,7 +1082,7 @@ Run: `npm run validate` (type-check + lint) — expect 0 errors.
 Run: `npm test` — expect all suites green.
 Run: `npm run test:coverage` — expect ≥ 80% across the board.
 
-**Step 2: Manual smoke test** (requires a real n8n workflow that inserts into `chat_sessions`)
+**Step 2: Manual smoke test** (requires a real n8n workflow that inserts into `n8n_chat_sessions`)
 
 - Sign in, open `/chat`, send a message → reply streams.
 - Within a moment the new session appears in the sidebar with its n8n-generated name (Realtime).
@@ -1079,5 +1098,5 @@ Run: `npm run test:coverage` — expect ≥ 80% across the board.
 
 - **`useChat` + changing transport:** rebuilding the transport via `useMemo` on `sessionId` is the switch mechanism; pair every switch with `setMessages(...)`. If the AI SDK version ignores a changed transport reference mid-session, fall back to keying the whole `useChat`-owning subtree with `key={sessionId}` (lift the chat pane into a child component that takes `sessionId` as a prop).
 - **History message shape:** `historyToUiMessages` emits `{ id, role, parts:[{type:'text',text}] }`, matching the live `useChat` message shape so `ChatMessages` renders both identically. Multi-run replies stored as separate `ai` rows naturally become separate bubbles (no separator needed for history).
-- **Realtime must be enabled** on the Supabase project (the migration adds `chat_sessions` to the `supabase_realtime` publication; Realtime is on by default for Supabase projects).
+- **Realtime must be enabled** on the Supabase project (the migration adds `n8n_chat_sessions` to the `supabase_realtime` publication; Realtime is on by default for Supabase projects).
 - **n8n owns naming.** If n8n hasn't inserted the session row yet, the sidebar simply won't show it until the Realtime insert event fires — expected.
