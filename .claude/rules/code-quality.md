@@ -1,3 +1,8 @@
+---
+description: 300-line limit, complexity triggers, doc sync, logging
+globs: app/**,components/**,lib/**,types/**,scripts/**
+---
+
 # Code Quality (applies to all source)
 
 ## Hard limits (mechanically enforced)

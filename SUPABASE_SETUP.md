@@ -185,9 +185,11 @@ All task endpoints require an authenticated session and return `401 Unauthorized
 when signed out. Each operation is automatically scoped to the current user.
 
 ### GET /api/tasks
+
 Fetch the current user's tasks, ordered by creation date (newest first)
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -207,9 +209,11 @@ Fetch the current user's tasks, ordered by creation date (newest first)
 ```
 
 ### POST /api/tasks
+
 Create a new task
 
 **Request:**
+
 ```json
 {
   "title": "New task",
@@ -220,9 +224,11 @@ Create a new task
 **Response:** `201 Created` with task data
 
 ### PATCH /api/tasks/:id
+
 Update an existing task
 
 **Request:**
+
 ```json
 {
   "completed": true
@@ -232,6 +238,7 @@ Update an existing task
 **Response:** `200 OK` with updated task data
 
 ### DELETE /api/tasks/:id
+
 Delete a task
 
 **Response:** `200 OK` with success message
@@ -250,6 +257,7 @@ Delete a task
 **Problem:** The app can't find your Supabase credentials.
 
 **Solution:**
+
 1. Check that you've added the environment variables (in `.env.local` or your host's environment settings)
 2. Restart your development server after adding the variables
 3. Verify the variable names match exactly: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -259,6 +267,7 @@ Delete a task
 **Problem:** Supabase query is failing.
 
 **Solution:**
+
 1. Check that the `tasks` table exists in your Supabase project
 2. Verify RLS policies are set up correctly
 3. Check the browser console for detailed error messages
@@ -269,6 +278,7 @@ Delete a task
 **Problem:** New tasks aren't showing in the list.
 
 **Solution:**
+
 1. Check browser console for errors
 2. Verify RLS policies allow INSERT operations
 3. Check Network tab to see if the POST request succeeded

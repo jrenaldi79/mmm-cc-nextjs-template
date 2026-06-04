@@ -17,7 +17,7 @@
  */
 
 const { execFileSync } = require('node:child_process');
-const { readdirSync, existsSync, statSync } = require('node:fs');
+const { readdirSync, readFileSync, existsSync, statSync } = require('node:fs');
 const { resolve, extname, basename } = require('node:path');
 
 const CONFIG = {
@@ -109,17 +109,23 @@ function sourceIdentity(filePath) {
 }
 
 /**
- * Check whether a staged source file has a matching test in the tests/ tree.
+ * Check whether a staged source file is covered by a test in the tests/ tree.
+ * A source file counts as tested if EITHER its path mirrors a test path
+ * (e.g. app/x/page.tsx ↔ tests/unit/app/x/page.test.tsx) OR some test file
+ * actually imports it (its module path appears in a test's contents — this
+ * catches cross-named tests like login.test.tsx covering signup/page.tsx).
  * @param {string} filePath - Source file path
  * @param {string[]} testIdentities - Normalized identities of existing test files
+ * @param {string} testBlob - Concatenated contents of all test files
  * @returns {null | {file: string}}
  */
-function checkColocation(filePath, testIdentities) {
+function checkColocation(filePath, testIdentities, testBlob = '') {
   const id = sourceIdentity(filePath);
-  const hasTest = testIdentities.some(
+  const mirrored = testIdentities.some(
     (t) => t === id || id.endsWith(t) || id.includes(t) || t.includes(id)
   );
-  return hasTest ? null : { file: filePath };
+  const imported = testBlob.includes(id);
+  return mirrored || imported ? null : { file: filePath };
 }
 
 function main() {
@@ -151,10 +157,19 @@ function main() {
       ? collectTestFiles(CONFIG.testDir, [])
       : [];
   const testIdentities = testFiles.map(normalizeTestIdentity);
+  const testBlob = testFiles
+    .map((f) => {
+      try {
+        return readFileSync(f, 'utf-8');
+      } catch {
+        return '';
+      }
+    })
+    .join('\n');
 
   const violations = [];
   for (const f of sourceFiles) {
-    const result = checkColocation(f, testIdentities);
+    const result = checkColocation(f, testIdentities, testBlob);
     if (result) {
       violations.push(result);
     }

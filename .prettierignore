@@ -8,3 +8,5 @@ next-env.d.ts
 
 # Partly auto-generated (AUTO:tree / AUTO:modules maintained by scripts/generate-docs.js)
 CLAUDE.md
+# Symlink to CLAUDE.md
+AGENTS.md

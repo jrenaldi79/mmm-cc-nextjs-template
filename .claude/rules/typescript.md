@@ -1,3 +1,8 @@
+---
+description: Strict TS, path aliases, naming, Next.js default-export rules
+globs: '**/*.ts,**/*.tsx'
+---
+
 # TypeScript & Naming (applies to `**/*.ts`, `**/*.tsx`)
 
 - **Strict mode**: always use TypeScript in strict mode (`tsconfig.json`).

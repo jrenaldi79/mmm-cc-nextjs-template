@@ -1,3 +1,8 @@
+---
+description: RSC-first, component structure order, performance
+globs: 'app/**/*.tsx,components/**/*.tsx'
+---
+
 # React & Front-End (applies to `app/**/*.tsx`, `components/**/*.tsx`)
 
 - **RSC first**: favor React Server Components. Minimize `'use client'`, `useEffect`, and

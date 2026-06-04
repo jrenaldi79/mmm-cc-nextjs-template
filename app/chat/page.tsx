@@ -1,38 +1,38 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useChat } from '@ai-sdk/react'
-import { TextStreamChatTransport } from 'ai'
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { Send } from 'lucide-react'
-import Navigation from '../components/Navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useState } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { TextStreamChatTransport } from 'ai';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Send } from 'lucide-react';
+import Navigation from '../components/Navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@/components/ui/card';
 
 export default function ChatPage() {
   // Created once; consumes the plain text stream from /api/chat.
   const [transport] = useState(
     () => new TextStreamChatTransport({ api: '/api/chat' })
-  )
-  const { messages, sendMessage, status, error } = useChat({ transport })
-  const [input, setInput] = useState('')
+  );
+  const { messages, sendMessage, status, error } = useChat({ transport });
+  const [input, setInput] = useState('');
 
-  const isBusy = status === 'submitted' || status === 'streaming'
+  const isBusy = status === 'submitted' || status === 'streaming';
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const text = input.trim()
-    if (!text || isBusy) return
-    sendMessage({ text })
-    setInput('')
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || isBusy) return;
+    sendMessage({ text });
+    setInput('');
   }
 
   return (
@@ -44,8 +44,10 @@ export default function ChatPage() {
             <CardHeader>
               <CardTitle>🤖 LLM Agent Chat</CardTitle>
               <CardDescription>
-                Streams a response from <code className="bg-muted px-1 rounded">/api/chat</code>.
-                Connect your n8n agent via <code className="bg-muted px-1 rounded">N8N_WEBHOOK_URL</code> —
+                Streams a response from{' '}
+                <code className="bg-muted px-1 rounded">/api/chat</code>.
+                Connect your n8n agent via{' '}
+                <code className="bg-muted px-1 rounded">N8N_WEBHOOK_URL</code> —
                 until then a placeholder reply streams back.
               </CardDescription>
             </CardHeader>
@@ -59,7 +61,9 @@ export default function ChatPage() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={message.role === 'user' ? 'text-right' : 'text-left'}
+                    className={
+                      message.role === 'user' ? 'text-right' : 'text-left'
+                    }
                   >
                     <div
                       className={`inline-block rounded-lg px-4 py-2 max-w-[85%] text-left ${
@@ -109,5 +113,5 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

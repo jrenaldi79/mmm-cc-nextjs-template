@@ -1,3 +1,8 @@
+---
+description: Supabase @supabase/ssr clients, RLS, auth/middleware
+globs: 'lib/supabase/**,app/auth/**,app/api/**,middleware.ts'
+---
+
 # Database & Auth — Supabase (applies to `lib/supabase/**`, `app/auth/**`, `app/api/**`, `middleware.ts`)
 
 ## Clients (`@supabase/ssr`)

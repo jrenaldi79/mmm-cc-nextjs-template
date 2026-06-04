@@ -4,49 +4,49 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export interface Database {
   public: {
     Tables: {
       tasks: {
         Row: {
-          id: string
-          user_id: string
-          title: string
-          completed: boolean
-          priority: 'low' | 'medium' | 'high'
-          created_at: string
-          updated_at: string
-        }
+          id: string;
+          user_id: string;
+          title: string;
+          completed: boolean;
+          priority: 'low' | 'medium' | 'high';
+          created_at: string;
+          updated_at: string;
+        };
         Insert: {
-          id?: string
-          user_id?: string
-          title: string
-          completed?: boolean
-          priority?: 'low' | 'medium' | 'high'
-          created_at?: string
-          updated_at?: string
-        }
+          id?: string;
+          user_id?: string;
+          title: string;
+          completed?: boolean;
+          priority?: 'low' | 'medium' | 'high';
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          completed?: boolean
-          priority?: 'low' | 'medium' | 'high'
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-    }
-    Views: Record<string, never>
-    Functions: Record<string, never>
-    Enums: Record<string, never>
-    CompositeTypes: Record<string, never>
-  }
+          id?: string;
+          user_id?: string;
+          title?: string;
+          completed?: boolean;
+          priority?: 'low' | 'medium' | 'high';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
 }
 
-export type Task = Database['public']['Tables']['tasks']['Row']
-export type TaskInsert = Database['public']['Tables']['tasks']['Insert']
-export type TaskUpdate = Database['public']['Tables']['tasks']['Update']
+export type Task = Database['public']['Tables']['tasks']['Row'];
+export type TaskInsert = Database['public']['Tables']['tasks']['Insert'];
+export type TaskUpdate = Database['public']['Tables']['tasks']['Update'];

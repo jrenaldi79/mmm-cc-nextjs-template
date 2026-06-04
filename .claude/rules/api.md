@@ -1,3 +1,8 @@
+---
+description: REST principles, Zod validation, server Supabase client
+globs: app/api/**
+---
+
 # API Design & Backend (applies to `app/api/**`)
 
 - **Logic**: use Node.js within Next.js Route Handlers for backend logic.

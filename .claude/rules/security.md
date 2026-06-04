@@ -1,3 +1,8 @@
+---
+description: Auth/RLS, input sanitization, secrets management
+globs: app/**,lib/**,middleware.ts
+---
+
 # Security (applies to all source)
 
 - **Authentication**: use Supabase auth; validate sessions and handle expiration. The app is

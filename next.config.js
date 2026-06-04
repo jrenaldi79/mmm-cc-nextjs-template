@@ -12,6 +12,6 @@ const nextConfig = {
     // proxy, such as Claude Code's cloud sandbox.
     turbopackUseSystemTlsCerts: true,
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

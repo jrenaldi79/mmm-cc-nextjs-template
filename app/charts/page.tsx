@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   Bar,
@@ -8,15 +8,15 @@ import {
   LineChart,
   XAxis,
   YAxis,
-} from 'recharts'
-import Navigation from '../components/Navigation'
+} from 'recharts';
+import Navigation from '../components/Navigation';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@/components/ui/card';
 import {
   ChartContainer,
   ChartLegend,
@@ -24,7 +24,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from '@/components/ui/chart'
+} from '@/components/ui/chart';
 
 // Sample data — replace with data from your API / Supabase.
 const monthlyData = [
@@ -34,7 +34,7 @@ const monthlyData = [
   { month: 'Apr', signups: 273, active: 190 },
   { month: 'May', signups: 209, active: 130 },
   { month: 'Jun', signups: 314, active: 240 },
-]
+];
 
 const chartConfig = {
   signups: {
@@ -45,7 +45,7 @@ const chartConfig = {
     label: 'Active Users',
     color: 'hsl(var(--chart-2))',
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export default function ChartsPage() {
   return (
@@ -56,25 +56,43 @@ export default function ChartsPage() {
           <div>
             <h1 className="text-4xl font-bold mb-2">📊 Charts Example</h1>
             <p className="text-muted-foreground">
-              Built with <strong>Recharts</strong> and shadcn/ui chart components. Edit{' '}
-              <code className="bg-muted px-1.5 py-0.5 rounded">app/charts/page.tsx</code> to use your own data.
+              Built with <strong>Recharts</strong> and shadcn/ui chart
+              components. Edit{' '}
+              <code className="bg-muted px-1.5 py-0.5 rounded">
+                app/charts/page.tsx
+              </code>{' '}
+              to use your own data.
             </p>
           </div>
 
           <Card>
             <CardHeader>
               <CardTitle>Monthly Sign-ups</CardTitle>
-              <CardDescription>A bar chart comparing two series</CardDescription>
+              <CardDescription>
+                A bar chart comparing two series
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={chartConfig} className="max-h-[320px] w-full">
+              <ChartContainer
+                config={chartConfig}
+                className="max-h-[320px] w-full"
+              >
                 <BarChart accessibilityLayer data={monthlyData}>
                   <CartesianGrid vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
                   <YAxis tickLine={false} axisLine={false} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <ChartLegend content={<ChartLegendContent />} />
-                  <Bar dataKey="signups" fill="var(--color-signups)" radius={4} />
+                  <Bar
+                    dataKey="signups"
+                    fill="var(--color-signups)"
+                    radius={4}
+                  />
                   <Bar dataKey="active" fill="var(--color-active)" radius={4} />
                 </BarChart>
               </ChartContainer>
@@ -87,15 +105,39 @@ export default function ChartsPage() {
               <CardDescription>A line chart over time</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={chartConfig} className="max-h-[320px] w-full">
-                <LineChart accessibilityLayer data={monthlyData} margin={{ left: 12, right: 12 }}>
+              <ChartContainer
+                config={chartConfig}
+                className="max-h-[320px] w-full"
+              >
+                <LineChart
+                  accessibilityLayer
+                  data={monthlyData}
+                  margin={{ left: 12, right: 12 }}
+                >
                   <CartesianGrid vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
                   <YAxis tickLine={false} axisLine={false} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <ChartLegend content={<ChartLegendContent />} />
-                  <Line dataKey="signups" type="monotone" stroke="var(--color-signups)" strokeWidth={2} dot={false} />
-                  <Line dataKey="active" type="monotone" stroke="var(--color-active)" strokeWidth={2} dot={false} />
+                  <Line
+                    dataKey="signups"
+                    type="monotone"
+                    stroke="var(--color-signups)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    dataKey="active"
+                    type="monotone"
+                    stroke="var(--color-active)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
                 </LineChart>
               </ChartContainer>
             </CardContent>
@@ -107,21 +149,35 @@ export default function ChartsPage() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2">
               <p>
-                <strong>Recharts</strong> is the charting library shadcn/ui is built around. The
-                <code className="bg-muted px-1.5 py-0.5 rounded mx-1">ChartContainer</code>
-                wrapper in <code className="bg-muted px-1.5 py-0.5 rounded">components/ui/chart.tsx</code>
-                handles theming (via CSS variables), tooltips, and legends so your charts match the rest of the UI.
+                <strong>Recharts</strong> is the charting library shadcn/ui is
+                built around. The
+                <code className="bg-muted px-1.5 py-0.5 rounded mx-1">
+                  ChartContainer
+                </code>
+                wrapper in{' '}
+                <code className="bg-muted px-1.5 py-0.5 rounded">
+                  components/ui/chart.tsx
+                </code>
+                handles theming (via CSS variables), tooltips, and legends so
+                your charts match the rest of the UI.
               </p>
               <p>
-                Add more chart types (area, pie, radar, radial) straight from the{' '}
-                <a href="https://ui.shadcn.com/charts" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                Add more chart types (area, pie, radar, radial) straight from
+                the{' '}
+                <a
+                  href="https://ui.shadcn.com/charts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline"
+                >
                   shadcn/ui charts gallery
-                </a>.
+                </a>
+                .
               </p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

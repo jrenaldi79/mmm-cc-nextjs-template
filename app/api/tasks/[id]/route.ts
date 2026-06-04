@@ -1,32 +1,35 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import type { TaskUpdate } from '@/types/supabase'
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import type { TaskUpdate } from '@/types/supabase';
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json() as TaskUpdate
-    const { id } = await params
+    const body = (await request.json()) as TaskUpdate;
+    const { id } = await params;
 
     if (body.title !== undefined && body.title.trim() === '') {
       return NextResponse.json(
         { error: 'Title cannot be empty' },
         { status: 400 }
-      )
+      );
     }
 
-    const updateData: TaskUpdate = { ...body, updated_at: new Date().toISOString() }
+    const updateData: TaskUpdate = {
+      ...body,
+      updated_at: new Date().toISOString(),
+    };
 
     // RLS ensures the user can only update their own task.
     const { data, error } = await supabase
@@ -34,28 +37,28 @@ export async function PATCH(
       .update(updateData)
       .eq('id', id)
       .select()
-      .single()
+      .single();
 
     if (error) {
       return NextResponse.json(
         { error: 'Failed to update task', details: error.message },
         { status: 500 }
-      )
+      );
     }
 
     if (!data) {
-      return NextResponse.json(
-        { error: 'Task not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ data })
+    return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -64,35 +67,35 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const {
       data: { user },
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params
+    const { id } = await params;
 
     // RLS ensures the user can only delete their own task.
-    const { error } = await supabase
-      .from('tasks')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
 
     if (error) {
       return NextResponse.json(
         { error: 'Failed to delete task', details: error.message },
         { status: 500 }
-      )
+      );
     }
 
-    return NextResponse.json({ message: 'Task deleted successfully' })
+    return NextResponse.json({ message: 'Task deleted successfully' });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
-    )
+    );
   }
 }

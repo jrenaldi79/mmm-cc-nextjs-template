@@ -73,6 +73,13 @@ app/
 ├── chat/
 │   └── page.tsx
 ├── components/
+│   ├── home/
+│   │   ├── AiInstructionsCard.tsx
+│   │   ├── TddFrameworkCard.tsx
+│   │   └── WelcomeCard.tsx
+│   ├── tasks/
+│   │   ├── StudentsInfoCard.tsx
+│   │   └── TaskItem.tsx
 │   ├── ExampleComponent.tsx
 │   ├── Navigation.tsx
 │   └── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
@@ -139,6 +146,11 @@ types/
 | `app/components/ExampleComponent.tsx` |  | `ExampleComponent` |
 | `app/components/Navigation.tsx` |  | `Navigation` |
 | `app/components/OAuthButtons.tsx` | Social sign-in buttons. OAuth must be initiated from the browser because it | `OAuthButtons` |
+| `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
+| `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
+| `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
+| `app/components/tasks/StudentsInfoCard.tsx` |  | `StudentsInfoCard` |
+| `app/components/tasks/TaskItem.tsx` |  | `TaskItem` |
 | `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
 | `app/login/page.tsx` |  | `LoginPage`, `default` |
 | `app/signup/page.tsx` |  | `SignupPage`, `default` |
@@ -167,6 +179,30 @@ types/
 | `types/index.ts` |  | `ApiError` |
 | `types/supabase.ts` |  | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
 <!-- /AUTO:modules -->
+
+---
+
+## Architecture
+
+Next.js 16 App Router. A request flows:
+
+```
+Browser
+  -> middleware.ts          # refreshes the Supabase session, redirects anon users to /login
+  -> app/**/page.tsx (RSC)  # Server Components render using the server Supabase client
+  -> app/api/**/route.ts    # Route Handlers (REST) validate input with Zod, run as the user
+  -> Supabase (RLS)         # row-level security scopes every query to the signed-in user
+```
+
+- **Auth gate**: `middleware.ts` → `lib/supabase/middleware.ts` runs on every request; only
+  `/login`, `/signup`, `/auth/*`, and static assets are public.
+- **Two Supabase clients**: the **server** client (`lib/supabase/server.ts`, carries the
+  session → RLS) for RSC / route handlers / server actions; the **browser** client
+  (`lib/supabase/client.ts`) only in Client Components for reading auth state.
+- **Chat**: `app/chat/page.tsx` (`useChat`) → `app/api/chat/route.ts` proxy → n8n webhook,
+  streamed back token-by-token (never call n8n from the browser).
+- **Layering**: `app/` (routes/UI) → `lib/` (clients/utils) → `types/`; UI composes shadcn/ui
+  primitives from `components/ui/`. No upward imports (`lib/` must not import from `app/`).
 
 ---
 
@@ -218,6 +254,46 @@ Full rule: [.claude/rules/tdd.md](.claude/rules/tdd.md).
 | **pre-push** | `validate` + `test` (SHA-cached via `.test-passed`, skipped if HEAD already passed) → `npm audit` (warn-only) |
 
 ---
+
+## Critical Gotchas
+
+- **`cookies()` is async in Next 16** — `await` it; the Supabase server client is created with
+  `await createClient()`. Dynamic route params are `Promise<{ id }>` — `await` them too.
+- **Supabase clients are factory functions** (no module-level instantiation), so the app
+  builds without credentials; a missing-env error only surfaces on first use.
+- **Default exports are required** for Next.js `page.tsx`/`layout.tsx`/`middleware.ts` — do
+  NOT enable ESLint `import/no-default-export`. Use named exports everywhere else.
+- **Dev server runs on port 5000**, host `0.0.0.0` (not 3000) — see the `dev` script.
+- **Tailwind is pinned to v3.4.x** — do not upgrade to v4 (breaking PostCSS/config changes).
+- **Google Fonts behind a TLS-intercepting proxy**: `next.config.js` enables the system cert
+  store; fonts fail to fetch at build time without it.
+- **AUTO sections in CLAUDE.md are generated** by `scripts/generate-docs.js` (pre-commit) —
+  never hand-edit between `<!-- AUTO:* -->` markers (CLAUDE.md is Prettier-ignored for this).
+- **pre-push test cache**: tests are skipped if `.test-passed` already holds the current HEAD
+  SHA (written by `posttest`). A new commit invalidates it automatically.
+
+## Code Review Checklist (pre-merge)
+
+The git hooks enforce most of this automatically; verify before opening a PR:
+
+- [ ] Tests written first and passing (`npm test`); coverage ≥ 80% (`npm run test:coverage`).
+- [ ] `npm run validate` clean (type-check + lint, 0 errors).
+- [ ] No source file over 300 lines (`node scripts/check-file-sizes.js`).
+- [ ] No secrets staged (`node scripts/check-secrets.js`).
+- [ ] New source modules have a matching test in `tests/`.
+- [ ] CLAUDE.md AUTO sections regenerated (`node scripts/generate-docs.js`); rules/docs updated
+      if architecture, env vars, or API contracts changed.
+- [ ] Prettier-clean (`npm run format:check`).
+
+## Deliberate Deviations from the harness defaults
+
+Intentional adaptations for this Next.js stack — not gaps to "fix":
+
+- **`import/no-default-export` is OFF** — App Router entrypoints require default exports.
+- **Centralized `tests/` tree** (not colocated beside source) — preserves the 80% Jest
+  coverage setup; `scripts/check-test-colocation.js` validates the mirror instead.
+- **No plan-before-build framework (BMAD/Superpowers)** — intentionally omitted to keep this
+  student starter template lean.
 
 ## Working in this repo
 

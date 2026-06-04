@@ -1,3 +1,8 @@
+---
+description: shadcn/ui, Tailwind v3.4.x tokens, Recharts
+globs: 'app/**/*.tsx,components/**/*.tsx,app/globals.css'
+---
+
 # UI & Styling — Tailwind + shadcn/ui (applies to `app/**`, `components/**`)
 
 - **Component library**: this template uses **shadcn/ui** (new-york style). Reusable

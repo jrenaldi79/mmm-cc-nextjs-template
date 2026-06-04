@@ -1,3 +1,8 @@
+---
+description: TDD is the law — tests before implementation
+globs: app/**,lib/**,tests/**
+---
+
 # TDD — The Law (applies to all feature work)
 
 **EVERY feature request or code change MUST start by writing tests _before_ any

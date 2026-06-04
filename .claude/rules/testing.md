@@ -1,3 +1,8 @@
+---
+description: Centralized tests/ layout, 80% coverage gate, testing patterns
+globs: tests/**,app/**,lib/**
+---
+
 # Testing & Quality (applies when editing `tests/**` or any source)
 
 - **TDD is Law**: see `.claude/rules/tdd.md`.

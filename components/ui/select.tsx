@@ -1,7 +1,7 @@
-import * as React from 'react'
-import { ChevronDown } from 'lucide-react'
+import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 /**
  * A lightweight select built on the native `<select>` element.
@@ -29,7 +29,7 @@ const Select = React.forwardRef<
     </select>
     <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
   </div>
-))
-Select.displayName = 'Select'
+));
+Select.displayName = 'Select';
 
-export { Select }
+export { Select };

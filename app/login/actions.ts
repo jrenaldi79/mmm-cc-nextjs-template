@@ -1,11 +1,11 @@
-'use server'
+'use server';
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 
 function siteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:5000'
+  return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:5000';
 }
 
 /**
@@ -13,19 +13,19 @@ function siteUrl(): string {
  * On success the session cookie is set and the user lands on the home page.
  */
 export async function login(formData: FormData): Promise<void> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
     email: String(formData.get('email')),
     password: String(formData.get('password')),
-  })
+  });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`)
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/')
+  revalidatePath('/', 'layout');
+  redirect('/');
 }
 
 /**
@@ -34,7 +34,7 @@ export async function login(formData: FormData): Promise<void> {
  * link (handled by /auth/confirm) before a session exists.
  */
 export async function signup(formData: FormData): Promise<void> {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signUp({
     email: String(formData.get('email')),
@@ -42,12 +42,12 @@ export async function signup(formData: FormData): Promise<void> {
     options: {
       emailRedirectTo: `${siteUrl()}/auth/confirm`,
     },
-  })
+  });
 
   if (error) {
-    redirect(`/signup?error=${encodeURIComponent(error.message)}`)
+    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/')
+  revalidatePath('/', 'layout');
+  redirect('/');
 }
