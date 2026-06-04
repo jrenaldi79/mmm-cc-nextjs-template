@@ -3,7 +3,8 @@
 A production-ready **Next.js 16** starter for Northwestern MMM and MPD2 master's students. It comes
 pre-wired with TypeScript, Tailwind CSS + shadcn/ui, Supabase (auth + database), an n8n LLM
 chat scaffold, and a Test-Driven Development framework with quality gates enforced by git
-hooks — so you can spend your time building your idea, not your toolchain.
+hooks — so you can spend your time building your idea, not your toolchain. Whether this is your
+first time coding or you're already comfortable with React, the guardrails meet you where you are.
 
 > 🧩 **This is a GitHub _template_ repository.** Click the green **"Use this template"**
 > button at the top of the GitHub page → **Create a new repository**. That gives you your own
@@ -17,7 +18,8 @@ hooks — so you can spend your time building your idea, not your toolchain.
 2. **A login-controlled app** — Supabase email/password + OAuth auth is already wired up; every
    page except `/login`, `/signup`, and `/auth/*` requires a signed-in user.
 3. **Working examples to learn from** — a full Supabase CRUD feature, a streaming AI chat, a
-   charts page, and a live test dashboard. Study them, then delete what you don't need.
+   charts page, an interactive design-system page, and a live test dashboard. Study them, then
+   delete what you don't need.
 4. **Guardrails that teach good habits** — a TDD workflow, an 80% test-coverage gate, a
    300-line file limit, secret scanning, and auto-generated docs, all enforced automatically
    when you commit and push.
@@ -43,7 +45,9 @@ cp .env.example .env.local  # create your local env file (gitignored — never c
 ```
 
 Then fill in your Supabase keys in `.env.local`. The first-time setup is walked through
-step-by-step in **[docs/getting-started.md](docs/getting-started.md)** — start there.
+step-by-step in **[docs/getting-started.md](docs/getting-started.md)** — start there. (Once
+you've finished bootstrapping, delete `docs/getting-started.md` and update the Project Overview
+in `CLAUDE.md` to describe _your_ project.)
 
 ### 3. Run it
 
@@ -55,21 +59,33 @@ npm run dev      # starts the dev server on http://localhost:3000
 > Create an account at `/signup` to get in. (Full auth + database setup is in
 > [SUPABASE_SETUP.md](SUPABASE_SETUP.md).)
 
+> 💬 The `/chat` page works out of the box in **placeholder mode** — no external setup needed to
+> demo it. To wire it to a real LLM agent, point it at your own n8n webhook
+> (see [docs/integrations/n8n.md](docs/integrations/n8n.md)).
+
 ---
 
 ## 🗺️ What's in the box
 
 The template ships with several working pages. Replace the home shell with your own app, and
-use the rest as reference (or delete them):
+use the rest as reference (or delete them). Every page sits inside a shared layout with a sticky
+header — logo, nav links, your signed-in email, a sign-out button, and a **light/dark theme
+toggle** (your choice is remembered across visits).
 
 | Route               | What it is                                                          |
 | ------------------- | ------------------------------------------------------------------- |
 | `/`                 | **The shell** — replace this with your project's main interface     |
 | `/login`, `/signup` | Email/password + OAuth (Google/GitHub) auth, ready to use           |
+| `/auth/*`           | Auth plumbing — OAuth callback, email confirmation, sign-out        |
 | `/tasks`            | A full **Supabase CRUD** example (create / read / update / delete)  |
 | `/chat`             | A **streaming LLM chat** that proxies to an n8n agent webhook       |
 | `/charts`           | A **Recharts** data-visualization example using the shadcn chart UI |
+| `/design`           | An interactive **design-system guide** — tokens, type, components   |
 | `/test-dashboard`   | A live view of your test suite + coverage                           |
+
+> 📚 `/design` is a learning tool, not part of your final app — it shows the live color tokens,
+> typography, and component gallery, plus how to add new shadcn/ui components. Browse it to stay
+> on-brand, then remove it when you no longer need the reference.
 
 ---
 
@@ -79,10 +95,10 @@ use the rest as reference (or delete them):
 .
 ├── app/                       # App Router: routes, pages, API handlers, UI
 │   ├── page.tsx               # 👈 Start here — replace with your app
-│   ├── components/            # 👈 Your app-specific components
-│   ├── api/                   # Route handlers (REST) — e.g. tasks, chat
+│   ├── components/            # 👈 Your app-specific components (Navigation, ThemeToggle…)
+│   ├── api/                   # Route handlers (REST) — e.g. tasks, chat, test-runner
 │   ├── login/ · signup/       # Auth pages + server actions
-│   └── auth/                  # OAuth / email-confirmation callbacks
+│   └── auth/                  # OAuth / email-confirmation / sign-out callbacks
 ├── components/ui/             # shadcn/ui primitives (Button, Card, Input, Chart…)
 ├── lib/
 │   ├── supabase/              # client.ts (browser) · server.ts (RSC/API) · middleware.ts
@@ -103,7 +119,7 @@ use the rest as reference (or delete them):
 
 | Category      | Technology                    | Why it's here                             |
 | ------------- | ----------------------------- | ----------------------------------------- |
-| **Framework** | Next.js 16 (App Router)       | Industry-standard React framework         |
+| **Framework** | Next.js 16 (App Router, RSC)  | Industry-standard React framework         |
 | **Language**  | TypeScript (strict)           | Type safety and better editor support     |
 | **Styling**   | Tailwind CSS v3.4 + shadcn/ui | Rapid, accessible, on-brand UI            |
 | **Auth + DB** | Supabase (`@supabase/ssr`)    | Login, row-level security, Postgres       |
@@ -150,7 +166,9 @@ This repo uses git hooks (husky) so the rules can't be forgotten:
   over 300 lines, blocks new source modules with no matching test, and keeps `CLAUDE.md` in sync.
 - **pre-push** — runs `npm run validate` and the full test suite before anything leaves your machine.
 
-If a commit or push is blocked, read the message — it's telling you which rule to fix.
+If a commit or push is blocked, read the message — it's telling you which rule to fix. These
+gates aren't busywork: they're the same habits (tests first, small files, no leaked secrets,
+typed boundaries) that professional teams rely on.
 
 ---
 
@@ -159,7 +177,8 @@ If a commit or push is blocked, read the message — it's telling you which rule
 This template is designed to be driven by an AI assistant (Claude Code, Cursor, etc.):
 
 - **[CLAUDE.md](CLAUDE.md)** (and its `AGENTS.md` alias) is the lean entry point describing the
-  project, commands, and architecture.
+  project, commands, and architecture. Its module tree and table are auto-generated — read it to
+  understand the codebase; the README (this file) is your human-facing on-ramp.
 - **[.claude/rules/](.claude/rules/)** holds path-scoped rules (TDD, testing, TypeScript, React,
   API, database, security, UI styling) that an agent auto-loads when editing matching files.
 
@@ -171,12 +190,17 @@ codebase.
 ## 🎨 Customization & Design System
 
 - **Home page**: edit `app/page.tsx` (this is the shell you replace).
-- **Global styles / theme**: the live design tokens are HSL CSS variables in `app/globals.css`.
+- **Global styles / theme**: the live design tokens are HSL CSS variables in `app/globals.css`,
+  mapped to Tailwind utilities (`bg-primary`, `text-muted-foreground`) in `tailwind.config.js`.
+  Use tokens, never hard-coded colors — raw hex and arbitrary color values are an ESLint **build
+  error** so light/dark mode stays consistent.
 - **Design system**: [DESIGN.md](DESIGN.md) documents your colors, typography, and components in
   Google's DESIGN.md format and maps each token to its CSS variable. Edit the variables in
   `app/globals.css` to rebrand, update `DESIGN.md` to match, then validate with
-  `npm run design:lint`.
-- **Add UI components**: `npx shadcn@latest add <name>` (e.g. `dialog`, `table`).
+  `npm run design:lint`. The `/design` page renders all of this live.
+- **Add UI components**: `npx shadcn@latest add <name> --yes` (e.g. `dialog`, `table`) — always
+  pass `--yes` so it doesn't hang. New primitives land in `components/ui/` and inherit your
+  tokens; feature-specific compositions go in `app/components/<feature>/`.
 
 ---
 
@@ -184,8 +208,9 @@ codebase.
 
 - **Login-controlled by default** — `proxy.ts` refreshes the session on every request and
   redirects anonymous users to `/login`.
-- **Row-Level Security (RLS)** — database access is scoped to the signed-in user; the server
-  Supabase client carries the session so RLS applies. Never trust the client for authorization.
+- **Row-Level Security (RLS)** — the example `tasks` table is user-scoped with per-user policies;
+  the server Supabase client carries the session so RLS applies and users only see their own rows.
+  Never trust the client for authorization.
 - **Input validation** — validate API inputs with **Zod** at the boundary.
 - **No committed secrets** — keys live in `.env.local` (gitignored); a pre-commit hook scans
   staged files and blocks API keys, tokens, and private keys.
@@ -201,6 +226,7 @@ Before submitting your project:
 - [ ] Test coverage ≥ 80% (`npm run test:coverage`)
 - [ ] `npm run validate` is clean (no type or lint errors)
 - [ ] No hardcoded secrets (use `.env.local`)
+- [ ] Deleted the example pages you don't need (`/tasks`, `/chat`, `/charts`, `/design`, `/test-dashboard`)
 - [ ] `CLAUDE.md` / `.claude/rules/` updated if you changed the architecture
 
 ---
