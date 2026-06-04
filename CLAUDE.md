@@ -131,6 +131,7 @@ lib/
 │   ├── client.ts  # Supabase client for use inside Client Components (`'use client'`).
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
+├── chat-history.ts  # Map stored n8n LangChain history rows into the UI message shape used by the
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
 ├── n8n-stream.ts  # Normalize an n8n AI Agent streaming response into a plain text token stream.
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
@@ -196,6 +197,7 @@ types/
 | `components/ui/input.tsx` |  | `Input` |
 | `components/ui/label.tsx` |  | `Label` |
 | `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
+| `lib/chat-history.ts` | Map stored n8n LangChain history rows into the UI message shape used by the | `UiMessage`, `historyToUiMessages` |
 | `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
 | `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `N8N_RUN_SEPARATOR`, `createN8nTextStream` |
 | `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `studioCard`, `studioCardHover` |
