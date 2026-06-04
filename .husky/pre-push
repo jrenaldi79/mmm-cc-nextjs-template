@@ -1,0 +1,9 @@
+CURRENT_SHA=$(git rev-parse HEAD)
+
+if [ -f .test-passed ] && grep -q "$CURRENT_SHA" .test-passed; then
+  echo "Tests already passed for $CURRENT_SHA, skipping..."
+else
+  npm run validate && npm test && echo "$CURRENT_SHA" > .test-passed
+fi
+
+npm audit --audit-level=moderate || true

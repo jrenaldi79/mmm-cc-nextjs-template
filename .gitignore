@@ -128,3 +128,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Pre-push test cache (SHA of last commit whose tests passed)
+.test-passed

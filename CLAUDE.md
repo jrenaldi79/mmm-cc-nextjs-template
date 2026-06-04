@@ -1,378 +1,233 @@
 # Northwestern MPD2 Starter Template
 
-## Overview
-This project is a Next.js 16 starter template for Northwestern MPD2 students. It provides a production-ready foundation with TypeScript, Tailwind CSS, a TDD framework, and Turbopack, accelerating student development by focusing on innovation over setup complexities. The `/` route is a shell main app that students replace with their own projects.
+This file is the lean entry point for agents. Detailed, path-scoped guidance lives in
+`.claude/rules/` (auto-loaded when editing matching files) and longer references in `docs/`.
+Mechanical enforcement (git hooks + check scripts) is the source of truth — prose guides,
+hooks enforce.
 
--   **Your Role**: You are an expert in TypeScript, Node.js, React, Next.js 16, Tailwind, and shadcn/ui.
--   **Shell Main App (`/`)**: A starter structure for students to replace with their own projects. This is where you will build.
+## Project Overview
 
-## 🚀 First-Time Setup (Bootstrapping)
+A **Next.js 16** starter template for Northwestern MPD2 students: TypeScript, Tailwind CSS +
+shadcn/ui, Supabase (auth + data, `@supabase/ssr`), a TDD framework, and an n8n LLM streaming
+chat scaffold. The app is **login-controlled** (everything outside `/login`, `/signup`,
+`/auth/*` requires a session). The `/` route is a shell that students replace with their own
+project.
 
-> **AI agent — read this first.** This section is a one-time onboarding script
-> for a brand-new user (likely a first-time coder). Walk them through each step
-> **interactively and conversationally** — do one step, confirm it worked, then
-> move on. Don't dump all the commands at once. Track progress with the
-> checklist at the end.
->
-> **🧹 Self-cleanup (important):** Once every item in the Setup Checklist is
-> checked off, you MUST:
-> 1. Delete this entire "First-Time Setup (Bootstrapping)" section from
->    `CLAUDE.md`.
-> 2. Rewrite the **Overview** (and **Project Structure**, if it changed) to
->    describe the user's actual project instead of the starter template.
-> 3. Commit the cleanup (e.g. "Complete project bootstrapping").
->
-> A template that still contains setup scaffolding after setup is confusing.
-> Leave the file describing the *real* project, not the bootstrap process.
+- **Your role**: expert in TypeScript, Node.js, React, Next.js 16, Tailwind, and shadcn/ui.
+- **New project? Start here**: walk through [docs/getting-started.md](docs/getting-started.md)
+  (first-time setup: env, Supabase, auth, verify) — then delete it once bootstrapping is done.
 
-Guide the user through these steps:
+---
 
-### 1. Install dependencies
-- Run `npm install`.
-- Confirm it finishes without errors.
+## Essential Commands
 
-### 2. Configure environment variables
-- Copy `.env.example` to `.env.local` (`cp .env.example .env.local`).
-- Explain that `.env.local` is **gitignored** and must never be committed —
-  it holds secrets.
-- They'll fill in the Supabase values in the next step. If you add the n8n
-  integration later, its variables go here too.
-
-### 3. Create / connect a Supabase project
-- Ask whether they already have a Supabase project.
-  - If not, walk them through creating a free one at https://supabase.com.
-- Have them copy **Project URL** and **anon/public key** from
-  *Project Settings → API* into `.env.local` as `NEXT_PUBLIC_SUPABASE_URL`
-  and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- `SUPABASE_SETUP.md` has the detailed, click-by-click walkthrough — point them
-  there if they get stuck.
-
-### 4. Create the database schema (user-scoped)
-- The bundled **Tasks** example needs a `tasks` table with a `user_id` column +
-  per-user RLS. The SQL lives in `SUPABASE_SETUP.md`.
-- **Preferred path — Supabase MCP:** if the Supabase MCP server is connected,
-  you (the agent) can create tables, run migrations (`apply_migration`), and
-  inspect the schema directly — offer to do it for them. If it isn't connected,
-  tell them how to add it (Supabase MCP: https://supabase.com/docs/guides/getting-started/mcp)
-  so you can manage their database, or have them paste the SQL from
-  `SUPABASE_SETUP.md` into the Supabase **SQL Editor**.
-- After schema changes, regenerate `types/supabase.ts` (Supabase MCP
-  `generate_typescript_types`). When the user designs their **own** features,
-  design the schema together and apply it the same way.
-
-### 5. Configure authentication
-- The app is **login-controlled** (everything except `/login`, `/signup`,
-  `/auth/*` requires a session). Walk the user through `SUPABASE_SETUP.md` →
-  *Configure Authentication*:
-  - Enable the **Email** provider; **disable "Confirm email"** for local dev.
-  - (Optional) Enable **Google**/**GitHub** providers and add the redirect URLs
-    (`http://localhost:5000/auth/callback`, `/auth/confirm`).
-
-### 6. Verify everything works
-- Run `npm run dev` and open http://localhost:5000 → you should be redirected
-  to `/login`.
-- Sign up at `/signup`, confirm the nav shows your email, and that `/tasks`
-  create/toggle/delete works. Sign out and confirm you're sent back to `/login`.
-- Run `npm test` — all tests should pass.
-
-### Setup Checklist
-- [ ] Dependencies installed (`npm install`)
-- [ ] `.env.local` created with Supabase credentials
-- [ ] Supabase project created & connected
-- [ ] Database schema applied (`tasks` table with `user_id` + RLS, + any custom tables)
-- [ ] Auth providers configured (Email; optionally Google/GitHub)
-- [ ] App runs locally: signup → `/tasks` → sign out all work end-to-end
-- [ ] `npm test` passes
-- [ ] **Cleanup done:** this section removed & Overview rewritten for the real project
-
-## 1. AI Agent Pre-Implementation Checklist
-
-Before writing ANY implementation code, the AI MUST verify:
-- [ ] Have I written failing tests that define success?
-- [ ] Have I run those tests to confirm they're RED?
-- [ ] Can I describe what "passing" looks like in concrete assertions?
-
-If ANY answer is "no" → STOP and write tests first.
-
-## 2. 🚨 THE LAW: Test-Driven Development (TDD) First
-
-**EVERY feature request or code change MUST start by writing tests *before* any implementation. This is the most important rule. There are no exceptions for feature work.**
-
-### TDD Process - ALWAYS FOLLOW:
-
-1.  **Red Phase (REQUIRED FIRST STEP)**:
-    -   Your FIRST response to a feature request MUST be: **"Let me start by writing the tests that define what success looks like for this feature."**
-    -   Write comprehensive failing tests in the `tests/` directory.
-    -   Run tests to confirm they fail (shows "red" in the test runner). This proves the test works.
-
-2.  **Green Phase**:
-    -   Implement the **simplest possible code** in the `app/` directory that makes the tests pass.
-    -   Run tests to confirm they now pass (shows "green").
-
-3.  **Refactor Phase**:
-    -   Clean up and optimize your implementation and test code without changing behavior.
-    -   Run tests after each refactor to ensure nothing is broken.
-
-4.  **Finalization Phase**:
-    -   Run the full test suite: `npm run test`
-    -   Validate test coverage is over 90%: `npm run test:coverage`
-
-### TDD Self-Check Questions
-Before writing implementation code, ask yourself:
-1.  Have I written tests that will fail without this code?
-2.  Have I run those tests and confirmed they are RED?
-3.  Can I describe what "passing" looks like in concrete test assertions?
-**If the answer to ANY of these is "no", STOP and write the tests first.**
-
-### Correct TDD Pattern:
-```
-User: "Add streaming tracing support"
-Assistant: "Following TDD - I'll write tests first to define what success looks like."
-Assistant: *Creates tests/unit/test_streaming_tracing.test.ts*
-Assistant: *Runs tests - shows RED (failing)*
-Assistant: *NOW creates app/utils/streaming-tracer.ts*
-Assistant: *Runs tests again - shows GREEN (passing)*
+```bash
+npm run dev            # Dev server (http://localhost:5000)
+npm run build          # Production build
+npm run lint           # ESLint
+npm run type-check     # tsc --noEmit
+npm run validate       # type-check + lint (run before committing)
+npm run format         # Prettier write
+npm test               # Jest (unit + integration)
+npm run test:coverage  # Coverage report (80% gate)
 ```
 
-## 3. General Workflow & Verification
+### Enforcement scripts (run in git hooks)
 
--   **Server Validation**: After starting any development server, **ALWAYS** check the server output for warnings, errors, or compilation issues before proceeding.
--   **Library Verification**: Always verify library versions before installation, especially for CSS frameworks.
--   **Initial Connection Tests**: Test authentication and external API connections with simple scripts before building out major features.
--   **Styling Issues**: When encountering styling issues, check CSS framework version compatibility and restart the dev server completely first.
-
-## 4. Project Structure & Naming Conventions
-
-All file paths must conform to this structure.
-
-```
-.
-├── middleware.ts                 # Auth session refresh + route protection
-├── app/                          # Main application (App Router)
-│   ├── login/ , signup/         # Auth pages (+ login/actions.ts server actions)
-│   ├── auth/                    # callback / confirm / signout route handlers
-│   ├── components/              # Shared or single-use components
-│   │   └── auth-wizard/         # Example: directory for a complex component
-│   ├── api/                     # API Route Handlers
-│   │   └── users/[id]/posts/    # Example: nested API route
-│   │       └── route.ts
-│
-├── lib/
-│   └── supabase/               # client.ts / server.ts / middleware.ts (@supabase/ssr)
-│
-├── tests/                       # All tests live here
-│   ├── unit/                    # Unit tests (mirror `app` structure)
-│   └── integration/             # Integration tests
-│
-├── types/                       # Shared TypeScript type definitions
-└── ...
+```bash
+node scripts/check-secrets.js          # Block staged secrets (API keys, tokens, private keys)
+node scripts/check-file-sizes.js       # Block source files over 300 lines
+node scripts/check-test-colocation.js  # Block source modules without a test in tests/
+node scripts/generate-docs.js          # Regenerate the AUTO sections below
+node scripts/generate-docs.js --check  # CI: verify AUTO sections are current
+node scripts/validate-docs.js --full   # Verify required doc sections/markers exist
 ```
 
--   **Directories**: `lowercase-with-dashes` (e.g., `components/auth-wizard`).
--   **Components/Types/Interfaces**: `PascalCase`.
--   **Variables/Functions**: `camelCase`.
--   **Constants**: `UPPER_CASE`.
--   **Test Files**: Match implementation: `app/utils/foo.ts` → `tests/unit/test_foo.test.ts`.
+`.claude/settings.json` pre-approves test/lint/build/format, `node scripts/*`, and safe git;
+denies `rm -rf /`, force-push, hard reset, `npm publish`, and pipe-to-shell.
 
-## 5. Front-End & React Best Practices
+---
 
--   **RSC First**: Favor React Server Components. Minimize `'use client'`, `useEffect`, and `useState`.
--   **Component Structure Order (MANDATORY)**:
-    1.  `useState` declarations.
-    2.  Computed values (`const isRunning = status === 'RUNNING'`).
-    3.  Function definitions (`handle...`, `fetch...`).
-    4.  `useEffect` hooks (Ensure all dependencies are declared *before* the `useEffect` call).
-    5.  The JSX `return` statement.
--   **File Structure**: Inside a component file, the order should be: exported component, subcomponents, helpers, static content, and finally type definitions. Co-locate props interfaces with their components.
--   **Component Definition**: Use `function`, not `const`, for components.
--   **Performance**: Use `next/dynamic` for non-critical components and `next/image` for optimized images.
--   **Async**: Prefer async/await over raw Promises.
+## Directory Structure
 
-## 6. UI & Styling (Tailwind CSS + shadcn/ui)
+<!-- AUTO:tree -->
+app/
+├── api/
+│   ├── chat/
+│   │   └── route.ts  # Streams an LLM agent response back to the UI.
+│   ├── tasks/
+│   │   ├── [id]/
+│   │   │   └── route.ts
+│   │   └── route.ts
+│   └── test-runner/
+│       └── route.ts
+├── auth/
+│   ├── callback/
+│   │   └── route.ts  # OAuth / PKCE callback. The provider redirects here with a `?code=...` which
+│   ├── confirm/
+│   │   └── route.ts  # Email confirmation / magic-link handler. Supabase emails a link containing a
+│   └── signout/
+│       └── route.ts  # Signs the user out and sends them to /login. Called by the Sign Out form in
+├── charts/
+│   └── page.tsx
+├── chat/
+│   └── page.tsx
+├── components/
+│   ├── ExampleComponent.tsx
+│   ├── Navigation.tsx
+│   └── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
+├── login/
+│   ├── actions.ts  # Email/password sign-in. Called as a form action from /login.
+│   └── page.tsx
+├── signup/
+│   └── page.tsx
+├── tasks/
+│   └── page.tsx
+├── test-dashboard/
+│   ├── components/
+│   │   ├── CoverageCard.tsx
+│   │   ├── TestSuiteList.tsx
+│   │   └── TestSummaryCard.tsx
+│   ├── page.tsx
+│   └── types.ts
+├── globals.css
+├── layout.tsx
+└── page.tsx
+components/
+└── ui/
+    ├── badge.tsx
+    ├── button.tsx
+    ├── card.tsx
+    ├── chart-container.tsx
+    ├── chart-context.tsx
+    ├── chart-legend.tsx
+    ├── chart-tooltip.tsx
+    ├── chart.tsx
+    ├── checkbox.tsx
+    ├── input.tsx
+    ├── label.tsx
+    └── select.tsx  # A lightweight select built on the native `<select>` element.
+lib/
+├── supabase/
+│   ├── client.ts  # Supabase client for use inside Client Components (`'use client'`).
+│   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
+│   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
+└── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
+types/
+├── index.ts
+└── supabase.ts
+<!-- /AUTO:tree -->
 
--   **Component library**: This template uses **shadcn/ui** (new-york style).
-    Reusable primitives live in `components/ui/` (Button, Card, Input, Label,
-    Checkbox, Badge, Select, Chart). **Prefer composing these over hand-rolling
-    custom components** — reach for a shadcn/ui component first, and only write
-    bespoke markup when no primitive fits.
--   **Adding components**: `npx shadcn@latest add <name>` (e.g. `dialog`,
-    `dropdown-menu`, `table`). If the CLI can't reach the registry, copy the
-    source from https://ui.shadcn.com/docs/components into `components/ui/`.
--   **Design tokens**: Colors are CSS variables (HSL) defined in
-    `app/globals.css` and mapped in `tailwind.config.js` (e.g. `bg-primary`,
-    `text-muted-foreground`, `border-border`). Use the tokens, not hard-coded
-    colors, so light/dark theming stays consistent.
--   **`cn()` helper**: Merge class names with `cn()` from `@/lib/utils`.
--   **Charts**: Use **Recharts** via the shadcn chart wrapper in
-    `components/ui/chart.tsx` (`ChartContainer`, `ChartTooltip`,
-    `ChartLegend`). See `app/charts/page.tsx` for a working example. Add more
-    chart types from https://ui.shadcn.com/charts.
--   **Version**: Stay on Tailwind CSS v3.4.x for stability (`tailwindcss@^3.4.0`),
-    with traditional PostCSS config (`postcss.config.js`) and `@tailwind`
-    directives in `app/globals.css`.
--   **Best Practices**: Utility classes, responsive/mobile-first design, and
-    accessible components (shadcn/ui is built on Radix primitives).
+---
 
-## 7. API Design & Backend
+## Key Modules
 
--   **Logic**: Use Node.js within Next.js Route Handlers for all backend logic.
--   **REST Principles**: Use consistent HTTP methods (`GET`, `POST`, `PUT`/`PATCH`, `DELETE`) and proper status codes (2xx, 4xx, 5xx).
--   **Standardized Responses**: Use a consistent response format (e.g., `{ data, metadata, error }`).
--   **Features**: Implement standardized pagination, filtering, and sorting via query parameters.
--   **Validation**: Implement input validation for all API endpoints using **Zod**.
+<!-- AUTO:modules -->
+| Module | Purpose | Key Exports |
+|--------|---------|-------------|
+| `app/layout.tsx` |  | `metadata`, `RootLayout` |
+| `app/page.tsx` |  | `HomePage` |
+| `app/api/chat/route.ts` | Streams an LLM agent response back to the UI. | `maxDuration`, `POST` |
+| `app/api/tasks/route.ts` |  | `GET`, `POST` |
+| `app/api/tasks/[id]/route.ts` |  | `PATCH`, `DELETE` |
+| `app/api/test-runner/route.ts` |  | `POST` |
+| `app/auth/callback/route.ts` | OAuth / PKCE callback. The provider redirects here with a `?code=...` which | `GET` |
+| `app/auth/confirm/route.ts` | Email confirmation / magic-link handler. Supabase emails a link containing a | `GET` |
+| `app/auth/signout/route.ts` | Signs the user out and sends them to /login. Called by the Sign Out form in | `POST` |
+| `app/charts/page.tsx` |  | `ChartsPage` |
+| `app/chat/page.tsx` |  | `ChatPage` |
+| `app/components/ExampleComponent.tsx` |  | `ExampleComponent` |
+| `app/components/Navigation.tsx` |  | `Navigation` |
+| `app/components/OAuthButtons.tsx` | Social sign-in buttons. OAuth must be initiated from the browser because it | `OAuthButtons` |
+| `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
+| `app/login/page.tsx` |  | `LoginPage`, `default` |
+| `app/signup/page.tsx` |  | `SignupPage`, `default` |
+| `app/tasks/page.tsx` |  | `TasksPage` |
+| `app/test-dashboard/page.tsx` |  | `TestDashboard` |
+| `app/test-dashboard/types.ts` |  | `TestResult`, `TestSuite`, `Coverage`, `TestSummary`, `TestRunResult` |
+| `app/test-dashboard/components/CoverageCard.tsx` |  | `CoverageCard` |
+| `app/test-dashboard/components/TestSuiteList.tsx` |  | `TestSuiteList` |
+| `app/test-dashboard/components/TestSummaryCard.tsx` |  | `TestSummaryCard` |
+| `components/ui/badge.tsx` |  | `BadgeProps`, `Badge`, `badgeVariants` |
+| `components/ui/button.tsx` |  | `ButtonProps`, `Button`, `buttonVariants` |
+| `components/ui/card.tsx` |  | `Card`, `CardHeader`, `CardFooter`, `CardTitle`, `CardDescription` |
+| `components/ui/chart-container.tsx` |  | `ChartContainer` |
+| `components/ui/chart-context.tsx` |  | `THEMES`, `ChartConfig`, `ChartContext`, `useChart`, `ChartStyle` |
+| `components/ui/chart-legend.tsx` |  | `ChartLegend`, `ChartLegendContent` |
+| `components/ui/chart-tooltip.tsx` |  | `ChartTooltip`, `ChartTooltipContent` |
+| `components/ui/chart.tsx` |  | `ChartStyle`, `ChartContainer`, `ChartTooltip`, `ChartTooltipContent`, `ChartLegend` |
+| `components/ui/checkbox.tsx` |  | `Checkbox` |
+| `components/ui/input.tsx` |  | `Input` |
+| `components/ui/label.tsx` |  | `Label` |
+| `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
+| `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn` |
+| `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
+| `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
+| `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
+| `types/index.ts` |  | `ApiError` |
+| `types/supabase.ts` |  | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
+<!-- /AUTO:modules -->
 
-## 8. TypeScript Best Practices
+---
 
--   **Strict Mode**: Always use TypeScript in strict mode.
--   **Path Aliases**: Use `@/components/...` for clean, maintainable imports.
--   **Type Imports**: Use explicit `type` imports: `import type { MyType } from '@/types/index'`.
--   **Import Order**: Use consistent import ordering and structure, managed by the linter.
--   **Barrel Files**: Prefer explicit file paths (`../types/index`) over barrel file directories (`../types`) to improve tree-shaking.
+## Rules Map (path-scoped, in `.claude/rules/`)
 
-## 9. Testing & Quality
+| When editing… | Rule |
+|---------------|------|
+| Any feature work | [tdd.md](.claude/rules/tdd.md) — **TDD is the law** (tests first) |
+| `tests/**` / any source | [testing.md](.claude/rules/testing.md) — centralized `tests/`, 80% gate |
+| Any source | [code-quality.md](.claude/rules/code-quality.md) — 300-line limit, logging, doc sync |
+| `**/*.ts(x)` | [typescript.md](.claude/rules/typescript.md) — strict, naming, default-export exemptions |
+| `app/**`, `components/**` (tsx) | [react.md](.claude/rules/react.md) · [ui-styling.md](.claude/rules/ui-styling.md) |
+| `app/api/**` | [api.md](.claude/rules/api.md) — REST, Zod, server client |
+| `lib/supabase/**`, `app/auth/**`, `middleware.ts` | [database.md](.claude/rules/database.md) — Supabase + auth |
+| Anything sensitive | [security.md](.claude/rules/security.md) — RLS, secrets, input validation |
 
--   **TDD is Law**: See Section 2.
--   **Performance**: Prefer running single tests for speed during development, and run the whole suite after completing medium-sized tasks.
--   **Unit Tests**: Focus on critical functionality. Mock dependencies until they are built. Test all data scenarios (valid, invalid, edge cases).
--   **Component Tests**: Use React Testing Library to test user interactions. Test component behavior with different props, states, loading, and error conditions.
--   **Integration Tests**: Test API endpoints for the full request/response cycle.
--   **Code Quality Tools**: Use ESLint and Prettier. Implement pre-commit hooks to run linting and basic tests.
+## Docs Map
 
-## 10. Linting & Type-Checking
+| Topic | File |
+|-------|------|
+| First-time setup (bootstrapping) | [docs/getting-started.md](docs/getting-started.md) |
+| Supabase project + schema + auth setup | [SUPABASE_SETUP.md](SUPABASE_SETUP.md) |
+| n8n LLM agent streaming chat | [docs/integrations/n8n.md](docs/integrations/n8n.md) |
 
-### TypeScript Type Checking
--   **Type Safety First**: All code must pass TypeScript type checking before deployment.
--   **Command**: Run `npm run type-check` to validate types without building.
--   **CI/CD Integration**: Type checking runs automatically during the build process (`npm run build`).
--   **Fix Approach**: Address type errors by adding proper type annotations, not by using `any` or `@ts-ignore` unless absolutely necessary.
+---
 
-### ESLint Configuration
--   **Version**: ESLint 9 with flat config format (`eslint.config.mjs`), required for Next.js 16.
--   **Plugins**: 
-    -   `typescript-eslint` - TypeScript-specific linting rules
-    -   `eslint-plugin-react` - React best practices
-    -   `eslint-plugin-react-hooks` - React Hooks rules enforcement
--   **Command**: Run `npm run lint` to check code quality.
--   **Rules**:
-    -   `@typescript-eslint/no-explicit-any`: warn - Discourage `any` usage
-    -   `@typescript-eslint/no-unused-vars`: warn - Flag unused variables (ignores variables/args starting with `_`)
-    -   `react/react-in-jsx-scope`: off - Not needed in Next.js
-    -   `react-hooks/rules-of-hooks`: error - Enforce Hook rules
-    -   `react-hooks/exhaustive-deps`: warn - Check Hook dependencies
+## TDD — The Law (summary)
 
-### Combined Validation
--   **Command**: Run `npm run validate` to execute both type-check and lint together.
--   **When to Run**:
-    -   Before committing code
-    -   Before requesting code review
-    -   Before deploying to production
-    -   After major refactoring
--   **Goal**: Zero type errors in `app/` directory; minimize warnings.
+**EVERY feature or change starts with a failing test, before any implementation.** Red →
+Green → Refactor. The pre-commit hook blocks staged source modules with no matching test.
+Full rule: [.claude/rules/tdd.md](.claude/rules/tdd.md).
 
-### Ignored Files
-The following are excluded from linting:
--   Build output: `.next/**`, `out/**`, `build/**`
--   Dependencies: `node_modules/**`
--   Tests: `tests/**` (have separate validation)
--   Config files: `*.config.js`, `*.config.mjs`, `*.config.ts`
+## Code Quality (summary)
 
-### Type Definition Best Practices
--   **Supabase Types**: Use `Record<string, never>` for empty schema containers (Views, Functions, Enums, CompositeTypes).
--   **API Routes**: Always add explicit return type annotations (e.g., `Promise<NextResponse>`) to API handlers.
--   **Dynamic Routes**: In Next.js 16, params must be typed as `Promise<{ id: string }>` and awaited.
+- **300-line limit** on source in `app/`/`components/`/`lib/`/`types/` (hook-enforced; tests
+  and `*.d.ts` exempt). **Functions** under ~50 lines.
+- **Docs sync**: the pre-commit hook regenerates the AUTO sections above and auto-stages
+  CLAUDE.md. Do not hand-edit content between `<!-- AUTO:* -->` markers.
+- Full rules: [.claude/rules/code-quality.md](.claude/rules/code-quality.md).
 
-## 11. Database (Supabase)
+---
 
--   **Clients (`@supabase/ssr`)**: Cookie-aware clients live in `lib/supabase/`.
-    Use the **server** client (`lib/supabase/server.ts`, `await createClient()`)
-    in Server Components, Route Handlers, and Server Actions — it carries the
-    user's session so RLS applies. Use the **browser** client
-    (`lib/supabase/client.ts`) only in Client Components. Both are **factory
-    functions** (no module-level instantiation) so the app still builds without
-    credentials. Note: `cookies()` is **async** in Next 16 — `await` it.
--   **Security**: Row Level Security (RLS) enforces all data access control. The
-    `tasks` table is **user-scoped** (`user_id` + per-user policies); queries run
-    as the signed-in user via the server client, so users only see their own rows.
--   **Schema & migrations**: Prefer the **Supabase MCP server** so the agent can
-    `apply_migration`, `list_tables`, and inspect advisors directly. Otherwise
-    use the Supabase SQL Editor. Keep migrations under version control.
--   **Type Safety**: Use TypeScript for type safety when interacting with
-    Supabase. Regenerate `types/supabase.ts` after schema changes (Supabase MCP
-    `generate_typescript_types` or the Supabase CLI).
+## Git Hooks (husky)
 
-### Authentication
--   **Protected by default**: `middleware.ts` (via `lib/supabase/middleware.ts`)
-    refreshes the session on every request and redirects unauthenticated users to
-    `/login`. Public paths: `/login`, `/signup`, `/auth/*`, and static assets.
--   **Methods**: email/password via **server actions** (`app/login/actions.ts`)
-    and **OAuth** (Google/GitHub) via the browser client in
-    `app/components/OAuthButtons.tsx` (must be client-initiated — it redirects).
--   **Routes**: `app/auth/callback` (OAuth/PKCE code exchange),
-    `app/auth/confirm` (email/magic-link `verifyOtp`), `app/auth/signout` (POST).
--   **Auth state in the UI**: read the user with the browser client
-    (`getUser()` + `onAuthStateChange`) in Client Components (see `Navigation.tsx`).
-    Never trust the client for authorization — RLS + the server client are the
-    real gate.
+| Hook | Steps |
+|------|-------|
+| **pre-commit** | `lint-staged` (eslint + prettier on staged) → `check-secrets` → `check-file-sizes` → `check-test-colocation` → `generate-docs` → `validate-docs` |
+| **pre-push** | `validate` + `test` (SHA-cached via `.test-passed`, skipped if HEAD already passed) → `npm audit` (warn-only) |
 
-## 11a. Integration: n8n LLM Agent Streaming
+---
 
-This template ships a working scaffold that calls an **n8n** workflow over an
-HTTP webhook and **streams an LLM agent's response back to the UI**
-token-by-token. Files: `app/api/chat/route.ts` (server) and `app/chat/page.tsx`
-(client chat UI).
+## Working in this repo
 
--   **Architecture**: Chat UI (`useChat`) → Next.js Route Handler
-    (`app/api/chat/route.ts`) → n8n Webhook (AI Agent node with streaming) →
-    response streamed back through the route handler to the browser. **Always
-    proxy through the route handler** — the n8n webhook URL/secret stay
-    server-side (`N8N_WEBHOOK_URL` / `N8N_WEBHOOK_SECRET`); never call n8n from
-    the browser.
--   **Placeholder mode**: When `N8N_WEBHOOK_URL` is unset, the route streams a
-    mock reply (via `simulateReadableStream`) so the UI works before n8n is
-    connected. Set the env var to switch to the real agent.
--   **Streaming transport**: The **Web Streams API** (built into Next.js /
-    Node 20+ and the browser). The route forwards the upstream `ReadableStream`
-    as a plain text stream via `createTextStreamResponse`; the client consumes
-    it with the AI SDK's `TextStreamChatTransport`.
--   **Installed dependencies**:
-    -   `ai` + `@ai-sdk/react` — `useChat` hook + streaming helpers.
-    -   `zod` — request-body validation.
-    -   `react-markdown` + `remark-gfm` — render streamed assistant markdown
-        safely (no `dangerouslySetInnerHTML`).
--   **n8n config**: Enable streaming on the AI Agent / "Respond to Webhook"
-    node. Its chunk format isn't standardized, so **normalize n8n's chunks into
-    a plain text stream inside the route handler** (the scaffold assumes raw
-    text tokens; adapt the `pipeThrough` if your workflow emits SSE/NDJSON).
--   **Env**: `N8N_WEBHOOK_URL` (and optional `N8N_WEBHOOK_SECRET`) live in
-    `.env.local`; placeholders are in `.env.example`.
-
-## 12. Logging, Monitoring & Error Handling
-
--   **Global Logging**: Every function must have appropriate logging using **Winston**. Avoid `console.log`.
--   **Structured Logging**: Implement structured logs with consistent levels (error, warn, info, debug) and correlation IDs.
--   **Monitoring**: Implement health check endpoints (`/api/health`) for services.
--   **Error Handling**:
-    -   Use Next.js `error.js` for boundaries and React Error Boundaries for granularity.
-    -   Implement retry logic for network requests.
-    -   Gracefully handle `loading.js`, error, and empty states in all UI components.
-    -   Validate and sanitize all inputs at API boundaries.
-
-## 13. Security Best Practices
-
--   **Authentication**: Implement proper authentication and authorization using Supabase. Validate JWTs and handle expiration.
--   **Data Access**: Adhere to the principle of least privilege via RLS policies.
--   **Input Sanitization**: Sanitize all user inputs to prevent XSS and injection attacks.
--   **API Security**: Configure CORS policies and implement rate limiting on API endpoints.
--   **Secrets**: Store all sensitive configuration in environment variables. **Never commit secrets to code.**
-
-## 14. Your Response Constraints
-
--   **Communication Style**: Simple, everyday language.
--   **Code Modification**: Do not remove existing code, comments, or commented-out code unless necessary. Do not change formatting unless important for new functionality.
-
-## 15. Maintenance Guidelines
-
-Update this rules file when:
--   Adding new major dependencies or architectural patterns.
--   Modifying directory structure or environment variables.
--   Changing API response formats or testing patterns.
+- **Server validation**: after starting the dev server, check its output for warnings/errors
+  before proceeding.
+- **Library verification**: verify library versions before installing (especially CSS
+  frameworks); restart the dev server fully when chasing styling issues.
+- **Initial connection tests**: test auth/external API connections with small scripts before
+  building major features.
+- **Response style**: simple, everyday language. Don't remove existing code/comments or
+  reformat unrelated code unless necessary for the change.
+- **Maintenance**: update CLAUDE.md / the relevant `.claude/rules/*` when adding major
+  dependencies or architectural patterns, changing structure or env vars, or changing API
+  response formats or testing patterns.
