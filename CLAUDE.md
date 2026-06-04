@@ -73,6 +73,8 @@ app/
 ├── chat/
 │   └── page.tsx
 ├── components/
+│   ├── chat/
+│   │   └── ChatMessages.tsx
 │   ├── home/
 │   │   ├── AiInstructionsCard.tsx
 │   │   ├── TddFrameworkCard.tsx
@@ -164,6 +166,7 @@ types/
 | `app/components/PageHero.tsx` | The shared page header used at the top of every top-level page (Design, Charts, | `PageHero` |
 | `app/components/PageShell.tsx` | The standard page frame for every top-level content page (Design, Charts, Chat, | `PageShell` |
 | `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
+| `app/components/chat/ChatMessages.tsx` |  | `ChatMessages` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
 | `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
