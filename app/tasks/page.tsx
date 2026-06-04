@@ -1,8 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Trash2 } from 'lucide-react'
 import type { Task } from '@/types/supabase'
 import Navigation from '../components/Navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -105,7 +118,7 @@ export default function TasksPage() {
     }
   }
 
-  function getPriorityColor(priority: string) {
+  function getPriorityClasses(priority: string) {
     switch (priority) {
       case 'high':
         return 'bg-red-100 text-red-800 border-red-300'
@@ -123,127 +136,127 @@ export default function TasksPage() {
       <Navigation />
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Supabase Tasks Example
-            </h1>
-            <p className="text-gray-600">
-              This is a sample integration showing how to connect to Supabase and perform CRUD operations.
-            </p>
-          </div>
+          <Card className="shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-4xl">Supabase Tasks Example</CardTitle>
+              <CardDescription>
+                This is a sample integration showing how to connect to Supabase and perform CRUD operations.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                  <strong>Error:</strong> {error}
+                </div>
+              )}
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-              <strong>Error:</strong> {error}
-            </div>
-          )}
-
-          <form onSubmit={handleCreateTask} className="mb-8 p-6 bg-gray-50 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Create New Task</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <input
-                type="text"
-                value={newTaskTitle}
-                onChange={(e) => setNewTaskTitle(e.target.value)}
-                placeholder="Enter task title..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <select
-                value={newTaskPriority}
-                onChange={(e) => setNewTaskPriority(e.target.value as 'low' | 'medium' | 'high')}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="low">Low Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="high">High Priority</option>
-              </select>
-              <button
-                type="submit"
-                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
-              >
-                Add Task
-              </button>
-            </div>
-          </form>
-
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Tasks ({tasks.length})
-            </h2>
-
-            {isLoading ? (
-              <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-                <p className="mt-4 text-gray-600">Loading tasks...</p>
-              </div>
-            ) : tasks.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-500 text-lg">No tasks yet. Create one above!</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+              <form onSubmit={handleCreateTask} className="mb-8 p-6 bg-muted/50 rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">Create New Task</h2>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Input
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                    placeholder="Enter task title..."
+                    className="flex-1"
+                  />
+                  <Select
+                    value={newTaskPriority}
+                    onChange={(e) => setNewTaskPriority(e.target.value as 'low' | 'medium' | 'high')}
+                    className="sm:w-44"
                   >
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => handleToggleComplete(task)}
-                      className="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500"
-                    />
-                    <div className="flex-1">
-                      <p className={`text-lg ${task.completed ? 'line-through text-gray-400' : 'text-gray-900'}`}>
-                        {task.title}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Created: {new Date(task.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getPriorityColor(task.priority)}`}>
-                      {task.priority}
-                    </span>
-                    <button
-                      onClick={() => handleDeleteTask(task.id)}
-                      className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+                    <option value="low">Low Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="high">High Priority</option>
+                  </Select>
+                  <Button type="submit">Add Task</Button>
+                </div>
+              </form>
 
-        <div className="mt-8 bg-white rounded-lg shadow-xl p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">📚 For Students</h2>
-          <div className="prose prose-sm max-w-none">
-            <p className="text-gray-700 mb-4">
-              This example demonstrates:
-            </p>
-            <ul className="list-disc list-inside text-gray-700 space-y-2">
-              <li><strong>Environment Variables:</strong> Supabase credentials stored in environment variables (e.g. a <code className="bg-gray-100 px-2 py-1 rounded">.env.local</code> file)</li>
-              <li><strong>API Routes:</strong> RESTful endpoints in <code className="bg-gray-100 px-2 py-1 rounded">app/api/tasks/</code></li>
-              <li><strong>CRUD Operations:</strong> Create, Read, Update, Delete tasks</li>
-              <li><strong>Type Safety:</strong> TypeScript types for database schema</li>
-              <li><strong>Error Handling:</strong> Proper error messages and loading states</li>
-              <li><strong>Client-Side State:</strong> React hooks for managing UI state</li>
-            </ul>
-            <p className="text-gray-700 mt-4">
-              Study the code in <code className="bg-gray-100 px-2 py-1 rounded">app/tasks/</code>,
-              <code className="bg-gray-100 px-2 py-1 rounded">app/api/tasks/</code>, and
-              <code className="bg-gray-100 px-2 py-1 rounded">lib/supabase.ts</code> to understand how it works!
-            </p>
-            <p className="text-gray-700 mt-4">
-              See <code className="bg-gray-100 px-2 py-1 rounded">SUPABASE_SETUP.md</code> for the full setup guide.
-            </p>
-          </div>
+              <div>
+                <h2 className="text-xl font-semibold mb-4">
+                  Tasks ({tasks.length})
+                </h2>
+
+                {isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <p className="mt-4 text-muted-foreground">Loading tasks...</p>
+                  </div>
+                ) : tasks.length === 0 ? (
+                  <div className="text-center py-12 bg-muted/50 rounded-lg">
+                    <p className="text-muted-foreground text-lg">No tasks yet. Create one above!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {tasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className="flex items-center gap-4 p-4 bg-card border rounded-lg hover:shadow-md transition-shadow"
+                      >
+                        <Checkbox
+                          checked={task.completed}
+                          onCheckedChange={() => handleToggleComplete(task)}
+                          aria-label={`Mark "${task.title}" as ${task.completed ? 'incomplete' : 'complete'}`}
+                        />
+                        <div className="flex-1">
+                          <p className={`text-lg ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+                            {task.title}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Created: {new Date(task.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className={getPriorityClasses(task.priority)}>
+                          {task.priority}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteTask(task.id)}
+                          className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                          aria-label={`Delete "${task.title}"`}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-8 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-xl">📚 For Students</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="prose prose-sm max-w-none">
+                <p className="text-gray-700 mb-4">
+                  This example demonstrates:
+                </p>
+                <ul className="list-disc list-inside text-gray-700 space-y-2">
+                  <li><strong>Environment Variables:</strong> Supabase credentials stored in environment variables (e.g. a <code className="bg-muted px-2 py-1 rounded">.env.local</code> file)</li>
+                  <li><strong>API Routes:</strong> RESTful endpoints in <code className="bg-muted px-2 py-1 rounded">app/api/tasks/</code></li>
+                  <li><strong>CRUD Operations:</strong> Create, Read, Update, Delete tasks</li>
+                  <li><strong>Type Safety:</strong> TypeScript types for database schema</li>
+                  <li><strong>Error Handling:</strong> Proper error messages and loading states</li>
+                  <li><strong>Client-Side State:</strong> React hooks for managing UI state</li>
+                </ul>
+                <p className="text-gray-700 mt-4">
+                  Study the code in <code className="bg-muted px-2 py-1 rounded">app/tasks/</code>,
+                  <code className="bg-muted px-2 py-1 rounded">app/api/tasks/</code>, and
+                  <code className="bg-muted px-2 py-1 rounded">lib/supabase.ts</code> to understand how it works!
+                </p>
+                <p className="text-gray-700 mt-4">
+                  See <code className="bg-muted px-2 py-1 rounded">SUPABASE_SETUP.md</code> for the full setup guide.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
     </div>
   )
 }

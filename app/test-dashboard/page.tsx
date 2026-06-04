@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface TestResult {
   title: string;
@@ -47,15 +51,15 @@ export default function TestDashboard() {
   const runTests = async () => {
     setIsRunning(true);
     setResults(null);
-    
+
     try {
       const response = await fetch('/api/test-runner', {
         method: 'POST',
       });
-      
+
       const data = await response.json();
       setResults(data);
-    } catch (error) {
+    } catch {
       setResults({
         success: false,
         summary: null,
@@ -93,255 +97,222 @@ export default function TestDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/30">
       <Navigation />
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Test Dashboard</h1>
-          <p className="text-gray-600">Run your tests and see the results in a friendly format</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <button
-            onClick={runTests}
-            disabled={isRunning}
-            className={`w-full py-4 px-6 rounded-lg text-white font-semibold text-lg transition-all ${
-              isRunning
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
-            }`}
-          >
-            {isRunning ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Running tests... this may take a moment
-              </span>
-            ) : (
-              '▶ Run All Tests'
-            )}
-          </button>
-        </div>
-
-        {results && (
-          <>
-            {results.summary && (
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 className="text-2xl font-semibold mb-4">Test Results</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-3xl font-bold text-gray-700">{results.summary.totalTests}</div>
-                    <div className="text-sm text-gray-600 mt-1">Total Tests</div>
-                  </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-3xl font-bold text-green-600">✓ {results.summary.passedTests}</div>
-                    <div className="text-sm text-gray-600 mt-1">Passing</div>
-                  </div>
-                  <div className="text-center p-4 bg-red-50 rounded-lg">
-                    <div className="text-3xl font-bold text-red-600">✗ {results.summary.failedTests}</div>
-                    <div className="text-sm text-gray-600 mt-1">Failing</div>
-                  </div>
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <div className="text-3xl font-bold text-yellow-600">⏭ {results.summary.pendingTests}</div>
-                    <div className="text-sm text-gray-600 mt-1">Skipped</div>
-                  </div>
-                </div>
-                
-                {results.summary.success ? (
-                  <div className="mt-6 p-4 bg-green-50 border-l-4 border-green-500 rounded">
-                    <p className="text-green-800 font-semibold">🎉 All tests passed! Great work!</p>
-                  </div>
-                ) : (
-                  <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
-                    <p className="text-red-800 font-semibold">
-                      {results.summary.failedTests} {results.summary.failedTests === 1 ? 'test needs' : 'tests need'} attention
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {results.coverage && (
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 className="text-2xl font-semibold mb-4">Code Coverage</h2>
-                <p className="text-gray-600 mb-6">
-                  Coverage shows how much of your code is being tested. Higher percentages are better!
-                </p>
-                
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium">Lines</span>
-                      <span className={`font-bold ${getCoverageColor(results.coverage.lines)}`}>
-                        {results.coverage.lines}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full ${getCoverageBarColor(results.coverage.lines)}`}
-                        style={{ width: `${results.coverage.lines}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      This shows what percentage of code lines were executed during testing
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium">Statements</span>
-                      <span className={`font-bold ${getCoverageColor(results.coverage.statements)}`}>
-                        {results.coverage.statements}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full ${getCoverageBarColor(results.coverage.statements)}`}
-                        style={{ width: `${results.coverage.statements}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      This measures individual statements that were run during tests
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium">Functions</span>
-                      <span className={`font-bold ${getCoverageColor(results.coverage.functions)}`}>
-                        {results.coverage.functions}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full ${getCoverageBarColor(results.coverage.functions)}`}
-                        style={{ width: `${results.coverage.functions}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      This shows what percentage of your functions were called during testing
-                    </p>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium">Branches</span>
-                      <span className={`font-bold ${getCoverageColor(results.coverage.branches)}`}>
-                        {results.coverage.branches}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full ${getCoverageBarColor(results.coverage.branches)}`}
-                        style={{ width: `${results.coverage.branches}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                      This measures different paths through your code (if/else statements, etc.)
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <h3 className="font-semibold text-blue-900 mb-2">What does coverage mean?</h3>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• <strong>Green (80%+)</strong> - Excellent! Your code is well tested</li>
-                    <li>• <strong>Yellow (60-79%)</strong> - Good, but there's room for improvement</li>
-                    <li>• <strong>Red (&lt;60%)</strong> - More tests needed to ensure code quality</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {results.testSuites && results.testSuites.length > 0 && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-semibold mb-4">Test Details</h2>
-                <div className="space-y-3">
-                  {results.testSuites.map((suite, idx) => (
-                    <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden">
-                      <button
-                        onClick={() => toggleSuite(suite.name)}
-                        className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex items-center justify-between transition-colors"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-gray-400">
-                            {expandedSuites.has(suite.name) ? '▼' : '▶'}
-                          </span>
-                          <span className="font-medium text-left">{suite.name}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className={`px-3 py-1 rounded text-sm font-medium ${
-                            suite.status === 'passed' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {suite.status === 'passed' ? '✓ Passed' : '✗ Failed'}
-                          </span>
-                          <span className="text-sm text-gray-500">{suite.duration}ms</span>
-                        </div>
-                      </button>
-                      
-                      {expandedSuites.has(suite.name) && (
-                        <div className="p-4 bg-white border-t border-gray-200">
-                          <div className="space-y-2">
-                            {suite.tests.map((test, testIdx) => (
-                              <div key={testIdx} className="pl-4 py-2 border-l-2 border-gray-200">
-                                <div className="flex items-start space-x-2">
-                                  <span className={`mt-1 ${
-                                    test.status === 'passed' 
-                                      ? 'text-green-600' 
-                                      : test.status === 'failed'
-                                      ? 'text-red-600'
-                                      : 'text-yellow-600'
-                                  }`}>
-                                    {test.status === 'passed' ? '✓' : test.status === 'failed' ? '✗' : '⏭'}
-                                  </span>
-                                  <div className="flex-1">
-                                    <p className="text-gray-800">{test.title}</p>
-                                    {test.failureMessages && test.failureMessages.length > 0 && (
-                                      <div className="mt-2 p-3 bg-red-50 rounded text-sm">
-                                        <p className="font-semibold text-red-800 mb-1">Error:</p>
-                                        {test.failureMessages.map((msg, msgIdx) => (
-                                          <pre key={msgIdx} className="text-red-700 whitespace-pre-wrap font-mono text-xs">
-                                            {msg}
-                                          </pre>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {results.error && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded">
-                  <p className="text-red-800 font-semibold">Error running tests</p>
-                  <p className="text-red-700 text-sm mt-2">{results.error}</p>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {!results && !isRunning && (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">🧪</div>
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Ready to test your code?</h2>
-            <p className="text-gray-600">Click the button above to run all your tests and see the results</p>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">Test Dashboard</h1>
+            <p className="text-muted-foreground">Run your tests and see the results in a friendly format</p>
           </div>
-        )}
+
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <Button
+                onClick={runTests}
+                disabled={isRunning}
+                size="lg"
+                className="w-full text-lg h-auto py-4"
+              >
+                {isRunning ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Running tests... this may take a moment
+                  </>
+                ) : (
+                  '▶ Run All Tests'
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {results && (
+            <>
+              {results.summary && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Test Results</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center p-4 bg-muted/50 rounded-lg">
+                        <div className="text-3xl font-bold text-gray-700">{results.summary.totalTests}</div>
+                        <div className="text-sm text-muted-foreground mt-1">Total Tests</div>
+                      </div>
+                      <div className="text-center p-4 bg-green-50 rounded-lg">
+                        <div className="text-3xl font-bold text-green-600">✓ {results.summary.passedTests}</div>
+                        <div className="text-sm text-muted-foreground mt-1">Passing</div>
+                      </div>
+                      <div className="text-center p-4 bg-red-50 rounded-lg">
+                        <div className="text-3xl font-bold text-red-600">✗ {results.summary.failedTests}</div>
+                        <div className="text-sm text-muted-foreground mt-1">Failing</div>
+                      </div>
+                      <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                        <div className="text-3xl font-bold text-yellow-600">⏭ {results.summary.pendingTests}</div>
+                        <div className="text-sm text-muted-foreground mt-1">Skipped</div>
+                      </div>
+                    </div>
+
+                    {results.summary.success ? (
+                      <div className="mt-6 p-4 bg-green-50 border-l-4 border-green-500 rounded">
+                        <p className="text-green-800 font-semibold">🎉 All tests passed! Great work!</p>
+                      </div>
+                    ) : (
+                      <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                        <p className="text-red-800 font-semibold">
+                          {results.summary.failedTests} {results.summary.failedTests === 1 ? 'test needs' : 'tests need'} attention
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {results.coverage && (
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Code Coverage</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-6">
+                      Coverage shows how much of your code is being tested. Higher percentages are better!
+                    </p>
+
+                    <div className="space-y-4">
+                      {([
+                        ['Lines', results.coverage.lines, 'This shows what percentage of code lines were executed during testing'],
+                        ['Statements', results.coverage.statements, 'This measures individual statements that were run during tests'],
+                        ['Functions', results.coverage.functions, 'This shows what percentage of your functions were called during testing'],
+                        ['Branches', results.coverage.branches, 'This measures different paths through your code (if/else statements, etc.)'],
+                      ] as const).map(([label, value, explanation]) => (
+                        <div key={label}>
+                          <div className="flex justify-between mb-2">
+                            <span className="font-medium">{label}</span>
+                            <span className={`font-bold ${getCoverageColor(value)}`}>
+                              {value}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-3">
+                            <div
+                              className={`h-3 rounded-full ${getCoverageBarColor(value)}`}
+                              style={{ width: `${value}%` }}
+                            />
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">{explanation}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                      <h3 className="font-semibold text-blue-900 mb-2">What does coverage mean?</h3>
+                      <ul className="text-sm text-blue-800 space-y-1">
+                        <li>• <strong>Green (80%+)</strong> - Excellent! Your code is well tested</li>
+                        <li>• <strong>Yellow (60-79%)</strong> - Good, but there&apos;s room for improvement</li>
+                        <li>• <strong>Red (&lt;60%)</strong> - More tests needed to ensure code quality</li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {results.testSuites && results.testSuites.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Test Details</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {results.testSuites.map((suite, idx) => (
+                        <div key={idx} className="border rounded-lg overflow-hidden">
+                          <Button
+                            variant="ghost"
+                            onClick={() => toggleSuite(suite.name)}
+                            className="w-full h-auto px-4 py-3 bg-muted/50 hover:bg-muted flex items-center justify-between rounded-none"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <span className="text-muted-foreground">
+                                {expandedSuites.has(suite.name) ? '▼' : '▶'}
+                              </span>
+                              <span className="font-medium text-left">{suite.name}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge
+                                variant="outline"
+                                className={
+                                  suite.status === 'passed'
+                                    ? 'bg-green-100 text-green-800 border-green-200'
+                                    : 'bg-red-100 text-red-800 border-red-200'
+                                }
+                              >
+                                {suite.status === 'passed' ? '✓ Passed' : '✗ Failed'}
+                              </Badge>
+                              <span className="text-sm text-muted-foreground">{suite.duration}ms</span>
+                            </div>
+                          </Button>
+
+                          {expandedSuites.has(suite.name) && (
+                            <div className="p-4 bg-card border-t">
+                              <div className="space-y-2">
+                                {suite.tests.map((test, testIdx) => (
+                                  <div key={testIdx} className="pl-4 py-2 border-l-2">
+                                    <div className="flex items-start space-x-2">
+                                      <span className={`mt-1 ${
+                                        test.status === 'passed'
+                                          ? 'text-green-600'
+                                          : test.status === 'failed'
+                                          ? 'text-red-600'
+                                          : 'text-yellow-600'
+                                      }`}>
+                                        {test.status === 'passed' ? '✓' : test.status === 'failed' ? '✗' : '⏭'}
+                                      </span>
+                                      <div className="flex-1">
+                                        <p className="text-foreground">{test.title}</p>
+                                        {test.failureMessages && test.failureMessages.length > 0 && (
+                                          <div className="mt-2 p-3 bg-red-50 rounded text-sm">
+                                            <p className="font-semibold text-red-800 mb-1">Error:</p>
+                                            {test.failureMessages.map((msg, msgIdx) => (
+                                              <pre key={msgIdx} className="text-red-700 whitespace-pre-wrap font-mono text-xs">
+                                                {msg}
+                                              </pre>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {results.error && (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                      <p className="text-red-800 font-semibold">Error running tests</p>
+                      <p className="text-red-700 text-sm mt-2">{results.error}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+
+          {!results && !isRunning && (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <div className="text-6xl mb-4">🧪</div>
+                <h2 className="text-2xl font-semibold text-gray-700 mb-2">Ready to test your code?</h2>
+                <p className="text-muted-foreground">Click the button above to run all your tests and see the results</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

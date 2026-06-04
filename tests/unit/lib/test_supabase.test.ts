@@ -22,15 +22,15 @@ describe('Supabase Client Configuration', () => {
     // Import after mock is set up
     const { supabase } = require('@/lib/supabase')
 
+    // The client is created lazily — accessing a property triggers init
+    expect(supabase).toBeDefined()
+    expect(supabase.from).toBeDefined()
+
     // Verify createClient was called with the correct parameters
     expect(mockCreateClient).toHaveBeenCalledWith(
       'https://test.supabase.co',
       'test-anon-key'
     )
-
-    // Verify the exported client is defined and functional
-    expect(supabase).toBeDefined()
-    expect(supabase.from).toBeDefined()
   })
 })
 
@@ -51,9 +51,9 @@ describe('Supabase Client Configuration - Error Handling', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = ''
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
 
-      expect(() => {
-        require('@/lib/supabase')
-      }).toThrow('Missing Supabase environment variables')
+      const { supabase } = require('@/lib/supabase')
+      // The error surfaces on first use, not on import
+      expect(() => supabase.from).toThrow('Missing Supabase environment variables')
     })
   })
 
@@ -62,9 +62,8 @@ describe('Supabase Client Configuration - Error Handling', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = ''
 
-      expect(() => {
-        require('@/lib/supabase')
-      }).toThrow('Missing Supabase environment variables')
+      const { supabase } = require('@/lib/supabase')
+      expect(() => supabase.from).toThrow('Missing Supabase environment variables')
     })
   })
 
@@ -74,9 +73,8 @@ describe('Supabase Client Configuration - Error Handling', () => {
       delete process.env.NEXT_PUBLIC_SUPABASE_URL
       delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-      expect(() => {
-        require('@/lib/supabase')
-      }).toThrow('Missing Supabase environment variables')
+      const { supabase } = require('@/lib/supabase')
+      expect(() => supabase.from).toThrow('Missing Supabase environment variables')
 
       process.env = envBackup
     })
@@ -88,9 +86,22 @@ describe('Supabase Client Configuration - Error Handling', () => {
       delete process.env.NEXT_PUBLIC_SUPABASE_URL
       delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-      expect(() => {
-        require('@/lib/supabase')
-      }).toThrow(/environment/)
+      const { supabase } = require('@/lib/supabase')
+      expect(() => supabase.from).toThrow(/environment/)
+
+      process.env = envBackup
+    })
+  })
+
+  it('should not throw or create a client at import time', () => {
+    jest.isolateModules(() => {
+      const envBackup = { ...process.env }
+      delete process.env.NEXT_PUBLIC_SUPABASE_URL
+      delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+      // Importing the module must succeed even without credentials so the
+      // app can be built without Supabase configured.
+      expect(() => require('@/lib/supabase')).not.toThrow()
 
       process.env = envBackup
     })

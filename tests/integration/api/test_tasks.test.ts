@@ -488,7 +488,7 @@ describe('Tasks API - PATCH /api/tasks/[id]', () => {
       body: JSON.stringify({ completed: true }),
     })
 
-    await PATCH(request, { params: { id: '123' } })
+    await PATCH(request, { params: Promise.resolve({ id: '123' }) })
 
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
