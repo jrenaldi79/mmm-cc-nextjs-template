@@ -89,6 +89,28 @@ describe('POST /api/chat — Zep memory', () => {
         assistantText: 'hello back',
       })
     );
+
+    // The retrieved context must never reach the write path (no feedback loop).
+    const recordArg = (recordChatTurn as jest.Mock).mock.calls[0][1];
+    expect(recordArg).not.toHaveProperty('context');
+    expect(JSON.stringify(recordArg)).not.toContain('USER CONTEXT BLOCK');
+  });
+
+  it('does not record a turn when the user text is blank', async () => {
+    (getZepClient as jest.Mock).mockReturnValue({ __zep: true });
+    (retrieveUserContext as jest.Mock).mockResolvedValue('CTX');
+    (recordChatTurn as jest.Mock).mockResolvedValue(undefined);
+    global.fetch = streamingFetchMock('reply') as unknown as typeof fetch;
+
+    const res = await POST(
+      makeRequest({
+        sessionId: 'sess-1',
+        messages: [{ role: 'user', parts: [{ type: 'text', text: '' }] }],
+      })
+    );
+    await res.text();
+
+    expect(recordChatTurn).not.toHaveBeenCalled();
   });
 
   it('does not touch Zep when the key is unset (getZepClient → null)', async () => {
