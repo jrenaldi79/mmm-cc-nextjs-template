@@ -54,7 +54,7 @@ denies `rm -rf /`, force-push, hard reset, `npm publish`, and pipe-to-shell.
 app/
 ├── api/
 │   ├── chat/
-│   │   └── route.ts  # Streams an LLM agent response back to the UI.
+│   │   └── route.ts  # Proxy the request to the n8n workflow and stream its reply back. When Zep is
 │   ├── tasks/
 │   │   ├── [id]/
 │   │   │   └── route.ts
@@ -153,7 +153,7 @@ types/
 |--------|---------|-------------|
 | `app/layout.tsx` |  | `metadata`, `RootLayout` |
 | `app/page.tsx` |  | `HomePage` |
-| `app/api/chat/route.ts` | Streams an LLM agent response back to the UI. | `maxDuration`, `POST` |
+| `app/api/chat/route.ts` | Proxy the request to the n8n workflow and stream its reply back. When Zep is | `maxDuration`, `POST` |
 | `app/api/tasks/route.ts` |  | `GET`, `POST` |
 | `app/api/tasks/[id]/route.ts` |  | `PATCH`, `DELETE` |
 | `app/api/test-runner/route.ts` |  | `POST` |
