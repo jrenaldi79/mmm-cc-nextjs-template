@@ -67,6 +67,9 @@ const eslintConfig = [
       'next-env.d.ts',
       'tests/**',
       'coverage/**',
+      // Vendored Superpowers skills (mirror of github.com/obra/superpowers) —
+      // third-party content, not linted (kept byte-identical to upstream).
+      '.claude/**',
       '*.config.js',
       '*.config.mjs',
       '*.config.ts',
