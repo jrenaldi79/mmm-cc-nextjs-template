@@ -1,61 +1,10 @@
 # Northwestern MPD2 Starter Template
 
 ## Overview
-This project is a Next.js 16 starter template for Northwestern MPD2 students, featuring a dual-app architecture: a **Document Viewer** (`/markdown-preview`) for BMAD methodology documentation and a **Shell Main App** (`/`) for student project customization. Its purpose is to provide a production-ready foundation with TypeScript, Tailwind CSS, a TDD framework, and Turbopack, accelerating student development by focusing on innovation over setup complexities. The project's ambition is to equip students with a robust, modern development environment that reduces setup overhead and allows them to concentrate on innovative project development.
+This project is a Next.js 16 starter template for Northwestern MPD2 students. It provides a production-ready foundation with TypeScript, Tailwind CSS, a TDD framework, and Turbopack, accelerating student development by focusing on innovation over setup complexities. The `/` route is a shell main app that students replace with their own projects.
 
 -   **Your Role**: You are an expert in TypeScript, Node.js, React, Next.js 16, and Tailwind.
--   **Dual-App Architecture**:
-    1.  **A Document Viewer (`/markdown-preview`)**: For referencing BMAD methodology documentation. This part of the app is maintained as is.
-    2.  **A Shell Main App (`/`)**: A starter structure for students to replace with their own projects. This is where you will build.
-
-## Recent Changes
-
-### November 9, 2024 - Fixed Next.js Cross-Origin Warnings in Replit
--   **Issue**: Next.js 16 was showing cross-origin request warnings in the console: `⚠ Blocked cross-origin request from *.replit.dev to /_next/* resource`
--   **Root Cause**: 
-    -   Replit uses multi-level subdomains for dev environments (e.g., `449b87cb-852c-4730-b5b5-959d5fe9d7c1-00-3ofkpagc0yzlb.worf.replit.dev`)
-    -   Next.js `allowedDevOrigins` doesn't support multi-level wildcard patterns like `*.*.replit.dev`
-    -   Only single-level wildcards work (e.g., `*.replit.dev` matches `worf.replit.dev` but NOT `something.worf.replit.dev`)
--   **Fix**: 
-    -   Dynamically inject the exact Replit domain from `REPLIT_DOMAINS` environment variable
-    -   Updated `next.config.js` to build `allowedDevOrigins` array at runtime
-    -   Added localhost and 127.0.0.1 for local development
--   **Result**: Zero cross-origin warnings, proper HMR (Hot Module Reload) connection, clean console logs.
--   **Configuration**: See `next.config.js` for the dynamic domain injection pattern.
-
-### November 9, 2024 - Linting & Type-Checking Setup
--   **Added**: Complete ESLint 9 and TypeScript type-checking configuration for Next.js 16.
--   **Configuration**:
-    -   ESLint 9 with flat config format (`eslint.config.mjs`)
-    -   TypeScript ESLint plugin for type-aware linting
-    -   React and React Hooks plugins for best practices
--   **Commands Added**:
-    -   `npm run type-check` - Validate TypeScript types without building
-    -   `npm run lint` - Run ESLint on codebase
-    -   `npm run validate` - Run both type-check and lint together
--   **Type Fixes**:
-    -   Added explicit `Promise<NextResponse>` return types to all API route handlers
-    -   Fixed Supabase Database type schema (Views, Functions, Enums, CompositeTypes as `Record<string, never>`)
-    -   Resolved TypeScript build errors for deployment
--   **Result**: Zero TypeScript errors in app directory, comprehensive linting coverage, ready for production deployment.
-
-### November 8, 2024 - Mermaid Diagram Rendering Complete Fix
--   **Issues**: 
-    1. Mermaid diagrams were rendering horizontally instead of vertically.
-    2. Inconsistent rendering - sometimes working, sometimes showing raw text.
--   **Root Cause**: 
-    1. Mermaid's auto-layout was choosing horizontal placement for complex diagrams.
-    2. Race conditions and timing issues causing inconsistent initialization.
-    3. CSS `!important` rules blocking JavaScript dimension control.
--   **Fix**: 
-    -   **Configuration**: Enhanced Mermaid config with dagre-d3 renderer, increased vertical spacing (rankSpacing: 100), reduced horizontal spacing (nodeSpacing: 30).
-    -   **Layout Forcing**: Automatically converts `graph LR/RL` to `graph TD` for vertical orientation.
-    -   **Retry Logic**: Added 3 attempts per diagram with 200ms delays to handle timing issues.
-    -   **Loading Indicators**: Shows "🔄 Rendering diagram..." while processing.
-    -   **Error Handling**: Clear error messages with original code when rendering fails.
-    -   **CSS Optimization**: Removed blocking `!important` rules from width/max-width properties.
-    -   **Visual Polish**: Added gray background and border to diagram containers.
--   **Result**: Mermaid diagrams now consistently render vertically with proper error recovery. Test coverage: 90 tests passing, 89.88% statement coverage.
+-   **Shell Main App (`/`)**: A starter structure for students to replace with their own projects. This is where you will build.
 
 ## 1. AI Agent Pre-Implementation Checklist
 
@@ -125,7 +74,6 @@ All file paths must conform to this structure.
 │   ├── api/                     # API Route Handlers
 │   │   └── users/[id]/posts/    # Example: nested API route
 │   │       └── route.ts
-│   └── markdown-preview/        # Document viewer app (do not modify)
 │
 ├── tests/                       # All tests live here
 │   ├── unit/                    # Unit tests (mirror `app` structure)

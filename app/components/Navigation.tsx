@@ -23,13 +23,7 @@ export default function Navigation() {
             >
               ✅ Tasks Example
             </Link>
-            <Link 
-              href="/markdown-preview"
-              className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
-            >
-              📚 BMAD Docs
-            </Link>
-            <Link 
+            <Link
               href="/test-dashboard"
               className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
             >

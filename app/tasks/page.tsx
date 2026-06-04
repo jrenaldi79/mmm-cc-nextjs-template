@@ -233,18 +233,13 @@ export default function TasksPage() {
               <li><strong>Client-Side State:</strong> React hooks for managing UI state</li>
             </ul>
             <p className="text-gray-700 mt-4">
-              Study the code in <code className="bg-gray-100 px-2 py-1 rounded">app/tasks/</code>, 
-              <code className="bg-gray-100 px-2 py-1 rounded">app/api/tasks/</code>, and 
+              Study the code in <code className="bg-gray-100 px-2 py-1 rounded">app/tasks/</code>,
+              <code className="bg-gray-100 px-2 py-1 rounded">app/api/tasks/</code>, and
               <code className="bg-gray-100 px-2 py-1 rounded">lib/supabase.ts</code> to understand how it works!
             </p>
-            <div className="mt-4">
-              <a 
-                href="/markdown-preview?file=SUPABASE_SETUP.md"
-                className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-              >
-                📖 View Supabase Setup Guide
-              </a>
-            </div>
+            <p className="text-gray-700 mt-4">
+              See <code className="bg-gray-100 px-2 py-1 rounded">SUPABASE_SETUP.md</code> for the full setup guide.
+            </p>
           </div>
         </div>
       </div>

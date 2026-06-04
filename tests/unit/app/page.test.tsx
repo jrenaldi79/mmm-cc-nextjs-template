@@ -19,15 +19,11 @@ describe('HomePage', () => {
   it('renders navigation links', () => {
     render(<HomePage />)
     const tasksLinks = screen.getAllByRole('link', { name: /tasks example/i })
-    const markdownLinks = screen.getAllByRole('link', { name: /bmad docs/i })
     const testDashboardLinks = screen.getAllByRole('link', { name: /test dashboard/i })
-    
+
     expect(tasksLinks.length).toBeGreaterThan(0)
     expect(tasksLinks[0]).toHaveAttribute('href', '/tasks')
-    
-    expect(markdownLinks.length).toBeGreaterThan(0)
-    expect(markdownLinks[0]).toHaveAttribute('href', '/markdown-preview')
-    
+
     expect(testDashboardLinks.length).toBeGreaterThan(0)
     expect(testDashboardLinks[0]).toHaveAttribute('href', '/test-dashboard')
   })

@@ -20,38 +20,18 @@ export default function HomePage() {
               Welcome to your Next.js starter project! This is a "shell" app that you'll replace with your own amazing idea.
             </p>
 
-            <div className="bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-400 rounded-lg p-5 mb-6">
-              <p className="text-purple-900 font-bold text-lg mb-2">📚 Start Here: BMAD User Guide</p>
-              <p className="text-purple-800 mb-3">
-                New to BMAD? Read the comprehensive user guide to understand the methodology and get started quickly.
-              </p>
-              <Link 
-                href="/markdown-preview?file=.bmad-core/user-guide.md"
-                className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-              >
-                📖 Read BMAD User Guide
-              </Link>
-            </div>
-            
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
               <p className="text-blue-800 font-semibold mb-2">💡 Quick Start Guide:</p>
               <ol className="list-decimal list-inside text-blue-700 space-y-1">
                 <li>Replace this page with your app's home page</li>
                 <li>Add your components in the <code className="bg-blue-100 px-1 rounded">app/components</code> folder</li>
                 <li>Create API routes in <code className="bg-blue-100 px-1 rounded">app/api</code></li>
-                <li>Use the BMAD Docs viewer to understand the methodology while you code</li>
-                <li>Customize <code className="bg-blue-100 px-1 rounded">replit.md</code> to guide your AI coding assistant</li>
+                <li>Customize <code className="bg-blue-100 px-1 rounded">CLAUDE.md</code> to guide your AI coding assistant</li>
               </ol>
             </div>
 
             <div className="flex gap-4 mb-6">
-              <Link 
-                href="/markdown-preview"
-                className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-              >
-                View BMAD Documentation
-              </Link>
-              <a 
+              <a
                 href="https://nextjs.org/docs"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -67,17 +47,11 @@ export default function HomePage() {
                 This template includes a working <strong>Supabase database example</strong> showing full CRUD operations.
               </p>
               <div className="flex gap-4">
-                <Link 
+                <Link
                   href="/tasks"
                   className="inline-flex items-center text-green-700 hover:text-green-800 font-medium"
                 >
                   View Tasks Example →
-                </Link>
-                <Link 
-                  href="/markdown-preview?file=SUPABASE_SETUP.md"
-                  className="inline-flex items-center text-green-700 hover:text-green-800 font-medium underline"
-                >
-                  📖 Setup Guide
                 </Link>
               </div>
             </div>
@@ -89,12 +63,12 @@ export default function HomePage() {
               🤖 AI Coding Assistant Instructions
             </h3>
             <p className="text-gray-600 mb-4">
-              The <code className="bg-purple-100 px-2 py-1 rounded text-purple-700 font-mono">replit.md</code> file is your command center for AI coding assistants. 
+              The <code className="bg-purple-100 px-2 py-1 rounded text-purple-700 font-mono">CLAUDE.md</code> file is your command center for AI coding assistants.
               It contains comprehensive rules and guidelines that any AI agent will follow when helping you code.
             </p>
-            
+
             <div className="bg-purple-50 border-l-4 border-purple-500 p-4 mb-4">
-              <p className="text-purple-800 font-semibold mb-2">What's in replit.md:</p>
+              <p className="text-purple-800 font-semibold mb-2">What's in CLAUDE.md:</p>
               <ul className="list-disc list-inside text-purple-700 space-y-1">
                 <li><strong>Project Architecture</strong> - Tech stack, dependencies, and structure</li>
                 <li><strong>TDD Requirements</strong> - Mandatory test-first development (80% coverage)</li>
@@ -103,17 +77,11 @@ export default function HomePage() {
                 <li><strong>API Design</strong> - RESTful conventions and response formats</li>
                 <li><strong>Performance Guidelines</strong> - Optimization strategies</li>
               </ul>
-              <Link 
-                href="/markdown-preview?file=replit.md"
-                className="inline-block mt-3 text-purple-700 hover:text-purple-800 font-medium underline"
-              >
-                📖 View Full replit.md Documentation →
-              </Link>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-700">
-                <strong>💡 Pro Tip:</strong> As you develop your app, update <code className="bg-gray-200 px-1 rounded">replit.md</code> with:
+                <strong>💡 Pro Tip:</strong> As you develop your app, update <code className="bg-gray-200 px-1 rounded">CLAUDE.md</code> with:
               </p>
               <ul className="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
                 <li>Your specific API endpoints and their purposes</li>
@@ -271,7 +239,7 @@ export default function HomePage() {
             Northwestern MPD2 Starter Template | Built with Next.js 16, TypeScript & Tailwind CSS
           </p>
           <p className="text-center text-sm text-gray-500 mt-2">
-            💡 Tip: Start by editing <code className="bg-gray-100 px-2 py-1 rounded">app/page.tsx</code> and check <code className="bg-gray-100 px-2 py-1 rounded">replit.md</code> for AI instructions
+            💡 Tip: Start by editing <code className="bg-gray-100 px-2 py-1 rounded">app/page.tsx</code> and check <code className="bg-gray-100 px-2 py-1 rounded">CLAUDE.md</code> for AI instructions
           </p>
         </div>
       </footer>

@@ -1,26 +1,16 @@
 # Northwestern MPD2 Next.js Starter Template
 
-A production-ready starter template for Northwestern MPD2 master's students, featuring a dual-app architecture designed to accelerate development while learning the BMAD methodology.
+A production-ready starter template for Northwestern MPD2 master's students, designed to accelerate development with TypeScript, Tailwind CSS, and a TDD framework pre-configured.
 
 ## 🎯 Purpose
 
 This starter template provides MPD2 students with:
-1. **A Document Viewer** - Interactive markdown viewer to reference BMAD methodology documentation while coding
-2. **A Shell Main App** - A starter structure that students replace with their own project ideas
-3. **Production-Ready Setup** - TDD framework, TypeScript, Tailwind CSS, and best practices pre-configured
+1. **A Shell Main App** - A starter structure that students replace with their own project ideas
+2. **Production-Ready Setup** - TDD framework, TypeScript, Tailwind CSS, and best practices pre-configured
+3. **A Database Example** - A working Supabase CRUD example to learn from
 
-## 🏗️ Dual-App Architecture
+## 🏗️ Main App Shell (`/`)
 
-### 1. Document Viewer (`/markdown-preview`)
-A built-in markdown documentation viewer that helps students:
-- Reference BMAD methodology while coding
-- View project documentation with syntax highlighting
-- Render Mermaid diagrams for visual understanding
-- Keep methodology docs accessible during development
-
-**This viewer stays with your project** - use it to document your own app as you build!
-
-### 2. Main App Shell (`/`)
 A minimal starter application that students **replace with their own ideas**:
 - Clean layout with header, main content, and footer
 - Example component showing React hooks and state management
@@ -29,10 +19,11 @@ A minimal starter application that students **replace with their own ideas**:
 
 ## 🚀 Quick Start for Students
 
-### Step 1: Start with the Template
+### Step 1: Start the Dev Server
 ```bash
-# The template is already set up and running
-# Access at port 5000 in your Replit webview
+npm install
+npm run dev
+# Opens on port 5000
 ```
 
 ### Step 2: Understand the Structure
@@ -42,12 +33,11 @@ A minimal starter application that students **replace with their own ideas**:
 │   ├── page.tsx                 # 👈 Start here! Replace with your app
 │   ├── components/              # 👈 Add your components here
 │   │   └── ExampleComponent.tsx # Example to learn from (delete when ready)
-│   ├── api/                     # API routes
-│   └── markdown-preview/        # Document viewer (keep this!)
+│   └── api/                     # API routes
 │
 ├── tests/                       # Your tests (TDD is required!)
 ├── types/                       # TypeScript type definitions
-└── replit.md                    # Project rules & guidelines
+└── CLAUDE.md                    # Project rules & guidelines
 ```
 
 ### Step 3: Build Your App
@@ -55,7 +45,6 @@ A minimal starter application that students **replace with their own ideas**:
 2. **Add your components** in `app/components/`
 3. **Create API routes** in `app/api/` as needed
 4. **Write tests first** (TDD) in `tests/`
-5. **Document as you go** using markdown files
 
 ## 💡 What to Build
 
@@ -99,8 +88,7 @@ The guide includes:
 | **Language** | TypeScript | Type safety and better IDE support |
 | **Styling** | Tailwind CSS | Rapid UI development |
 | **Testing** | Jest + React Testing Library | TDD methodology (required) |
-| **Markdown** | marked + DOMPurify | Documentation & security |
-| **Diagrams** | Mermaid | Visual documentation |
+| **Database** | Supabase | Backend example with CRUD operations |
 
 ## 📝 Development Workflow
 
@@ -131,16 +119,6 @@ npm run test:coverage
 # Minimum 80% coverage required
 ```
 
-## 📚 Using the Document Viewer
-
-The markdown viewer at `/markdown-preview` helps you:
-- Keep BMAD methodology docs open while coding
-- Reference your own project documentation
-- View code examples with syntax highlighting
-- Understand architecture with Mermaid diagrams
-
-**Pro tip**: Add your own markdown docs as you build - they'll automatically appear in the viewer!
-
 ## 🎨 Customization Guide
 
 ### Changing the Main App
@@ -155,22 +133,18 @@ The markdown viewer at `/markdown-preview` helps you:
 3. **Component**: Create `app/components/YourComponent.tsx`
 4. **Test**: Create `tests/unit/app/components/YourComponent.test.tsx`
 
-### Keep the Document Viewer
-The `/markdown-preview` route is independent - your styling changes won't affect it!
-
 ## 🔒 Security & Best Practices
 
 ### Built-In Security
-- XSS protection via DOMPurify
 - Path traversal prevention
 - TypeScript for type safety
-- Environment variables via Replit Secrets
+- Environment variables for secrets
 
 ### Required Practices
 - **TDD**: Write tests before code
 - **Coverage**: Maintain >80% test coverage
 - **Types**: Use TypeScript types
-- **Secrets**: Never commit API keys (use Replit Secrets)
+- **Secrets**: Never commit API keys (use environment variables)
 
 ## 📋 Assignment Checklist
 
@@ -179,14 +153,13 @@ Before submitting your project:
 - [ ] All features have tests (TDD)
 - [ ] Test coverage >80%
 - [ ] TypeScript types defined
-- [ ] Documentation in markdown files
 - [ ] No hardcoded secrets
 - [ ] Code follows project structure
 
 ## 🆘 Getting Help
 
 ### Resources
-- **BMAD Docs**: Use the `/markdown-preview` viewer
+- **Project Rules**: See `CLAUDE.md`
 - **Next.js Docs**: https://nextjs.org/docs
 - **Tailwind CSS**: https://tailwindcss.com/docs
 - **TypeScript**: https://www.typescriptlang.org/docs
@@ -195,7 +168,7 @@ Before submitting your project:
 ### Common Issues
 
 **Changes not showing?**
-- Restart the workflow in Replit
+- Restart the dev server
 - Check the console for errors
 - Clear browser cache
 
@@ -217,15 +190,14 @@ This starter template helps you learn:
 3. **TypeScript** for production code
 4. **Component-based architecture**
 5. **API development** with Next.js routes
-6. **Professional documentation** practices
 
 ## 🚢 Deployment
 
 When ready to deploy:
 1. Ensure all tests pass
 2. Build production version: `npm run build`
-3. Use Replit's deployment features
-4. Set environment variables in Replit Secrets
+3. Deploy to your hosting platform of choice
+4. Set environment variables in your host's configuration
 
 ## 📄 License
 
@@ -235,5 +207,5 @@ ISC - This is your starter template to build upon!
 
 **Remember**: This is YOUR canvas. The shell app is just a starting point - replace it with your creative vision and make something amazing! 🌟
 
-**Happy Coding!** 
+**Happy Coding!**
 *Northwestern MPD2 Program*

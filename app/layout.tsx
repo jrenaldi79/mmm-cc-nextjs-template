@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Next.js App',
-  description: 'Next.js application with markdown preview',
+  description: 'Northwestern MPD2 Next.js starter template',
 }
 
 export default function RootLayout({
