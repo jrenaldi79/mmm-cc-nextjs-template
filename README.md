@@ -1,241 +1,245 @@
-# Northwestern MPD2 Next.js Starter Template
-
-A production-ready starter template for Northwestern MPD2 master's students, designed to accelerate development with TypeScript, Tailwind CSS, and a TDD framework pre-configured.
-
-> 🧩 **This is a GitHub template repository.** Click **"Use this template"** at the top of the GitHub page to create your own copy, then clone it and start building.
-
-## 🎯 Purpose
-
-This starter template provides MPD2 students with:
-
-1. **A Shell Main App** - A starter structure that students replace with their own project ideas
-2. **Production-Ready Setup** - TDD framework, TypeScript, Tailwind CSS, and best practices pre-configured
-3. **A Database Example** - A working Supabase CRUD example to learn from
-
-## 🏗️ Main App Shell (`/`)
-
-A minimal starter application that students **replace with their own ideas**:
-
-- Clean layout with header, main content, and footer
-- Example component showing React hooks and state management
-- Links to helpful resources
-- Ready for you to build your unique application
-
-## 🚀 Quick Start for Students
-
-### Step 1: Start the Dev Server
-
-```bash
-npm install
-npm run dev
-# Opens on port 5000
-```
-
-### Step 2: Understand the Structure
-
-```
-.
-├── app/                          # Your main application
-│   ├── page.tsx                 # 👈 Start here! Replace with your app
-│   ├── components/              # 👈 Add your components here
-│   │   └── ExampleComponent.tsx # Example to learn from (delete when ready)
-│   └── api/                     # API routes
-│
-├── tests/                       # Your tests (TDD is required!)
-├── types/                       # TypeScript type definitions
-└── CLAUDE.md                    # Project rules & guidelines
-```
-
-### Step 3: Build Your App
-
-1. **Replace the home page** (`app/page.tsx`) with your app's main interface
-2. **Add your components** in `app/components/`
-3. **Create API routes** in `app/api/` as needed
-4. **Write tests first** (TDD) in `tests/`
-
-## 💡 What to Build
-
-Replace the shell app with YOUR idea:
-
-- 🛍️ E-commerce platform
-- 📊 Data visualization dashboard
-- 🎮 Interactive game
-- 📱 Social media app
-- 🤖 AI-powered tool
-- 📚 Educational platform
-- Whatever you imagine!
-
-## 🗄️ Database Integration Example
-
-This template includes a **working Supabase database example** to help you learn how to integrate a database into your app:
-
-- **Live Demo:** Visit `/tasks` to see it in action
-- **Full CRUD Operations:** Create, Read, Update, Delete tasks
-- **Complete Code Examples:** API routes, UI components, and TypeScript types
-- **Security Best Practices:** Row Level Security (RLS) setup and environment variable configuration
-
-### Get Started with the Database Example
-
-📖 **[View Complete Setup Guide →](SUPABASE_SETUP.md)**
-
-The guide includes:
-
-- ✅ Step-by-step Supabase project setup
-- ✅ SQL schema and sample data
-- ✅ Environment variable configuration
-- ✅ Security and RLS best practices
-- ✅ API endpoint documentation
-- ✅ Troubleshooting tips
-
-**Study the example code** in `app/tasks/`, `app/api/tasks/`, and `lib/supabase.ts` to understand how to build database-backed features in your own app!
-
-## 🛠️ Pre-Configured Tech Stack
-
-| Category      | Technology                   | Why It's Included                    |
-| ------------- | ---------------------------- | ------------------------------------ |
-| **Framework** | Next.js 16                   | Industry-standard React framework    |
-| **Language**  | TypeScript                   | Type safety and better IDE support   |
-| **Styling**   | Tailwind CSS                 | Rapid UI development                 |
-| **Testing**   | Jest + React Testing Library | TDD methodology (required)           |
-| **Database**  | Supabase                     | Backend example with CRUD operations |
-
-## 📝 Development Workflow
-
-### 1. Always Start with Tests (TDD)
-
-```bash
-# Write test first
-# Create: tests/unit/app/components/MyComponent.test.tsx
-
-# Run tests (they should fail - RED)
-npm test
-
-# Write code to pass tests - GREEN
-# Create: app/components/MyComponent.tsx
-
-# Run tests again (they should pass)
-npm test
-```
-
-### 2. Run Your Development Server
-
-```bash
-npm run dev
-# Opens on port 5000
-```
-
-### 3. Check Test Coverage
-
-```bash
-npm run test:coverage
-# Minimum 80% coverage required
-```
-
-## 🎨 Customization Guide
-
-### Changing the Main App
-
-1. **Home Page**: Edit `app/page.tsx`
-2. **Global Styles**: Modify `app/globals.css`
-3. **Layout**: Update `app/layout.tsx`
-4. **Colors**: Adjust Tailwind config in `tailwind.config.js`
-
-### Design System
-
-Your app's visual identity (colors, typography, components) is documented in
-[`DESIGN.md`](DESIGN.md) using Google's DESIGN.md format. It maps each token to its
-live CSS variable in `app/globals.css` and walks you through editing the theme
-directly. Validate it any time with `npm run design:lint`.
-
-### Adding Features
-
-1. **New Page**: Create `app/your-feature/page.tsx`
-2. **API Route**: Create `app/api/your-endpoint/route.ts`
-3. **Component**: Create `app/components/YourComponent.tsx`
-4. **Test**: Create `tests/unit/app/components/YourComponent.test.tsx`
-
-## 🔒 Security & Best Practices
-
-### Built-In Security
-
-- Path traversal prevention
-- TypeScript for type safety
-- Environment variables for secrets
-
-### Required Practices
-
-- **TDD**: Write tests before code
-- **Coverage**: Maintain >80% test coverage
-- **Types**: Use TypeScript types
-- **Secrets**: Never commit API keys (use environment variables)
-
-## 📋 Assignment Checklist
-
-Before submitting your project:
-
-- [ ] Replaced shell app with your unique idea
-- [ ] All features have tests (TDD)
-- [ ] Test coverage >80%
-- [ ] TypeScript types defined
-- [ ] No hardcoded secrets
-- [ ] Code follows project structure
-
-## 🆘 Getting Help
-
-### Resources
-
-- **Project Rules**: See `CLAUDE.md`
-- **Next.js Docs**: https://nextjs.org/docs
-- **Tailwind CSS**: https://tailwindcss.com/docs
-- **TypeScript**: https://www.typescriptlang.org/docs
-- **React**: https://react.dev
-
-### Common Issues
-
-**Changes not showing?**
-
-- Restart the dev server
-- Check the console for errors
-- Clear browser cache
-
-**Tests failing?**
-
-- Read error messages carefully
-- Check test file location
-- Ensure proper imports
-
-**Type errors?**
-
-- Define types in `types/index.ts`
-- Use proper TypeScript syntax
-- Check tsconfig.json
-
-## 🎓 Learning Objectives
-
-This starter template helps you learn:
-
-1. **Modern web development** with Next.js and React
-2. **Test-Driven Development** methodology
-3. **TypeScript** for production code
-4. **Component-based architecture**
-5. **API development** with Next.js routes
-
-## 🚢 Deployment
-
-When ready to deploy:
-
-1. Ensure all tests pass
-2. Build production version: `npm run build`
-3. Deploy to your hosting platform of choice
-4. Set environment variables in your host's configuration
-
-## 📄 License
-
-ISC - This is your starter template to build upon!
+# Northwestern MPD2 — Next.js Starter Template
+
+A production-ready **Next.js 16** starter for Northwestern MPD2 master's students. It comes
+pre-wired with TypeScript, Tailwind CSS + shadcn/ui, Supabase (auth + database), an n8n LLM
+chat scaffold, and a Test-Driven Development framework with quality gates enforced by git
+hooks — so you can spend your time building your idea, not your toolchain.
+
+> 🧩 **This is a GitHub _template_ repository.** Click the green **"Use this template"**
+> button at the top of the GitHub page → **Create a new repository**. That gives you your own
+> clean copy (no shared git history) to clone and build on. Don't fork it.
 
 ---
 
-**Remember**: This is YOUR canvas. The shell app is just a starting point - replace it with your creative vision and make something amazing! 🌟
+## 🎯 What this template gives you
 
-**Happy Coding!**
+1. **A blank canvas** — the home page (`/`) is a shell you replace with your own project.
+2. **A login-controlled app** — Supabase email/password + OAuth auth is already wired up; every
+   page except `/login`, `/signup`, and `/auth/*` requires a signed-in user.
+3. **Working examples to learn from** — a full Supabase CRUD feature, a streaming AI chat, a
+   charts page, and a live test dashboard. Study them, then delete what you don't need.
+4. **Guardrails that teach good habits** — a TDD workflow, an 80% test-coverage gate, a
+   300-line file limit, secret scanning, and auto-generated docs, all enforced automatically
+   when you commit and push.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Get your own copy
+
+Click **"Use this template" → Create a new repository**, then clone _your_ new repo:
+
+```bash
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
+```
+
+### 2. Install & configure
+
+```bash
+npm install                 # install dependencies
+cp .env.example .env.local  # create your local env file (gitignored — never commit it)
+```
+
+Then fill in your Supabase keys in `.env.local`. The first-time setup is walked through
+step-by-step in **[docs/getting-started.md](docs/getting-started.md)** — start there.
+
+### 3. Run it
+
+```bash
+npm run dev      # starts the dev server on http://localhost:5000
+```
+
+> The app is login-controlled, so visiting `http://localhost:5000` redirects you to `/login`.
+> Create an account at `/signup` to get in. (Full auth + database setup is in
+> [SUPABASE_SETUP.md](SUPABASE_SETUP.md).)
+
+---
+
+## 🗺️ What's in the box
+
+The template ships with several working pages. Replace the home shell with your own app, and
+use the rest as reference (or delete them):
+
+| Route               | What it is                                                          |
+| ------------------- | ------------------------------------------------------------------- |
+| `/`                 | **The shell** — replace this with your project's main interface     |
+| `/login`, `/signup` | Email/password + OAuth (Google/GitHub) auth, ready to use           |
+| `/tasks`            | A full **Supabase CRUD** example (create / read / update / delete)  |
+| `/chat`             | A **streaming LLM chat** that proxies to an n8n agent webhook       |
+| `/charts`           | A **Recharts** data-visualization example using the shadcn chart UI |
+| `/test-dashboard`   | A live view of your test suite + coverage                           |
+
+---
+
+## 📂 Project Structure
+
+```
+.
+├── app/                       # App Router: routes, pages, API handlers, UI
+│   ├── page.tsx               # 👈 Start here — replace with your app
+│   ├── components/            # 👈 Your app-specific components
+│   ├── api/                   # Route handlers (REST) — e.g. tasks, chat
+│   ├── login/ · signup/       # Auth pages + server actions
+│   └── auth/                  # OAuth / email-confirmation callbacks
+├── components/ui/             # shadcn/ui primitives (Button, Card, Input, Chart…)
+├── lib/
+│   ├── supabase/              # client.ts (browser) · server.ts (RSC/API) · middleware.ts
+│   ├── logger.ts              # structured logger — use instead of console.log
+│   └── utils.ts              # cn() Tailwind class merger
+├── types/                     # Shared TypeScript types (incl. generated Supabase types)
+├── tests/                     # Your tests live here (TDD is required)
+│   ├── unit/                  # mirrors app/ — unit + component tests
+│   └── integration/           # API + cross-module tests
+├── docs/                      # getting-started.md + integration guides
+├── CLAUDE.md / AGENTS.md      # Project rules for you and your AI coding agent
+└── .claude/rules/             # Path-scoped rules your AI agent auto-loads
+```
+
+---
+
+## 🛠️ Pre-Configured Tech Stack
+
+| Category      | Technology                    | Why it's here                             |
+| ------------- | ----------------------------- | ----------------------------------------- |
+| **Framework** | Next.js 16 (App Router)       | Industry-standard React framework         |
+| **Language**  | TypeScript (strict)           | Type safety and better editor support     |
+| **Styling**   | Tailwind CSS v3.4 + shadcn/ui | Rapid, accessible, on-brand UI            |
+| **Auth + DB** | Supabase (`@supabase/ssr`)    | Login, row-level security, Postgres       |
+| **AI Chat**   | n8n webhook (streamed)        | LLM agent scaffold, proxied server-side   |
+| **Charts**    | Recharts (shadcn wrapper)     | Data visualization                        |
+| **Testing**   | Jest + React Testing Library  | TDD methodology with an 80% coverage gate |
+
+---
+
+## 📝 Development Workflow
+
+### TDD is the law — write tests first
+
+Every feature starts with a failing test. Red → Green → Refactor.
+
+```bash
+# 1. Write a failing test first (RED)
+#    e.g. tests/unit/app/components/MyComponent.test.tsx
+npm test
+
+# 2. Write the simplest code to make it pass (GREEN)
+#    e.g. app/components/MyComponent.tsx
+npm test
+
+# 3. Refactor with the tests as your safety net
+```
+
+### Everyday commands
+
+```bash
+npm run dev            # dev server on http://localhost:5000
+npm run validate       # type-check + lint (run before committing)
+npm test               # run the test suite
+npm run test:coverage  # coverage report (80% gate)
+npm run format         # Prettier
+npm run build          # production build
+```
+
+### Quality gates (enforced automatically)
+
+This repo uses git hooks (husky) so the rules can't be forgotten:
+
+- **pre-commit** — lints & formats staged files, blocks committed secrets, blocks source files
+  over 300 lines, blocks new source modules with no matching test, and keeps `CLAUDE.md` in sync.
+- **pre-push** — runs `npm run validate` and the full test suite before anything leaves your machine.
+
+If a commit or push is blocked, read the message — it's telling you which rule to fix.
+
+---
+
+## 🤖 Built to work with AI coding agents
+
+This template is designed to be driven by an AI assistant (Claude Code, Cursor, etc.):
+
+- **[CLAUDE.md](CLAUDE.md)** (and its `AGENTS.md` alias) is the lean entry point describing the
+  project, commands, and architecture.
+- **[.claude/rules/](.claude/rules/)** holds path-scoped rules (TDD, testing, TypeScript, React,
+  API, database, security, UI styling) that an agent auto-loads when editing matching files.
+
+Keep these accurate as your project grows — they're how your AI partner stays aligned with your
+codebase.
+
+---
+
+## 🎨 Customization & Design System
+
+- **Home page**: edit `app/page.tsx` (this is the shell you replace).
+- **Global styles / theme**: the live design tokens are HSL CSS variables in `app/globals.css`.
+- **Design system**: [DESIGN.md](DESIGN.md) documents your colors, typography, and components in
+  Google's DESIGN.md format and maps each token to its CSS variable. Edit the variables in
+  `app/globals.css` to rebrand, update `DESIGN.md` to match, then validate with
+  `npm run design:lint`.
+- **Add UI components**: `npx shadcn@latest add <name>` (e.g. `dialog`, `table`).
+
+---
+
+## 🔒 Security (built in)
+
+- **Login-controlled by default** — `middleware.ts` refreshes the session on every request and
+  redirects anonymous users to `/login`.
+- **Row-Level Security (RLS)** — database access is scoped to the signed-in user; the server
+  Supabase client carries the session so RLS applies. Never trust the client for authorization.
+- **Input validation** — validate API inputs with **Zod** at the boundary.
+- **No committed secrets** — keys live in `.env.local` (gitignored); a pre-commit hook scans
+  staged files and blocks API keys, tokens, and private keys.
+
+---
+
+## 📋 Project Checklist
+
+Before submitting your project:
+
+- [ ] Replaced the home shell with your own idea
+- [ ] All features have tests (written first — TDD)
+- [ ] Test coverage ≥ 80% (`npm run test:coverage`)
+- [ ] `npm run validate` is clean (no type or lint errors)
+- [ ] No hardcoded secrets (use `.env.local`)
+- [ ] `CLAUDE.md` / `.claude/rules/` updated if you changed the architecture
+
+---
+
+## 🆘 Getting Help
+
+- **First-time setup**: [docs/getting-started.md](docs/getting-started.md)
+- **Supabase + auth setup**: [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
+- **AI chat integration**: [docs/integrations/n8n.md](docs/integrations/n8n.md)
+- **Project rules**: [CLAUDE.md](CLAUDE.md)
+- **Docs**: [Next.js](https://nextjs.org/docs) ·
+  [Tailwind](https://tailwindcss.com/docs) · [shadcn/ui](https://ui.shadcn.com) ·
+  [Supabase](https://supabase.com/docs) · [React](https://react.dev)
+
+**Common issues**
+
+- _Changes not showing?_ Restart the dev server and check the console.
+- _Tests failing?_ Read the error, check the test file location, and verify your imports.
+- _Type errors?_ Define types in `types/`, and check `tsconfig.json`.
+- _Redirected to `/login`?_ That's expected — the app requires a session. Sign up at `/signup`.
+
+---
+
+## 🚢 Deployment
+
+1. Make sure tests pass and `npm run build` succeeds.
+2. Deploy to your hosting platform of choice (e.g. Vercel).
+3. Set your environment variables (the ones in `.env.example`) in the host's configuration.
+
+---
+
+## 📄 License
+
+ISC — this is your starter template to build upon.
+
+---
+
+**Remember**: this is _your_ canvas. The shell app is just a starting point — replace it with
+your creative vision and build something amazing. 🌟
+
+**Happy coding!**
 _Northwestern MPD2 Program_
