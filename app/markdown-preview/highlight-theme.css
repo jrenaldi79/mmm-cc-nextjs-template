@@ -1,0 +1,114 @@
+/* Replit-inspired syntax highlighting theme */
+/* Light theme with blue keywords, orange strings, and gray base */
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+  background: transparent;
+  color: #1f2937;
+}
+
+/* Comments */
+.hljs-comment,
+.hljs-quote {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Keywords, built-ins, selectors */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name,
+.hljs-tag,
+.hljs-attr,
+.hljs-attribute {
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* Strings, template strings */
+.hljs-string,
+.hljs-doctag,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-regexp {
+  color: #c2410c;
+}
+
+/* Numbers, literals */
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-type {
+  color: #059669;
+}
+
+/* Functions, titles */
+.hljs-title,
+.hljs-section,
+.hljs-title.function_,
+.hljs-title.class_,
+.hljs-title.class_.inherited__ {
+  color: #7c3aed;
+}
+
+/* Meta, params */
+.hljs-meta,
+.hljs-params {
+  color: #4b5563;
+}
+
+/* Symbols, bullets */
+.hljs-symbol,
+.hljs-bullet,
+.hljs-code {
+  color: #0891b2;
+}
+
+/* Additions */
+.hljs-addition {
+  color: #059669;
+  background-color: #d1fae5;
+}
+
+/* Deletions */
+.hljs-deletion {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+/* Emphasis */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+/* Strong */
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Links */
+.hljs-link {
+  text-decoration: underline;
+  color: #2563eb;
+}
+
+/* Operators, punctuation */
+.hljs-operator,
+.hljs-punctuation {
+  color: #374151;
+}
+
+/* Selectors */
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-selector-pseudo {
+  color: #7c3aed;
+}
+
+/* Property */
+.hljs-property {
+  color: #2563eb;
+}
