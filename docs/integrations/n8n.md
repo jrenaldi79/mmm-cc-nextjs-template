@@ -65,7 +65,10 @@ switch between them. It is backed by two Supabase tables that the migration
   in **`n8n_chat_histories`** — the table n8n's **Postgres Chat Memory** node
   reads and writes, keyed by `session_id`. Each row is one LangChain message
   (`message` jsonb, `{type, content}`). Point the memory node at this table and
-  it fills automatically as the agent runs.
+  it fills automatically as the agent runs. The Postgres Chat Memory node needs a
+  **Postgres credential pointing at your Supabase database via the session
+  pooler** — see [SUPABASE_SETUP.md → 2b. Connect n8n to Postgres](../../SUPABASE_SETUP.md)
+  for the exact host/port/user fields.
 - **The app reads, never writes**: the sidebar list comes from
   **`n8n_chat_sessions`** (live via **Supabase Realtime** — that table is in the
   `supabase_realtime` publication), and selecting a session loads its messages
