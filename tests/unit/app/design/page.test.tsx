@@ -33,6 +33,20 @@ describe('Design System page', () => {
     expect(screen.getAllByText('bg-primary').length).toBeGreaterThan(0);
   });
 
+  it('reads each color value live from the rendered theme', () => {
+    expect(screen.getByText(/read live from your/i)).toBeInTheDocument();
+  });
+
+  it('points to more shadcn components you can add', () => {
+    expect(screen.getByText(/what else you can add/i)).toBeInTheDocument();
+    expect(screen.getByText('Dialog')).toBeInTheDocument();
+    const browse = screen.getByRole('link', { name: /browse all components/i });
+    expect(browse).toHaveAttribute(
+      'href',
+      expect.stringContaining('ui.shadcn.com')
+    );
+  });
+
   it('shows the typography & shape section', () => {
     expect(
       screen.getByRole('heading', { name: /typography/i })

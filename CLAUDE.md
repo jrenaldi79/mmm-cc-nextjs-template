@@ -88,7 +88,7 @@ app/
 │   └── ThemeToggle.tsx
 ├── design/
 │   ├── components/
-│   │   ├── AddComponentGuide.tsx  # A friendly, visual walkthrough of how a new component enters the project via
+│   │   ├── AddComponentGuide.tsx  # A taste of the wider shadcn registry — components that aren't installed yet
 │   │   ├── ColorTokens.tsx  # The living color palette. Each swatch renders with its real token class
 │   │   ├── ComponentGallery.tsx  # Live gallery of the shadcn/ui primitives that ship with this template. These
 │   │   ├── ConceptsSection.tsx  # Plain-language explanation of what a design system is, what shadcn/ui is, and
@@ -171,7 +171,7 @@ types/
 | `app/components/tasks/StudentsInfoCard.tsx` |  | `StudentsInfoCard` |
 | `app/components/tasks/TaskItem.tsx` |  | `TaskItem` |
 | `app/design/page.tsx` |  | `metadata`, `DesignPage` |
-| `app/design/components/AddComponentGuide.tsx` | A friendly, visual walkthrough of how a new component enters the project via | `AddComponentGuide` |
+| `app/design/components/AddComponentGuide.tsx` | A taste of the wider shadcn registry — components that aren't installed yet | `AddComponentGuide` |
 | `app/design/components/ColorTokens.tsx` | The living color palette. Each swatch renders with its real token class | `ColorTokens` |
 | `app/design/components/ComponentGallery.tsx` | Live gallery of the shadcn/ui primitives that ship with this template. These | `ComponentGallery` |
 | `app/design/components/ConceptsSection.tsx` | Plain-language explanation of what a design system is, what shadcn/ui is, and | `ConceptsSection` |
