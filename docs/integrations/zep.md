@@ -130,6 +130,33 @@ if the key is unset or Zep is unavailable, the chat works exactly as before. Set
 
 ---
 
+## 4. App integration: the `/memory` learning page
+
+The `/memory` route (in the nav after **Design**) is a student-facing page that
+teaches long-term memory + knowledge graphs in plain language, then lets students
+explore **their own** Zep graph live. It's backed by two server routes and one
+shared helper (`lib/zep/graph-search.ts`):
+
+- **`GET /api/memory/summary`** → `fetchUserSummary(client, userId)` returns the
+  signed-in user's user-node summary (their long-term memory). Rendered by
+  `UserSummaryCard`.
+- **`POST /api/memory/search`** (`{ query }`, Zod-validated, ≤400 chars) →
+  `searchUserGraph(client, userId, query)` runs an **auto search**
+  (`graph.search({ scope: 'auto', returnRawResults: true })`). Auto scope lets Zep
+  compose the most relevant context across edges, nodes, episodes, observations,
+  and thread summaries into a single `context` block, and the raw
+  edges/nodes/episodes are surfaced so students see what fed it. Rendered by
+  `GraphSearchExplorer` (with starter sample queries).
+
+Both routes resolve the user from the **server Supabase session** and pass
+`user.id` to Zep — a browser-supplied id is never trusted, so a student can only
+ever read/search their own graph. `ZEP_API_KEY` stays server-side; if it's unset
+the routes return **503** and the page explains how to enable the tools. Unlike
+the chat helpers (which swallow errors), these surface failures so students can
+see exactly what happened.
+
+---
+
 ## Notes
 
 - **Per-developer, not committed.** `zepctl`'s key lives in the keychain; the MCP

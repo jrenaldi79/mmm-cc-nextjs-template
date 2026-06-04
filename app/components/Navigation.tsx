@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: '/chat', label: 'Chat' },
   { href: '/test-dashboard', label: 'Tests' },
   { href: '/design', label: 'Design' },
+  { href: '/memory', label: 'Memory' },
 ];
 
 function LogoMark() {
