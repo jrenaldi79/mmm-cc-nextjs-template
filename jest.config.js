@@ -12,7 +12,14 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    // Sibling git worktrees live under .claude/worktrees/ and carry their own
+    // test trees; without this, jest run from the main checkout discovers and
+    // runs every worktree's tests (and fails the pre-push gate on unrelated work).
+    '<rootDir>/.claude/worktrees/',
+  ],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     '!app/**/*.d.ts',
