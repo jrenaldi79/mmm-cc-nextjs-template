@@ -92,8 +92,10 @@ app/
 │   │   ├── ColorTokens.tsx  # The living color palette. Each swatch renders with its real token class
 │   │   ├── ComponentGallery.tsx  # Live gallery of the shadcn/ui primitives that ship with this template. These
 │   │   ├── ConceptsSection.tsx  # Plain-language explanation of what a design system is, what shadcn/ui is, and
+│   │   ├── DesignMdSection.tsx  # Explains the open DESIGN.md format that this template's design system is
 │   │   ├── EnforcementSection.tsx  # Explains, for non-technical students, why hard-coded styles create
-│   │   └── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the three real
+│   │   ├── TypeAndShapeSection.tsx  # Typography scale and shape (corner radius) reference. Shows the three real
+│   │   └── WhyDesignSystemsSection.tsx  # Frames the *problem* before any solution: what an interface looks like with no
 │   └── page.tsx
 ├── login/
 │   ├── actions.ts  # Email/password sign-in. Called as a form action from /login.
@@ -173,8 +175,10 @@ types/
 | `app/design/components/ColorTokens.tsx` | The living color palette. Each swatch renders with its real token class | `ColorTokens` |
 | `app/design/components/ComponentGallery.tsx` | Live gallery of the shadcn/ui primitives that ship with this template. These | `ComponentGallery` |
 | `app/design/components/ConceptsSection.tsx` | Plain-language explanation of what a design system is, what shadcn/ui is, and | `ConceptsSection` |
+| `app/design/components/DesignMdSection.tsx` | Explains the open DESIGN.md format that this template's design system is | `DesignMdSection` |
 | `app/design/components/EnforcementSection.tsx` | Explains, for non-technical students, why hard-coded styles create | `EnforcementSection` |
 | `app/design/components/TypeAndShapeSection.tsx` | Typography scale and shape (corner radius) reference. Shows the three real | `TypeAndShapeSection` |
+| `app/design/components/WhyDesignSystemsSection.tsx` | Frames the *problem* before any solution: what an interface looks like with no | `WhyDesignSystemsSection` |
 | `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
 | `app/login/page.tsx` |  | `LoginPage`, `default` |
 | `app/signup/page.tsx` |  | `SignupPage`, `default` |
