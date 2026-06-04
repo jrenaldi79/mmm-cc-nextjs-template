@@ -3,8 +3,76 @@
 ## Overview
 This project is a Next.js 16 starter template for Northwestern MPD2 students. It provides a production-ready foundation with TypeScript, Tailwind CSS, a TDD framework, and Turbopack, accelerating student development by focusing on innovation over setup complexities. The `/` route is a shell main app that students replace with their own projects.
 
--   **Your Role**: You are an expert in TypeScript, Node.js, React, Next.js 16, and Tailwind.
+-   **Your Role**: You are an expert in TypeScript, Node.js, React, Next.js 16, Tailwind, and shadcn/ui.
 -   **Shell Main App (`/`)**: A starter structure for students to replace with their own projects. This is where you will build.
+
+## 🚀 First-Time Setup (Bootstrapping)
+
+> **AI agent — read this first.** This section is a one-time onboarding script
+> for a brand-new user (likely a first-time coder). Walk them through each step
+> **interactively and conversationally** — do one step, confirm it worked, then
+> move on. Don't dump all the commands at once. Track progress with the
+> checklist at the end.
+>
+> **🧹 Self-cleanup (important):** Once every item in the Setup Checklist is
+> checked off, you MUST:
+> 1. Delete this entire "First-Time Setup (Bootstrapping)" section from
+>    `CLAUDE.md`.
+> 2. Rewrite the **Overview** (and **Project Structure**, if it changed) to
+>    describe the user's actual project instead of the starter template.
+> 3. Commit the cleanup (e.g. "Complete project bootstrapping").
+>
+> A template that still contains setup scaffolding after setup is confusing.
+> Leave the file describing the *real* project, not the bootstrap process.
+
+Guide the user through these steps:
+
+### 1. Install dependencies
+- Run `npm install`.
+- Confirm it finishes without errors.
+
+### 2. Configure environment variables
+- Copy `.env.example` to `.env.local` (`cp .env.example .env.local`).
+- Explain that `.env.local` is **gitignored** and must never be committed —
+  it holds secrets.
+- They'll fill in the Supabase values in the next step. If you add the n8n
+  integration later, its variables go here too.
+
+### 3. Create / connect a Supabase project
+- Ask whether they already have a Supabase project.
+  - If not, walk them through creating a free one at https://supabase.com.
+- Have them copy **Project URL** and **anon/public key** from
+  *Project Settings → API* into `.env.local` as `NEXT_PUBLIC_SUPABASE_URL`
+  and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- `SUPABASE_SETUP.md` has the detailed, click-by-click walkthrough — point them
+  there if they get stuck.
+
+### 4. Create the database schema
+- The bundled **Tasks** example needs a `tasks` table. The SQL lives in
+  `SUPABASE_SETUP.md`.
+- **Preferred path — Supabase MCP:** if the Supabase MCP server is connected,
+  you (the agent) can create tables, run migrations (`apply_migration`), and
+  inspect the schema directly — offer to do it for them. If it isn't connected,
+  tell them how to add it (Supabase MCP: https://supabase.com/docs/guides/getting-started/mcp)
+  so you can manage their database, or have them paste the SQL from
+  `SUPABASE_SETUP.md` into the Supabase **SQL Editor**.
+- When the user designs their **own** features, design the schema together and
+  apply it the same way (Supabase MCP `apply_migration` or the SQL Editor).
+
+### 5. Verify everything works
+- Run `npm run dev` and open http://localhost:5000.
+- Visit `/tasks` and confirm create/toggle/delete works against their Supabase
+  project. Visit `/charts` to confirm the UI renders.
+- Run `npm test` — all tests should pass.
+
+### Setup Checklist
+- [ ] Dependencies installed (`npm install`)
+- [ ] `.env.local` created with Supabase credentials
+- [ ] Supabase project created & connected
+- [ ] Database schema applied (`tasks` table + any custom tables)
+- [ ] App runs locally and `/tasks` works end-to-end
+- [ ] `npm test` passes
+- [ ] **Cleanup done:** this section removed & Overview rewritten for the real project
 
 ## 1. AI Agent Pre-Implementation Checklist
 
@@ -103,23 +171,30 @@ All file paths must conform to this structure.
 -   **Performance**: Use `next/dynamic` for non-critical components and `next/image` for optimized images.
 -   **Async**: Prefer async/await over raw Promises.
 
-## 6. UI & Styling (Tailwind CSS)
+## 6. UI & Styling (Tailwind CSS + shadcn/ui)
 
--   **Version**: ALWAYS use Tailwind CSS v3.4.x for stability: `npm install -D tailwindcss@^3.4.0`.
--   **Configuration**: Use traditional PostCSS configuration.
-    ```js
-    // postcss.config.js
-    export default {
-      plugins: { tailwindcss: {}, autoprefixer: {} },
-    }
-    ```
--   **Directives**: Use traditional directives in `app/globals.css`.
-    ```css
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
-    ```
--   **Best Practices**: Utilize Tailwind utility classes, follow Shadcn UI guidelines, and ensure responsive, mobile-first design.
+-   **Component library**: This template uses **shadcn/ui** (new-york style).
+    Reusable primitives live in `components/ui/` (Button, Card, Input, Label,
+    Checkbox, Badge, Select, Chart). **Prefer composing these over hand-rolling
+    custom components** — reach for a shadcn/ui component first, and only write
+    bespoke markup when no primitive fits.
+-   **Adding components**: `npx shadcn@latest add <name>` (e.g. `dialog`,
+    `dropdown-menu`, `table`). If the CLI can't reach the registry, copy the
+    source from https://ui.shadcn.com/docs/components into `components/ui/`.
+-   **Design tokens**: Colors are CSS variables (HSL) defined in
+    `app/globals.css` and mapped in `tailwind.config.js` (e.g. `bg-primary`,
+    `text-muted-foreground`, `border-border`). Use the tokens, not hard-coded
+    colors, so light/dark theming stays consistent.
+-   **`cn()` helper**: Merge class names with `cn()` from `@/lib/utils`.
+-   **Charts**: Use **Recharts** via the shadcn chart wrapper in
+    `components/ui/chart.tsx` (`ChartContainer`, `ChartTooltip`,
+    `ChartLegend`). See `app/charts/page.tsx` for a working example. Add more
+    chart types from https://ui.shadcn.com/charts.
+-   **Version**: Stay on Tailwind CSS v3.4.x for stability (`tailwindcss@^3.4.0`),
+    with traditional PostCSS config (`postcss.config.js`) and `@tailwind`
+    directives in `app/globals.css`.
+-   **Best Practices**: Utility classes, responsive/mobile-first design, and
+    accessible components (shadcn/ui is built on Radix primitives).
 
 ## 7. API Design & Backend
 
@@ -192,9 +267,45 @@ The following are excluded from linting:
 ## 11. Database (Supabase)
 
 -   **Interaction**: Use the Supabase SDK for all data fetching and querying.
+    The client is created lazily in `lib/supabase.ts` (`supabase` proxy) so the
+    app builds without credentials; the missing-env error surfaces on first use.
 -   **Security**: Use Row Level Security (RLS) policies in Supabase for all data access control.
--   **Schema**: Create data models using Supabase's schema builder.
--   **Type Safety**: Use TypeScript for type safety when interacting with Supabase.
+-   **Schema & migrations**: Prefer the **Supabase MCP server** so the agent can
+    `apply_migration`, `list_tables`, and inspect advisors directly. Otherwise
+    use the Supabase SQL Editor. Keep migrations under version control.
+-   **Type Safety**: Use TypeScript for type safety when interacting with
+    Supabase. Regenerate `types/supabase.ts` after schema changes (Supabase MCP
+    `generate_typescript_types` or the Supabase CLI).
+
+## 11a. Integration: n8n LLM Agent Streaming
+
+This template is designed to call an **n8n** workflow over an HTTP webhook and
+**stream an LLM agent's response back to the UI** token-by-token.
+
+-   **Architecture**: Chat UI → Next.js Route Handler (`app/api/chat/route.ts`)
+    → n8n Webhook (AI Agent node with streaming) → response streamed back
+    through the route handler to the browser. **Always proxy through the route
+    handler** — keep the n8n webhook URL/secret server-side (`N8N_WEBHOOK_URL`),
+    never call n8n from the browser.
+-   **Streaming transport**: Uses the **Web Streams API**, which is built into
+    Next.js / Node 20+ and the browser — no polyfill required. The route handler
+    forwards `response.body` (a `ReadableStream`); the client reads it.
+-   **Recommended dependencies** (install when building this feature):
+    -   `ai` + `@ai-sdk/react` — `useChat` / `useCompletion` React hooks plus
+        streaming message state on the client and a standard stream protocol on
+        the server. (If you want zero new runtime deps, you can stream natively
+        with `fetch()` + `response.body.getReader()` + `TextDecoder`.)
+    -   `zod` — validate the chat request body (this template's API-validation
+        rule already assumes Zod; it is not yet installed).
+    -   `react-markdown` + `remark-gfm` — render the streamed assistant markdown
+        safely as React components (avoid `dangerouslySetInnerHTML`).
+-   **n8n config**: Enable streaming on the AI Agent / "Respond to Webhook"
+    node. Its chunk format isn't a fixed standard, so **normalize n8n's chunks
+    into a plain text stream (or the AI SDK data-stream protocol) inside the
+    route handler**. Use the AI SDK client with `streamProtocol: 'text'` if you
+    forward raw token text.
+-   **Env**: Add `N8N_WEBHOOK_URL` (and any auth header/secret) to `.env.local`
+    and document them in `.env.example`.
 
 ## 12. Logging, Monitoring & Error Handling
 
