@@ -73,6 +73,9 @@ app/
 ├── chat/
 │   └── page.tsx
 ├── components/
+│   ├── chat/
+│   │   ├── ChatMessages.tsx
+│   │   └── ChatSessionSidebar.tsx
 │   ├── home/
 │   │   ├── AiInstructionsCard.tsx
 │   │   ├── TddFrameworkCard.tsx
@@ -133,12 +136,13 @@ lib/
 │   ├── client.ts  # Supabase client for use inside Client Components (`'use client'`).
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
+├── chat-history.ts  # Map stored n8n LangChain history rows into the UI message shape used by the
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
 ├── n8n-stream.ts  # Normalize an n8n AI Agent streaming response into a plain text token stream.
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
 types/
 ├── index.ts
-└── supabase.ts
+└── supabase.ts  # A single LangChain message as stored in n8n_chat_histories.message.
 <!-- /AUTO:tree -->
 
 ---
@@ -165,6 +169,8 @@ types/
 | `app/components/PageHero.tsx` | The shared page header used at the top of every top-level page (Design, Charts, | `PageHero` |
 | `app/components/PageShell.tsx` | The standard page frame for every top-level content page (Design, Charts, Chat, | `PageShell` |
 | `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
+| `app/components/chat/ChatMessages.tsx` |  | `ChatMessages` |
+| `app/components/chat/ChatSessionSidebar.tsx` |  | `ChatSessionSidebar` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
 | `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
@@ -200,6 +206,7 @@ types/
 | `components/ui/input.tsx` |  | `Input` |
 | `components/ui/label.tsx` |  | `Label` |
 | `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
+| `lib/chat-history.ts` | Map stored n8n LangChain history rows into the UI message shape used by the | `UiMessage`, `historyToUiMessages` |
 | `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
 | `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `N8N_RUN_SEPARATOR`, `createN8nTextStream` |
 | `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `studioCard`, `studioCardHover` |
@@ -207,7 +214,7 @@ types/
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
 | `types/index.ts` |  | `ApiError` |
-| `types/supabase.ts` |  | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
+| `types/supabase.ts` | A single LangChain message as stored in n8n_chat_histories.message. | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
 <!-- /AUTO:modules -->
 
 ---

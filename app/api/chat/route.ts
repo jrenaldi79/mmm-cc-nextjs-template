@@ -1,6 +1,7 @@
 import { createTextStreamResponse, simulateReadableStream } from 'ai';
 import { z } from 'zod';
 import { createN8nTextStream } from '@/lib/n8n-stream';
+import { createClient } from '@/lib/supabase/server';
 
 // Allow streaming responses up to 30 seconds.
 export const maxDuration = 30;
@@ -65,6 +66,15 @@ export async function POST(request: Request): Promise<Response> {
 
   const userText = latestUserText(parsed.data.messages);
   const sessionId = parsed.data.sessionId ?? crypto.randomUUID();
+
+  // The route is login-gated by proxy.ts, so there is a session here. We read the
+  // user id and forward it to n8n so it can stamp n8n_chat_sessions ownership on insert.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id;
+
   const webhookUrl = process.env.N8N_WEBHOOK_URL;
 
   // ---- Real n8n agent: proxy the workflow and stream its response back ----
@@ -84,6 +94,7 @@ export async function POST(request: Request): Promise<Response> {
         body: JSON.stringify({
           message: userText,
           sessionId,
+          userId,
           messages: parsed.data.messages,
         }),
       });

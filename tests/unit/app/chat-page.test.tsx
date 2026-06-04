@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
@@ -7,6 +7,7 @@ import '@testing-library/jest-dom';
 // transform from node_modules. Mock them so the test stays focused on the
 // chat shell rendering (streaming behavior is covered by the route handler test).
 const mockSendMessage = jest.fn();
+const mockSetMessages = jest.fn();
 let mockChatState: {
   messages: Array<{
     id: string;
@@ -21,6 +22,7 @@ jest.mock('@ai-sdk/react', () => ({
   useChat: () => ({
     messages: mockChatState.messages,
     sendMessage: mockSendMessage,
+    setMessages: mockSetMessages,
     status: mockChatState.status,
     error: mockChatState.error,
   }),
@@ -36,17 +38,55 @@ jest.mock('react-markdown', () => ({
 }));
 jest.mock('remark-gfm', () => ({ __esModule: true, default: () => {} }));
 
-// Navigation (rendered by this page) reads auth state from the Supabase
-// browser client — stub it so it doesn't create a real client.
+// Navigation, the session sidebar, and history loading all read from the
+// Supabase browser client — stub it so they don't create a real client.
+// The sidebar lists sessions via `.from().select().order()`; history loading
+// filters via `.from().select().eq()` (no trailing `.order()` — the mapper sorts).
+const mockOrder = jest.fn().mockResolvedValue({ data: [], error: null });
+const mockHistoryOrder = jest.fn().mockResolvedValue({ data: [], error: null });
 jest.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
     auth: {
-      getUser: jest.fn().mockResolvedValue({ data: { user: null } }),
+      getUser: jest.fn().mockResolvedValue({ data: { user: { id: 'u1' } } }),
       onAuthStateChange: () => ({
         data: { subscription: { unsubscribe: jest.fn() } },
       }),
     },
+    from: () => ({
+      select: () => ({
+        order: mockOrder,
+        eq: () => mockHistoryOrder(),
+      }),
+    }),
+    channel: () => ({
+      on: () => ({ subscribe: () => ({}) }),
+      subscribe: () => ({}),
+    }),
+    removeChannel: jest.fn(),
   }),
+}));
+
+// Stub the sidebar so we can drive its callbacks directly: a "New chat" button
+// fires `onNewChat`, a "Load session" button fires `onSelectSession('sess-1')`.
+// This lets us characterize the page's session-switch / new-chat handlers
+// without depending on the real sidebar's data loading.
+jest.mock('@/app/components/chat/ChatSessionSidebar', () => ({
+  ChatSessionSidebar: ({
+    onNewChat,
+    onSelectSession,
+  }: {
+    onNewChat: () => void;
+    onSelectSession: (id: string) => void;
+  }) => (
+    <div>
+      <button type="button" onClick={onNewChat}>
+        New chat
+      </button>
+      <button type="button" onClick={() => onSelectSession('sess-1')}>
+        Load session
+      </button>
+    </div>
+  ),
 }));
 
 import ChatPage from '@/app/chat/page';
@@ -55,6 +95,9 @@ import { N8N_RUN_SEPARATOR } from '@/lib/n8n-stream';
 describe('ChatPage', () => {
   beforeEach(() => {
     mockSendMessage.mockReset();
+    mockSetMessages.mockReset();
+    mockHistoryOrder.mockReset();
+    mockHistoryOrder.mockResolvedValue({ data: [], error: null });
     mockChatState = { messages: [], status: 'ready', error: undefined };
     global.fetch = jest.fn(
       () => new Promise(() => {})
@@ -194,6 +237,55 @@ describe('ChatPage', () => {
     expect(
       screen.queryByText(`First response${N8N_RUN_SEPARATOR}Final answer`)
     ).not.toBeInTheDocument();
+  });
+
+  it('renders the session sidebar with a New chat button', async () => {
+    render(<ChatPage />);
+    expect(
+      await screen.findByRole('button', { name: /new chat/i })
+    ).toBeInTheDocument();
+  });
+
+  it('clears the transcript when starting a new chat', async () => {
+    const user = userEvent.setup();
+    render(<ChatPage />);
+
+    await user.click(screen.getByRole('button', { name: /new chat/i }));
+
+    expect(mockSetMessages).toHaveBeenCalledWith([]);
+  });
+
+  it('loads a selected session and maps its history into UI messages', async () => {
+    mockHistoryOrder.mockResolvedValue({
+      data: [
+        {
+          id: 1,
+          session_id: 'sess-1',
+          message: { type: 'human', content: 'Hi' },
+        },
+        { id: 2, session_id: 'sess-1', message: { type: 'ai', content: 'Yo' } },
+      ],
+      error: null,
+    });
+    const user = userEvent.setup();
+    render(<ChatPage />);
+
+    await user.click(screen.getByRole('button', { name: /load session/i }));
+
+    await waitFor(() =>
+      expect(mockSetMessages).toHaveBeenCalledWith([
+        {
+          id: 'history-1',
+          role: 'user',
+          parts: [{ type: 'text', text: 'Hi' }],
+        },
+        {
+          id: 'history-2',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'Yo' }],
+        },
+      ])
+    );
   });
 
   it('sends a message on submit', async () => {
