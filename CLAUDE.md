@@ -132,7 +132,7 @@ lib/
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
 ├── zep/
-│   ├── chat-memory.ts  # Fetch the user's long-term context block for a thread. Best-effort: on any
+│   ├── chat-memory.ts  # Fetch the user's long-term context for a thread, plus (when `userId` is
 │   ├── client.ts  # Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat
 │   ├── identity.ts  # Map a Supabase user to the fields Zep's user.add expects.
 │   └── stream-capture.ts  # A pass-through transform that accumulates the streamed assistant text and,
@@ -207,7 +207,7 @@ types/
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
-| `lib/zep/chat-memory.ts` | Fetch the user's long-term context block for a thread. Best-effort: on any | `retrieveUserContext`, `ChatTurn`, `recordChatTurn` |
+| `lib/zep/chat-memory.ts` | Fetch the user's long-term context for a thread, plus (when `userId` is | `retrieveUserContext`, `ChatTurn`, `recordChatTurn` |
 | `lib/zep/client.ts` | Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat | `getZepClient` |
 | `lib/zep/identity.ts` | Map a Supabase user to the fields Zep's user.add expects. | `ZepUserFields`, `toZepUser`, `displayName` |
 | `lib/zep/stream-capture.ts` | A pass-through transform that accumulates the streamed assistant text and, | `createCaptureStream` |

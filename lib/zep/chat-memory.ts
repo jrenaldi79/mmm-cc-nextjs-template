@@ -25,14 +25,12 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   });
 }
 
-/**
- * Fetch the user's long-term context block for a thread. Best-effort: on any
- * failure or timeout it returns '' so the chat proceeds without context.
- */
-export async function retrieveUserContext(
+// Best-effort: fetch the thread's long-term context block. Returns '' on any
+// failure or timeout so the chat proceeds without context.
+async function getThreadContext(
   client: ZepClient,
   threadId: string,
-  timeoutMs: number = DEFAULT_TIMEOUT_MS
+  timeoutMs: number
 ): Promise<string> {
   try {
     const result = await withTimeout(
@@ -41,11 +39,57 @@ export async function retrieveUserContext(
     );
     return result?.context ?? '';
   } catch (error) {
-    logger.warn('Zep getUserContext failed; proceeding without context', {
+    logger.warn(
+      'Zep getUserContext failed; proceeding without thread context',
+      {
+        error: String(error),
+      }
+    );
+    return '';
+  }
+}
+
+// Best-effort: fetch the user node's regional summary. This is independent of
+// the Zep project's context-block summary toggle, so we can surface it even
+// when that toggle is off. Returns '' on any failure or timeout.
+async function getUserSummary(
+  client: ZepClient,
+  userId: string,
+  timeoutMs: number
+): Promise<string> {
+  try {
+    const result = await withTimeout(client.user.getNode(userId), timeoutMs);
+    return (result?.node?.summary ?? '').trim();
+  } catch (error) {
+    logger.warn('Zep user.getNode failed; proceeding without user summary', {
       error: String(error),
     });
     return '';
   }
+}
+
+/**
+ * Fetch the user's long-term context for a thread, plus (when `userId` is
+ * given) the user-node summary, and prepend the summary as a `<USER_SUMMARY>`
+ * block. Both lookups run in parallel and are best-effort: on any failure or
+ * timeout each returns '' so the chat proceeds without that piece. The summary
+ * block is deduped if the thread context already includes one.
+ */
+export async function retrieveUserContext(
+  client: ZepClient,
+  threadId: string,
+  userId?: string,
+  timeoutMs: number = DEFAULT_TIMEOUT_MS
+): Promise<string> {
+  const [context, summary] = await Promise.all([
+    getThreadContext(client, threadId, timeoutMs),
+    userId ? getUserSummary(client, userId, timeoutMs) : Promise.resolve(''),
+  ]);
+  if (summary && !context.includes('<USER_SUMMARY>')) {
+    const block = `<USER_SUMMARY>\n${summary}\n</USER_SUMMARY>`;
+    return context ? `${block}\n\n${context}` : block;
+  }
+  return context;
 }
 
 export interface ChatTurn {

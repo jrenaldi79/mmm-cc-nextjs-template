@@ -74,6 +74,7 @@ describe('POST /api/chat — Zep memory', () => {
     expect(retrieveUserContext).toHaveBeenCalledWith(
       expect.anything(),
       'sess-1',
+      'user-123',
       expect.anything()
     );
     const sentBody = JSON.parse(

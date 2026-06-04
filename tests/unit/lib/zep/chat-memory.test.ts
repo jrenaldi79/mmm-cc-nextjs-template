@@ -4,10 +4,10 @@ import type { User } from '@supabase/supabase-js';
 import { retrieveUserContext, recordChatTurn } from '@/lib/zep/chat-memory';
 import { N8N_RUN_SEPARATOR } from '@/lib/n8n-stream';
 
-function fakeClient(getUserContext: jest.Mock): ZepClient {
+function fakeClient(getUserContext: jest.Mock, getNode?: jest.Mock): ZepClient {
   return {
     thread: { getUserContext, create: jest.fn(), addMessages: jest.fn() },
-    user: { add: jest.fn() },
+    user: { add: jest.fn(), getNode: getNode ?? jest.fn() },
   } as unknown as ZepClient;
 }
 
@@ -28,12 +28,94 @@ describe('retrieveUserContext', () => {
 
   it('returns empty string when getUserContext exceeds the timeout', async () => {
     const client = fakeClient(jest.fn().mockReturnValue(new Promise(() => {}))); // never resolves
-    await expect(retrieveUserContext(client, 'thread-1', 20)).resolves.toBe('');
+    await expect(
+      retrieveUserContext(client, 'thread-1', undefined, 20)
+    ).resolves.toBe('');
   });
 
   it('returns empty string when getUserContext resolves without a context field', async () => {
     const client = fakeClient(jest.fn().mockResolvedValue({}));
     await expect(retrieveUserContext(client, 'thread-1')).resolves.toBe('');
+  });
+
+  it('prepends the user-node summary as a <USER_SUMMARY> block before the thread context', async () => {
+    const getNode = jest
+      .fn()
+      .mockResolvedValue({ node: { summary: 'Dana is a fintech founder.' } });
+    const client = fakeClient(
+      jest.fn().mockResolvedValue({ context: 'FACTS_BLOCK' }),
+      getNode
+    );
+    const result = await retrieveUserContext(client, 'thread-1', 'user-1');
+    expect(
+      result.startsWith(
+        '<USER_SUMMARY>\nDana is a fintech founder.\n</USER_SUMMARY>'
+      )
+    ).toBe(true);
+    expect(result).toContain('FACTS_BLOCK');
+    expect(getNode).toHaveBeenCalledWith('user-1');
+  });
+
+  it('omits the summary block when the user-node summary is empty/missing', async () => {
+    const getNode = jest.fn().mockResolvedValue({ node: { summary: '' } });
+    const client = fakeClient(
+      jest.fn().mockResolvedValue({ context: 'FACTS_BLOCK' }),
+      getNode
+    );
+    await expect(
+      retrieveUserContext(client, 'thread-1', 'user-1')
+    ).resolves.toBe('FACTS_BLOCK');
+  });
+
+  it('does not duplicate <USER_SUMMARY> when the thread context already contains one', async () => {
+    const getNode = jest
+      .fn()
+      .mockResolvedValue({ node: { summary: 'Dana is a fintech founder.' } });
+    const client = fakeClient(
+      jest.fn().mockResolvedValue({
+        context: '<USER_SUMMARY>\nExisting summary.\n</USER_SUMMARY>\n\nFACTS',
+      }),
+      getNode
+    );
+    const result = await retrieveUserContext(client, 'thread-1', 'user-1');
+    const occurrences = result.split('<USER_SUMMARY>').length - 1;
+    expect(occurrences).toBe(1);
+    expect(result).toContain('Existing summary.');
+  });
+
+  it('does not call user.getNode when no userId is provided', async () => {
+    const getNode = jest
+      .fn()
+      .mockResolvedValue({ node: { summary: 'should not appear' } });
+    const client = fakeClient(
+      jest.fn().mockResolvedValue({ context: 'FACTS_BLOCK' }),
+      getNode
+    );
+    const result = await retrieveUserContext(client, 'thread-1');
+    expect(getNode).not.toHaveBeenCalled();
+    expect(result).toBe('FACTS_BLOCK');
+  });
+
+  it('omits the summary but still returns thread context when getNode throws', async () => {
+    const getNode = jest.fn().mockRejectedValue(new Error('node boom'));
+    const client = fakeClient(
+      jest.fn().mockResolvedValue({ context: 'FACTS_BLOCK' }),
+      getNode
+    );
+    await expect(
+      retrieveUserContext(client, 'thread-1', 'user-1')
+    ).resolves.toBe('FACTS_BLOCK');
+  });
+
+  it('omits the summary but still returns thread context when getNode exceeds the timeout', async () => {
+    const getNode = jest.fn().mockReturnValue(new Promise(() => {})); // never resolves
+    const client = fakeClient(
+      jest.fn().mockResolvedValue({ context: 'FACTS_BLOCK' }),
+      getNode
+    );
+    await expect(
+      retrieveUserContext(client, 'thread-1', 'user-1', 20)
+    ).resolves.toBe('FACTS_BLOCK');
   });
 });
 

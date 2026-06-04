@@ -72,12 +72,17 @@ interface N8nProxyArgs {
 async function proxyToN8n(args: N8nProxyArgs): Promise<Response> {
   const { webhookUrl, userText, sessionId, messages } = args;
   const zep = getZepClient();
-  // Kick off the user lookup concurrently; only awaited in the capture flush.
-  const userPromise = zep
-    ? getSignedInUser()
-    : Promise.resolve<User | null>(null);
+  // Resolve the user up front: its id scopes the user-node summary lookup, and
+  // the same value is reused to record the turn. getSignedInUser is try/caught
+  // and returns null on failure, so this can't break or stall the request.
+  const user = zep ? await getSignedInUser() : null;
   const context = zep
-    ? await retrieveUserContext(zep, sessionId, ZEP_CONTEXT_TIMEOUT_MS)
+    ? await retrieveUserContext(
+        zep,
+        sessionId,
+        user?.id,
+        ZEP_CONTEXT_TIMEOUT_MS
+      )
     : '';
 
   let upstream: Response;
@@ -119,7 +124,6 @@ async function proxyToN8n(args: N8nProxyArgs): Promise<Response> {
   const textStream = zep
     ? baseTextStream.pipeThrough(
         createCaptureStream(async (assistantText) => {
-          const user = await userPromise;
           if (user && userText.trim() && assistantText.trim()) {
             await recordChatTurn(zep, {
               supabaseUser: user,
