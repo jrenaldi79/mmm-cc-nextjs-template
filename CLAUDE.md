@@ -119,6 +119,7 @@ lib/
 │   ├── client.ts  # Supabase client for use inside Client Components (`'use client'`).
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
+├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
 types/
 ├── index.ts
@@ -172,6 +173,7 @@ types/
 | `components/ui/input.tsx` |  | `Input` |
 | `components/ui/label.tsx` |  | `Label` |
 | `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
+| `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
 | `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn` |
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |

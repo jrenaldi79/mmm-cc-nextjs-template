@@ -28,8 +28,9 @@ or `scripts/` should keep CLAUDE.md current. The pre-commit hook auto-regenerate
 
 ## Logging, Monitoring & Error Handling
 
-- **Structured logging**: prefer a centralized logger with consistent levels
-  (error/warn/info/debug) and correlation IDs over scattered `console.log`.
+- **Structured logging**: use the centralized logger in `lib/logger.ts`
+  (`logger.error/warn/info/debug`, structured JSON, `LOG_LEVEL`-controlled) instead of
+  scattered `console.log`. It is the single sanctioned place that writes to the console.
 - **Monitoring**: expose health-check endpoints (e.g. `/api/health`) for services.
 - **Error handling**: use Next.js `error.tsx` boundaries and React Error Boundaries; add
   retry logic for network calls; gracefully handle `loading.tsx`, error, and empty states;
