@@ -47,30 +47,41 @@ Guide the user through these steps:
 - `SUPABASE_SETUP.md` has the detailed, click-by-click walkthrough — point them
   there if they get stuck.
 
-### 4. Create the database schema
-- The bundled **Tasks** example needs a `tasks` table. The SQL lives in
-  `SUPABASE_SETUP.md`.
+### 4. Create the database schema (user-scoped)
+- The bundled **Tasks** example needs a `tasks` table with a `user_id` column +
+  per-user RLS. The SQL lives in `SUPABASE_SETUP.md`.
 - **Preferred path — Supabase MCP:** if the Supabase MCP server is connected,
   you (the agent) can create tables, run migrations (`apply_migration`), and
   inspect the schema directly — offer to do it for them. If it isn't connected,
   tell them how to add it (Supabase MCP: https://supabase.com/docs/guides/getting-started/mcp)
   so you can manage their database, or have them paste the SQL from
   `SUPABASE_SETUP.md` into the Supabase **SQL Editor**.
-- When the user designs their **own** features, design the schema together and
-  apply it the same way (Supabase MCP `apply_migration` or the SQL Editor).
+- After schema changes, regenerate `types/supabase.ts` (Supabase MCP
+  `generate_typescript_types`). When the user designs their **own** features,
+  design the schema together and apply it the same way.
 
-### 5. Verify everything works
-- Run `npm run dev` and open http://localhost:5000.
-- Visit `/tasks` and confirm create/toggle/delete works against their Supabase
-  project. Visit `/charts` to confirm the UI renders.
+### 5. Configure authentication
+- The app is **login-controlled** (everything except `/login`, `/signup`,
+  `/auth/*` requires a session). Walk the user through `SUPABASE_SETUP.md` →
+  *Configure Authentication*:
+  - Enable the **Email** provider; **disable "Confirm email"** for local dev.
+  - (Optional) Enable **Google**/**GitHub** providers and add the redirect URLs
+    (`http://localhost:5000/auth/callback`, `/auth/confirm`).
+
+### 6. Verify everything works
+- Run `npm run dev` and open http://localhost:5000 → you should be redirected
+  to `/login`.
+- Sign up at `/signup`, confirm the nav shows your email, and that `/tasks`
+  create/toggle/delete works. Sign out and confirm you're sent back to `/login`.
 - Run `npm test` — all tests should pass.
 
 ### Setup Checklist
 - [ ] Dependencies installed (`npm install`)
 - [ ] `.env.local` created with Supabase credentials
 - [ ] Supabase project created & connected
-- [ ] Database schema applied (`tasks` table + any custom tables)
-- [ ] App runs locally and `/tasks` works end-to-end
+- [ ] Database schema applied (`tasks` table with `user_id` + RLS, + any custom tables)
+- [ ] Auth providers configured (Email; optionally Google/GitHub)
+- [ ] App runs locally: signup → `/tasks` → sign out all work end-to-end
 - [ ] `npm test` passes
 - [ ] **Cleanup done:** this section removed & Overview rewritten for the real project
 
@@ -136,12 +147,18 @@ All file paths must conform to this structure.
 
 ```
 .
+├── middleware.ts                 # Auth session refresh + route protection
 ├── app/                          # Main application (App Router)
+│   ├── login/ , signup/         # Auth pages (+ login/actions.ts server actions)
+│   ├── auth/                    # callback / confirm / signout route handlers
 │   ├── components/              # Shared or single-use components
 │   │   └── auth-wizard/         # Example: directory for a complex component
 │   ├── api/                     # API Route Handlers
 │   │   └── users/[id]/posts/    # Example: nested API route
 │   │       └── route.ts
+│
+├── lib/
+│   └── supabase/               # client.ts / server.ts / middleware.ts (@supabase/ssr)
 │
 ├── tests/                       # All tests live here
 │   ├── unit/                    # Unit tests (mirror `app` structure)
@@ -266,16 +283,36 @@ The following are excluded from linting:
 
 ## 11. Database (Supabase)
 
--   **Interaction**: Use the Supabase SDK for all data fetching and querying.
-    The client is created lazily in `lib/supabase.ts` (`supabase` proxy) so the
-    app builds without credentials; the missing-env error surfaces on first use.
--   **Security**: Use Row Level Security (RLS) policies in Supabase for all data access control.
+-   **Clients (`@supabase/ssr`)**: Cookie-aware clients live in `lib/supabase/`.
+    Use the **server** client (`lib/supabase/server.ts`, `await createClient()`)
+    in Server Components, Route Handlers, and Server Actions — it carries the
+    user's session so RLS applies. Use the **browser** client
+    (`lib/supabase/client.ts`) only in Client Components. Both are **factory
+    functions** (no module-level instantiation) so the app still builds without
+    credentials. Note: `cookies()` is **async** in Next 16 — `await` it.
+-   **Security**: Row Level Security (RLS) enforces all data access control. The
+    `tasks` table is **user-scoped** (`user_id` + per-user policies); queries run
+    as the signed-in user via the server client, so users only see their own rows.
 -   **Schema & migrations**: Prefer the **Supabase MCP server** so the agent can
     `apply_migration`, `list_tables`, and inspect advisors directly. Otherwise
     use the Supabase SQL Editor. Keep migrations under version control.
 -   **Type Safety**: Use TypeScript for type safety when interacting with
     Supabase. Regenerate `types/supabase.ts` after schema changes (Supabase MCP
     `generate_typescript_types` or the Supabase CLI).
+
+### Authentication
+-   **Protected by default**: `middleware.ts` (via `lib/supabase/middleware.ts`)
+    refreshes the session on every request and redirects unauthenticated users to
+    `/login`. Public paths: `/login`, `/signup`, `/auth/*`, and static assets.
+-   **Methods**: email/password via **server actions** (`app/login/actions.ts`)
+    and **OAuth** (Google/GitHub) via the browser client in
+    `app/components/OAuthButtons.tsx` (must be client-initiated — it redirects).
+-   **Routes**: `app/auth/callback` (OAuth/PKCE code exchange),
+    `app/auth/confirm` (email/magic-link `verifyOtp`), `app/auth/signout` (POST).
+-   **Auth state in the UI**: read the user with the browser client
+    (`getUser()` + `onAuthStateChange`) in Client Components (see `Navigation.tsx`).
+    Never trust the client for authorization — RLS + the server client are the
+    real gate.
 
 ## 11a. Integration: n8n LLM Agent Streaming
 

@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import type { TaskInsert } from '@/types/supabase'
 
 export async function GET(): Promise<NextResponse> {
   try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // RLS scopes this to the current user's rows automatically.
     const { data, error } = await supabase
       .from('tasks')
       .select('*')
@@ -27,6 +37,15 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json() as TaskInsert
 
     if (!body.title || body.title.trim() === '') {
@@ -39,12 +58,13 @@ export async function POST(request: Request): Promise<NextResponse> {
     const newTask = {
       title: body.title,
       completed: body.completed ?? false,
-      priority: body.priority ?? 'medium'
+      priority: body.priority ?? 'medium',
+      user_id: user.id,
     }
 
     const { data, error } = await supabase
       .from('tasks')
-      .insert(newTask as any)
+      .insert(newTask)
       .select()
       .single()
 

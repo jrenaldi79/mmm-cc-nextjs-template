@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import type { TaskUpdate } from '@/types/supabase'
 
 export async function PATCH(
@@ -7,6 +7,15 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json() as TaskUpdate
     const { id } = await params
 
@@ -18,7 +27,8 @@ export async function PATCH(
     }
 
     const updateData: TaskUpdate = { ...body, updated_at: new Date().toISOString() }
-    
+
+    // RLS ensures the user can only update their own task.
     const { data, error } = await supabase
       .from('tasks')
       .update(updateData)
@@ -54,8 +64,18 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { id } = await params
 
+    // RLS ensures the user can only delete their own task.
     const { error } = await supabase
       .from('tasks')
       .delete()

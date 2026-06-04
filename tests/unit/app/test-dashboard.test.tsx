@@ -1,6 +1,18 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
+
+// Navigation (rendered by this page) reads auth state from the Supabase
+// browser client — stub it so it doesn't create a real client.
+jest.mock('@/lib/supabase/client', () => ({
+  createClient: () => ({
+    auth: {
+      getUser: jest.fn().mockResolvedValue({ data: { user: null } }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: jest.fn() } } }),
+    },
+  }),
+}))
+
 import TestDashboard from '../../../app/test-dashboard/page'
 
 global.fetch = jest.fn()

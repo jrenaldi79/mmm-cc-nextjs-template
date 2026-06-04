@@ -12,6 +12,7 @@ export interface Database {
       tasks: {
         Row: {
           id: string
+          user_id: string
           title: string
           completed: boolean
           priority: 'low' | 'medium' | 'high'
@@ -20,6 +21,7 @@ export interface Database {
         }
         Insert: {
           id?: string
+          user_id?: string
           title: string
           completed?: boolean
           priority?: 'low' | 'medium' | 'high'
@@ -28,6 +30,7 @@ export interface Database {
         }
         Update: {
           id?: string
+          user_id?: string
           title?: string
           completed?: boolean
           priority?: 'low' | 'medium' | 'high'

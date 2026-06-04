@@ -2,6 +2,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import TasksPage from '@/app/tasks/page'
 
+// Navigation (rendered by this page) reads auth state from the Supabase
+// browser client — stub it so it doesn't create a real client.
+jest.mock('@/lib/supabase/client', () => ({
+  createClient: () => ({
+    auth: {
+      getUser: jest.fn().mockResolvedValue({ data: { user: null } }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: jest.fn() } } }),
+    },
+  }),
+}))
+
 // Mock fetch globally
 global.fetch = jest.fn()
 

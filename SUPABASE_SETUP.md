@@ -1,12 +1,18 @@
-# Supabase Database Example Setup
+# Supabase Setup (Database + Authentication)
 
-This template includes a working Supabase integration example showing how to build a full-stack application with database CRUD operations.
+This template includes a working Supabase integration showing how to build a
+**login-controlled** full-stack app: cookie-based auth (email/password + OAuth),
+protected routes, and per-user database CRUD operations.
 
 ## 📋 What's Included
 
-- **Database Client** (`lib/supabase.ts`) - Configured Supabase client
+- **Auth clients** (`lib/supabase/{client,server,middleware}.ts`) - Cookie-aware
+  Supabase clients for the browser, the server, and the auth middleware (`@supabase/ssr`)
+- **Route protection** (`middleware.ts`) - Redirects unauthenticated users to `/login`
+- **Auth pages & routes** (`app/login`, `app/signup`, `app/auth/*`) - Email/password +
+  Google/GitHub sign-in, sign-out, and OAuth/email callbacks
 - **TypeScript Types** (`types/supabase.ts`) - Type-safe database schema definitions
-- **API Routes** (`app/api/tasks/`) - RESTful endpoints for CRUD operations
+- **API Routes** (`app/api/tasks/`) - RESTful, per-user CRUD endpoints (require auth)
 - **UI Page** (`app/tasks/page.tsx`) - Interactive task management interface
 
 ## 🚀 Quick Setup
@@ -26,9 +32,10 @@ In your Supabase project dashboard:
 3. Paste the following SQL:
 
 ```sql
--- Create the tasks table
+-- Create the tasks table, scoped to the signed-in user.
 CREATE TABLE tasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   completed BOOLEAN DEFAULT false,
   priority TEXT CHECK (priority IN ('low', 'medium', 'high')) DEFAULT 'medium',
@@ -39,21 +46,24 @@ CREATE TABLE tasks (
 -- Enable Row Level Security (RLS)
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 
--- Create policy to allow all operations (for development/testing)
--- NOTE: In production, you should restrict this based on user authentication
-CREATE POLICY "Allow all operations for development" ON tasks
-  FOR ALL
-  USING (true)
-  WITH CHECK (true);
-
--- Insert sample data
-INSERT INTO tasks (title, priority) VALUES
-  ('Complete Next.js tutorial', 'high'),
-  ('Learn TypeScript basics', 'medium'),
-  ('Set up Supabase database', 'high'),
-  ('Write unit tests', 'medium'),
-  ('Deploy to production', 'low');
+-- Per-user policies: each user can only see and modify their own tasks.
+CREATE POLICY "Users can view their own tasks" ON tasks
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own tasks" ON tasks
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own tasks" ON tasks
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own tasks" ON tasks
+  FOR DELETE USING (auth.uid() = user_id);
 ```
+
+> No seed rows are inserted here: tasks belong to a user, so `auth.uid()` must
+> be set (which only happens when a signed-in user inserts via the app). Sign in
+> and create tasks from the `/tasks` page instead.
+>
+> **Tip:** If your Supabase project is connected via the **Supabase MCP**, ask
+> Claude to apply this with `apply_migration` (named e.g. `create_tasks_table`)
+> so it's tracked in your migration history.
 
 4. Click **Run** to execute the query
 
@@ -75,52 +85,61 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 
 **⚠️ IMPORTANT:** Never commit the `.env.local` file to Git! It's already in `.gitignore`.
 
-When deploying, add the same variables in your hosting provider's environment settings.
+When deploying, add the same variables in your hosting provider's environment
+settings, plus `NEXT_PUBLIC_SITE_URL` (your production URL) so OAuth and email
+links redirect correctly.
 
-### 4. Test the Integration
+### 4. Configure Authentication
 
-1. Restart your Next.js development server
-2. Navigate to [http://localhost:5000/tasks](http://localhost:5000/tasks)
-3. You should see your sample tasks and be able to:
+The whole app is login-controlled: visiting any page while signed out redirects
+to `/login`. Set up the sign-in methods in your Supabase dashboard.
+
+**Email / password**
+
+1. Go to **Authentication → Providers → Email** and make sure it's enabled.
+2. For local development, **turn OFF "Confirm email"** so new signups work
+   immediately. (Leave it on in production — `/auth/confirm` handles the
+   confirmation link.)
+
+**Google / GitHub OAuth**
+
+1. Go to **Authentication → Providers** and enable **Google** and/or **GitHub**.
+2. Create an OAuth app with each provider and paste the **Client ID** and
+   **Client Secret** into Supabase.
+3. Go to **Authentication → URL Configuration** and add these **Redirect URLs**:
+   - `http://localhost:5000/auth/callback`
+   - `http://localhost:5000/auth/confirm`
+   - your production equivalents (e.g. `https://your-app.com/auth/callback`)
+
+> Don't want OAuth yet? Email/password works on its own — the Google/GitHub
+> buttons simply won't function until their providers are enabled.
+
+### 5. Test the Integration
+
+1. Restart your Next.js development server.
+2. Navigate to [http://localhost:5000](http://localhost:5000) — you'll be
+   redirected to `/login`.
+3. Go to `/signup`, create an account, and you'll land on the home page with
+   your email shown in the nav.
+4. Visit [http://localhost:5000/tasks](http://localhost:5000/tasks) and:
    - ✅ Create new tasks
    - ✅ Mark tasks as complete/incomplete
    - ✅ Delete tasks
    - ✅ See different priority levels
+5. Click **Sign Out** — you're returned to `/login` and protected pages are
+   no longer accessible.
 
 ## 🔒 Security Best Practices
 
 ### Row Level Security (RLS)
 
-The example includes a permissive RLS policy for development. **In production**, you should:
-
-1. **Enable Authentication:**
-   ```sql
-   -- Remove the permissive policy
-   DROP POLICY "Allow all operations for development" ON tasks;
-   
-   -- Add user-specific policies
-   CREATE POLICY "Users can view their own tasks" ON tasks
-     FOR SELECT
-     USING (auth.uid() = user_id);
-   
-   CREATE POLICY "Users can insert their own tasks" ON tasks
-     FOR INSERT
-     WITH CHECK (auth.uid() = user_id);
-   
-   CREATE POLICY "Users can update their own tasks" ON tasks
-     FOR UPDATE
-     USING (auth.uid() = user_id)
-     WITH CHECK (auth.uid() = user_id);
-   
-   CREATE POLICY "Users can delete their own tasks" ON tasks
-     FOR DELETE
-     USING (auth.uid() = user_id);
-   ```
-
-2. **Add a user_id column:**
-   ```sql
-   ALTER TABLE tasks ADD COLUMN user_id UUID REFERENCES auth.users(id);
-   ```
+This template ships **per-user RLS** out of the box (see the table SQL above):
+each policy checks `auth.uid() = user_id`, so users can only read and modify
+their own rows. Because the API routes use the cookie-aware server client
+(`lib/supabase/server.ts`), the signed-in user is passed to the database and
+these policies are enforced automatically — even though the app only ever uses
+the public anon key. This is the correct, safe pattern: never ship a permissive
+`USING (true)` policy to production.
 
 ### Environment Variables
 
@@ -133,16 +152,28 @@ The example includes a permissive RLS policy for development. **In production**,
 
 ```
 .
+├── middleware.ts                # Refreshes the session & protects routes
 ├── lib/
-│   └── supabase.ts              # Supabase client initialization
+│   └── supabase/
+│       ├── client.ts            # Browser client (Client Components)
+│       ├── server.ts            # Server client (Server Components/Actions/Routes)
+│       └── middleware.ts        # updateSession() used by middleware.ts
 ├── types/
-│   └── supabase.ts              # Database type definitions
+│   └── supabase.ts              # Database type definitions (incl. user_id)
 ├── app/
+│   ├── login/                   # Login page + email/password server actions
+│   ├── signup/                  # Signup page
+│   ├── auth/
+│   │   ├── callback/route.ts    # OAuth/PKCE code exchange
+│   │   ├── confirm/route.ts     # Email-confirmation / magic link
+│   │   └── signout/route.ts     # POST sign-out
+│   ├── components/
+│   │   └── OAuthButtons.tsx     # Google/GitHub buttons
 │   ├── api/
 │   │   └── tasks/
-│   │       ├── route.ts         # GET /api/tasks, POST /api/tasks
+│   │       ├── route.ts         # GET /api/tasks, POST /api/tasks (per-user)
 │   │       └── [id]/
-│   │           └── route.ts     # PATCH /api/tasks/:id, DELETE /api/tasks/:id
+│   │           └── route.ts     # PATCH/DELETE /api/tasks/:id (per-user)
 │   └── tasks/
 │       └── page.tsx             # Tasks UI page
 └── .env.example                 # Environment variable template
@@ -150,8 +181,11 @@ The example includes a permissive RLS policy for development. **In production**,
 
 ## 🧪 API Endpoints
 
+All task endpoints require an authenticated session and return `401 Unauthorized`
+when signed out. Each operation is automatically scoped to the current user.
+
 ### GET /api/tasks
-Fetch all tasks, ordered by creation date (newest first)
+Fetch the current user's tasks, ordered by creation date (newest first)
 
 **Response:**
 ```json
