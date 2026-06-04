@@ -2,6 +2,8 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import tailwindcss from 'eslint-plugin-tailwindcss';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 const eslintConfig = [
   js.configs.recommended,
@@ -56,6 +58,70 @@ const eslintConfig = [
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
+    // Design-system enforcement — keep agent/student UI on the design tokens.
+    // Scoped to rendered UI (app/** + components/**). Token-SOURCE files
+    // (app/globals.css, tailwind.config.js, DESIGN.md) are not linted here and
+    // are allowed to hold raw color values.
+    files: ['app/**/*.{ts,tsx,jsx}', 'components/**/*.{ts,tsx,jsx}'],
+    plugins: {
+      tailwindcss,
+      'jsx-a11y': jsxA11y,
+    },
+    settings: {
+      tailwindcss: {
+        config: 'tailwind.config.js',
+        // Class strings also live inside these helpers, not just className.
+        callees: ['cn', 'clsx', 'cva', 'classnames'],
+      },
+    },
+    rules: {
+      // Accessibility (shadcn/Radix gives us a head start; keep it).
+      ...jsxA11y.flatConfigs.recommended.rules,
+      // Hard-coded colors are the #1 "frankenstein" vector — block them.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'Literal[value=/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]',
+          message:
+            'Hard-coded hex color. Use a design token (e.g. bg-primary, text-foreground) from app/globals.css — see DESIGN.md.',
+        },
+        {
+          selector: 'Literal[value=/\\[#[0-9a-fA-F]/]',
+          message:
+            'Hard-coded hex color in a Tailwind arbitrary value (e.g. bg-[#fff]). Use a token utility like bg-primary — see DESIGN.md.',
+        },
+        {
+          selector: 'TemplateElement[value.raw=/\\[#[0-9a-fA-F]/]',
+          message:
+            'Hard-coded hex color in a Tailwind arbitrary value. Use a token utility like bg-primary — see DESIGN.md.',
+        },
+        {
+          selector: 'Literal[value=/\\[(?:rgb|hsl)a?\\(/i]',
+          message:
+            'Hard-coded rgb()/hsl() color in a Tailwind arbitrary value. Use a token utility — see DESIGN.md.',
+        },
+      ],
+      // Conflicting utilities (e.g. px-2 px-4) are real bugs — block them.
+      'tailwindcss/no-contradicting-classname': 'error',
+      // Magic numbers / off-theme classes — surface as nudges, don't break
+      // legitimate layout values like h-[70vh] or vendored shadcn primitives.
+      'tailwindcss/no-arbitrary-value': 'warn',
+      'tailwindcss/no-custom-classname': 'warn',
+    },
+  },
+  {
+    // components/ui/** are canonical shadcn primitives pulled via the CLI
+    // (`npx shadcn@latest add`). They legitimately use arbitrary variants
+    // (data-[state=...], [&_svg]:...) so the "nudge" rules don't apply — but the
+    // hard-coded-color block and a11y rules above still do.
+    files: ['components/ui/**/*.{ts,tsx,jsx}'],
+    rules: {
+      'tailwindcss/no-arbitrary-value': 'off',
+      'tailwindcss/no-custom-classname': 'off',
     },
   },
   {

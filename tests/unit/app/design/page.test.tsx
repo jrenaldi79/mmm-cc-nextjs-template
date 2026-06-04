@@ -1,0 +1,63 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+
+// The page renders the shared Navigation (a client component that calls
+// Supabase). Stub it so this test focuses on the educational design content.
+jest.mock('@/app/components/Navigation', () => ({
+  __esModule: true,
+  default: () => <nav data-testid="nav" />,
+}));
+
+import DesignPage from '@/app/design/page';
+
+describe('Design System page', () => {
+  beforeEach(() => {
+    render(<DesignPage />);
+  });
+
+  it('has a single page title and explains what a design system is', () => {
+    expect(
+      screen.getByRole('heading', { level: 1, name: /design system/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/what is a design system\?/i)).toBeInTheDocument();
+    // shadcn/ui is explained in plain language (appears in more than one place).
+    expect(screen.getAllByText(/shadcn\/ui/i).length).toBeGreaterThan(0);
+  });
+
+  it('shows color tokens with their Tailwind class and CSS variable', () => {
+    expect(
+      screen.getByRole('heading', { name: /color tokens/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText('--primary')).toBeInTheDocument();
+    expect(screen.getAllByText('bg-primary').length).toBeGreaterThan(0);
+  });
+
+  it('shows the typography & shape section', () => {
+    expect(
+      screen.getByRole('heading', { name: /typography/i })
+    ).toBeInTheDocument();
+  });
+
+  it('shows the component gallery with real shadcn primitives', () => {
+    expect(
+      screen.getByRole('heading', { name: /building blocks/i })
+    ).toBeInTheDocument();
+    // A real <Button variant="destructive"> is rendered, not a picture of one.
+    expect(
+      screen.getByRole('button', { name: 'Destructive' })
+    ).toBeInTheDocument();
+  });
+
+  it('explains how enforcement prevents Frankenstein UI', () => {
+    expect(screen.getAllByText(/frankenstein/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/eslint/i).length).toBeGreaterThan(0);
+  });
+
+  it('teaches how to add a new component with the shadcn CLI', () => {
+    expect(
+      screen.getByRole('heading', { name: /adding a new component/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/npx shadcn@latest add/i)).toBeInTheDocument();
+  });
+});

@@ -82,8 +82,8 @@ export default function HomePage() {
       <footer className="mt-auto border-t bg-card">
         <div className="container mx-auto px-6 py-8">
           <p className="text-center text-muted-foreground">
-            Northwestern MPD2 Starter Template | Built with Next.js 16,
-            TypeScript, Tailwind CSS &amp; shadcn/ui
+            Northwestern MMM &amp; MPD2 Starter Template | Built with Next.js
+            16, TypeScript, Tailwind CSS &amp; shadcn/ui
           </p>
           <p className="text-center text-sm text-muted-foreground mt-2">
             💡 Tip: Start by editing{' '}
