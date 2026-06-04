@@ -59,15 +59,22 @@ function parseTestResults(stdout: string) {
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   return new Promise((resolve) => {
-    // Invoke Jest directly (not `npm test`) via execFile with an argument
-    // array — no shell, so no command-injection surface. Going through npm
-    // would print lifecycle banners and run the `posttest` hook, which both
-    // pollute stdout AND write `.test-passed` for the current commit, letting
-    // a UI click make the pre-push hook skip tests. Running the local Jest
-    // entrypoint with `node` is cross-platform.
+    // Run Jest's CLI directly via `npx` (not `npm test`) with execFile and an
+    // argument array — no shell, so no command-injection surface. Going through
+    // npm would print lifecycle banners and run the `posttest` hook, which both
+    // pollute stdout AND write `.test-passed` for the current commit, letting a
+    // UI click make the pre-push hook skip tests. `npx` runs the locally
+    // installed jest binary and triggers no npm lifecycle scripts.
+    //
+    // We invoke jest by command name (`npx jest`) rather than `node
+    // node_modules/jest/bin/jest.js`: the bundler's static analyzer treats a
+    // path-like string argument (one containing slashes) as a module to resolve
+    // at build time and fails the build, but a bare command name is opaque to
+    // it. `--no-install` keeps it offline — jest is already a dev dependency.
+    const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
     execFile(
-      'node',
-      ['node_modules/jest/bin/jest.js', '--json', '--coverage', '--verbose'],
+      npx,
+      ['--no-install', 'jest', '--json', '--coverage', '--verbose'],
       {
         maxBuffer: 1024 * 1024 * 10,
         cwd: process.cwd(),
