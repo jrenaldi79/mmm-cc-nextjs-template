@@ -74,7 +74,8 @@ app/
 │   └── page.tsx
 ├── components/
 │   ├── chat/
-│   │   └── ChatMessages.tsx
+│   │   ├── ChatMessages.tsx
+│   │   └── ChatSessionSidebar.tsx
 │   ├── home/
 │   │   ├── AiInstructionsCard.tsx
 │   │   ├── TddFrameworkCard.tsx
@@ -167,6 +168,7 @@ types/
 | `app/components/PageShell.tsx` | The standard page frame for every top-level content page (Design, Charts, Chat, | `PageShell` |
 | `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
 | `app/components/chat/ChatMessages.tsx` |  | `ChatMessages` |
+| `app/components/chat/ChatSessionSidebar.tsx` |  | `ChatSessionSidebar` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
 | `app/components/home/WelcomeCard.tsx` |  | `WelcomeCard` |
