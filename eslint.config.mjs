@@ -61,6 +61,27 @@ const eslintConfig = [
     },
   },
   {
+    // ESM Node tooling scripts (.mjs): ES modules (import + top-level await),
+    // run by `node` — so Node globals, not browser ones.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 2022,
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearTimeout: 'readonly',
+        clearInterval: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+  },
+  {
     // Design-system enforcement — keep agent/student UI on the design tokens.
     // Scoped to rendered UI (app/** + components/**). Token-SOURCE files
     // (app/globals.css, tailwind.config.js, DESIGN.md) are not linted here and
