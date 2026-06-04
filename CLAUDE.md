@@ -294,14 +294,15 @@ Intentional adaptations for this Next.js stack — not gaps to "fix":
 - **`import/no-default-export` is OFF** — App Router entrypoints require default exports.
 - **Centralized `tests/` tree** (not colocated beside source) — preserves the 80% Jest
   coverage setup; `scripts/check-test-colocation.js` validates the mirror instead.
-- **Superpowers skills auto-synced in cloud sessions** — Claude Code on the web can't use the
-  interactive `/plugin` installer, so the SessionStart hook (`.claude/hooks/session-start.sh`)
-  fetches the latest [Superpowers](https://github.com/obra/superpowers) skills into
-  `.claude/skills/` (gitignored) and reproduces its `using-superpowers` context injection. Local
-  CLI users instead get it via the registered marketplace (`extraKnownMarketplaces` +
-  `enabledPlugins` in `.claude/settings.json`) plus `/plugin install`. We deliberately reproduce
-  only the data-only context-injection hook inline — we do **not** auto-execute upstream hook
-  scripts each session (supply-chain safety for a student template).
+- **Superpowers skills vendored in `.claude/skills/`** — Claude Code on the web can't use the
+  interactive `/plugin` installer, so the [Superpowers](https://github.com/obra/superpowers)
+  skills are **committed** under `.claude/skills/` and auto-discovered in every session (web and
+  local) with no plugin install and no runtime fetch. They mirror upstream (Prettier-ignored to
+  stay byte-identical) and are refreshed by the `update-superpowers-skills` GitHub Action, which
+  runs `scripts/sync-superpowers-skills.sh` and opens a **PR** — the single review gate for
+  upstream changes. The SessionStart hook injects the `using-superpowers` guidance from the
+  **local** committed file (no clone). `extraKnownMarketplaces` + `enabledPlugins` in
+  `.claude/settings.json` additionally let local CLI users `/plugin install` the upstream plugin.
 
 ## Working in this repo
 
