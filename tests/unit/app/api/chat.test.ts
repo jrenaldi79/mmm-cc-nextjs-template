@@ -16,6 +16,13 @@ const userMessage = {
   messages: [{ role: 'user', parts: [{ type: 'text', text: 'Hello there' }] }],
 };
 
+const mockGetUser = jest.fn();
+jest.mock('@/lib/supabase/server', () => ({
+  createClient: jest.fn().mockResolvedValue({
+    auth: { getUser: () => mockGetUser() },
+  }),
+}));
+
 describe('POST /api/chat', () => {
   const originalEnv = process.env;
   const originalFetch = global.fetch;
@@ -23,6 +30,7 @@ describe('POST /api/chat', () => {
   beforeEach(() => {
     process.env = { ...originalEnv };
     delete process.env.N8N_WEBHOOK_URL;
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-123' } } });
   });
 
   afterEach(() => {
@@ -169,6 +177,16 @@ describe('POST /api/chat', () => {
     expect(text).toBe('2 + 2 equals 4.');
     // The raw JSON envelopes must not leak into the reply.
     expect(text).not.toContain('"type"');
+  });
+
+  it('forwards the signed-in user id to n8n', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+    const fetchMock = streamingFetchMock();
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await POST(makeRequest(userMessage));
+
+    expect(lastFetchBody(fetchMock).userId).toBe('user-123');
   });
 
   it('returns 502 when the n8n webhook errors', async () => {
