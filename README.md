@@ -7,6 +7,7 @@ A production-ready starter template for Northwestern MPD2 master's students, des
 ## 🎯 Purpose
 
 This starter template provides MPD2 students with:
+
 1. **A Shell Main App** - A starter structure that students replace with their own project ideas
 2. **Production-Ready Setup** - TDD framework, TypeScript, Tailwind CSS, and best practices pre-configured
 3. **A Database Example** - A working Supabase CRUD example to learn from
@@ -14,6 +15,7 @@ This starter template provides MPD2 students with:
 ## 🏗️ Main App Shell (`/`)
 
 A minimal starter application that students **replace with their own ideas**:
+
 - Clean layout with header, main content, and footer
 - Example component showing React hooks and state management
 - Links to helpful resources
@@ -22,6 +24,7 @@ A minimal starter application that students **replace with their own ideas**:
 ## 🚀 Quick Start for Students
 
 ### Step 1: Start the Dev Server
+
 ```bash
 npm install
 npm run dev
@@ -29,6 +32,7 @@ npm run dev
 ```
 
 ### Step 2: Understand the Structure
+
 ```
 .
 ├── app/                          # Your main application
@@ -43,6 +47,7 @@ npm run dev
 ```
 
 ### Step 3: Build Your App
+
 1. **Replace the home page** (`app/page.tsx`) with your app's main interface
 2. **Add your components** in `app/components/`
 3. **Create API routes** in `app/api/` as needed
@@ -51,6 +56,7 @@ npm run dev
 ## 💡 What to Build
 
 Replace the shell app with YOUR idea:
+
 - 🛍️ E-commerce platform
 - 📊 Data visualization dashboard
 - 🎮 Interactive game
@@ -73,6 +79,7 @@ This template includes a **working Supabase database example** to help you learn
 📖 **[View Complete Setup Guide →](SUPABASE_SETUP.md)**
 
 The guide includes:
+
 - ✅ Step-by-step Supabase project setup
 - ✅ SQL schema and sample data
 - ✅ Environment variable configuration
@@ -84,17 +91,18 @@ The guide includes:
 
 ## 🛠️ Pre-Configured Tech Stack
 
-| Category | Technology | Why It's Included |
-|----------|------------|-------------------|
-| **Framework** | Next.js 16 | Industry-standard React framework |
-| **Language** | TypeScript | Type safety and better IDE support |
-| **Styling** | Tailwind CSS | Rapid UI development |
-| **Testing** | Jest + React Testing Library | TDD methodology (required) |
-| **Database** | Supabase | Backend example with CRUD operations |
+| Category      | Technology                   | Why It's Included                    |
+| ------------- | ---------------------------- | ------------------------------------ |
+| **Framework** | Next.js 16                   | Industry-standard React framework    |
+| **Language**  | TypeScript                   | Type safety and better IDE support   |
+| **Styling**   | Tailwind CSS                 | Rapid UI development                 |
+| **Testing**   | Jest + React Testing Library | TDD methodology (required)           |
+| **Database**  | Supabase                     | Backend example with CRUD operations |
 
 ## 📝 Development Workflow
 
 ### 1. Always Start with Tests (TDD)
+
 ```bash
 # Write test first
 # Create: tests/unit/app/components/MyComponent.test.tsx
@@ -110,12 +118,14 @@ npm test
 ```
 
 ### 2. Run Your Development Server
+
 ```bash
 npm run dev
 # Opens on port 5000
 ```
 
 ### 3. Check Test Coverage
+
 ```bash
 npm run test:coverage
 # Minimum 80% coverage required
@@ -124,12 +134,21 @@ npm run test:coverage
 ## 🎨 Customization Guide
 
 ### Changing the Main App
+
 1. **Home Page**: Edit `app/page.tsx`
 2. **Global Styles**: Modify `app/globals.css`
 3. **Layout**: Update `app/layout.tsx`
 4. **Colors**: Adjust Tailwind config in `tailwind.config.js`
 
+### Design System
+
+Your app's visual identity (colors, typography, components) is documented in
+[`DESIGN.md`](DESIGN.md) using Google's DESIGN.md format. It maps each token to its
+live CSS variable in `app/globals.css` and walks you through editing the theme
+directly. Validate it any time with `npm run design:lint`.
+
 ### Adding Features
+
 1. **New Page**: Create `app/your-feature/page.tsx`
 2. **API Route**: Create `app/api/your-endpoint/route.ts`
 3. **Component**: Create `app/components/YourComponent.tsx`
@@ -138,11 +157,13 @@ npm run test:coverage
 ## 🔒 Security & Best Practices
 
 ### Built-In Security
+
 - Path traversal prevention
 - TypeScript for type safety
 - Environment variables for secrets
 
 ### Required Practices
+
 - **TDD**: Write tests before code
 - **Coverage**: Maintain >80% test coverage
 - **Types**: Use TypeScript types
@@ -151,6 +172,7 @@ npm run test:coverage
 ## 📋 Assignment Checklist
 
 Before submitting your project:
+
 - [ ] Replaced shell app with your unique idea
 - [ ] All features have tests (TDD)
 - [ ] Test coverage >80%
@@ -161,6 +183,7 @@ Before submitting your project:
 ## 🆘 Getting Help
 
 ### Resources
+
 - **Project Rules**: See `CLAUDE.md`
 - **Next.js Docs**: https://nextjs.org/docs
 - **Tailwind CSS**: https://tailwindcss.com/docs
@@ -170,16 +193,19 @@ Before submitting your project:
 ### Common Issues
 
 **Changes not showing?**
+
 - Restart the dev server
 - Check the console for errors
 - Clear browser cache
 
 **Tests failing?**
+
 - Read error messages carefully
 - Check test file location
 - Ensure proper imports
 
 **Type errors?**
+
 - Define types in `types/index.ts`
 - Use proper TypeScript syntax
 - Check tsconfig.json
@@ -187,6 +213,7 @@ Before submitting your project:
 ## 🎓 Learning Objectives
 
 This starter template helps you learn:
+
 1. **Modern web development** with Next.js and React
 2. **Test-Driven Development** methodology
 3. **TypeScript** for production code
@@ -196,6 +223,7 @@ This starter template helps you learn:
 ## 🚢 Deployment
 
 When ready to deploy:
+
 1. Ensure all tests pass
 2. Build production version: `npm run build`
 3. Deploy to your hosting platform of choice
@@ -210,4 +238,4 @@ ISC - This is your starter template to build upon!
 **Remember**: This is YOUR canvas. The shell app is just a starting point - replace it with your creative vision and make something amazing! 🌟
 
 **Happy Coding!**
-*Northwestern MPD2 Program*
+_Northwestern MPD2 Program_

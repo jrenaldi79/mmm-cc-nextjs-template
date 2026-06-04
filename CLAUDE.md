@@ -188,6 +188,7 @@ types/
 | Topic | File |
 |-------|------|
 | First-time setup (bootstrapping) | [docs/getting-started.md](docs/getting-started.md) |
+| App design system (colors, typography, components) | [DESIGN.md](DESIGN.md) |
 | Supabase project + schema + auth setup | [SUPABASE_SETUP.md](SUPABASE_SETUP.md) |
 | n8n LLM agent streaming chat | [docs/integrations/n8n.md](docs/integrations/n8n.md) |
 

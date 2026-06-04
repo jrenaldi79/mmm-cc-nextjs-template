@@ -14,6 +14,7 @@
     "validate": "npm run type-check && npm run lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "design:lint": "npx --yes @google/design.md lint DESIGN.md",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

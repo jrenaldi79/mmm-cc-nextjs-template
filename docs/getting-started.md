@@ -74,6 +74,14 @@ Guide the user through these steps:
   create/toggle/delete works. Sign out and confirm you're sent back to `/login`.
 - Run `npm test` — all tests should pass.
 
+## 7. (Optional) Make it yours — the design system
+
+- Your app's look (colors, typography, components) is documented in
+  [`DESIGN.md`](../DESIGN.md). It mirrors the live theme in `app/globals.css` and
+  shows which token maps to which CSS variable.
+- To rebrand, edit the HSL variables in `app/globals.css` directly, then update the
+  matching tokens in `DESIGN.md` and run `npm run design:lint` to validate.
+
 ## Setup Checklist
 
 - [ ] Dependencies installed (`npm install`)
