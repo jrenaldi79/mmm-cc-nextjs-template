@@ -48,7 +48,28 @@ describe('ChatSessionSidebar', () => {
   beforeEach(() => {
     mockOrder.mockReset();
     mockRemoveChannel.mockReset();
+    mockChannel.on.mockClear();
+    mockChannel.subscribe.mockClear();
     realtime.cb = undefined;
+  });
+
+  it('creates and subscribes the channel synchronously within the effect', () => {
+    // Regression: the channel must be set up synchronously (no `await` before
+    // `.subscribe()`). If it sits behind an await (e.g. getUser), React Strict
+    // Mode's cleanup runs before the channel exists, so it is never torn down;
+    // the second mount then reuses the already-subscribed channel and Supabase
+    // throws "cannot add postgres_changes callbacks ... after subscribe()".
+    mockOrder.mockResolvedValue({ data: [], error: null });
+    render(
+      <ChatSessionSidebar
+        activeSessionId="s1"
+        onSelectSession={jest.fn()}
+        onNewChat={jest.fn()}
+      />
+    );
+    // Called during the synchronous effect body, before render() returns.
+    expect(mockChannel.subscribe).toHaveBeenCalled();
+    expect(realtime.cb).toBeDefined();
   });
 
   it('renders the session list from the browser client', async () => {

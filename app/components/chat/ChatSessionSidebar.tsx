@@ -22,7 +22,6 @@ export function ChatSessionSidebar({
 
   useEffect(() => {
     const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | undefined;
 
     async function load() {
       const { data } = await supabase
@@ -32,32 +31,29 @@ export function ChatSessionSidebar({
       setSessions(data ?? []);
     }
 
-    async function subscribe() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      channel = supabase
-        .channel('n8n_chat_sessions_changes')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'n8n_chat_sessions',
-            ...(user ? { filter: `user_id=eq.${user.id}` } : {}),
-          },
-          () => {
-            void load();
-          }
-        )
-        .subscribe();
-    }
-
     void load();
-    void subscribe();
+
+    // Create + subscribe synchronously (no `await` first) so the cleanup below
+    // always has a channel to tear down. Under React Strict Mode the effect
+    // mounts, unmounts, then re-mounts; if channel creation sat behind an await,
+    // cleanup would run before the channel existed, leaving it subscribed — and
+    // the re-mount would reuse that same-topic channel and throw "cannot add
+    // postgres_changes callbacks ... after subscribe()". RLS on n8n_chat_sessions
+    // already scopes these events to the signed-in user, so no per-user filter is
+    // needed here.
+    const channel = supabase
+      .channel('n8n_chat_sessions_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'n8n_chat_sessions' },
+        () => {
+          void load();
+        }
+      )
+      .subscribe();
 
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      supabase.removeChannel(channel);
     };
   }, []);
 
