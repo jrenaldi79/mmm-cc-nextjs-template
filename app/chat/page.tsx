@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
 import { historyToUiMessages } from '@/lib/chat-history';
+import { generateId } from '@/lib/utils';
 import { logger } from '@/lib/logger';
 import { PageHero } from '../components/PageHero';
 import { PageShell } from '../components/PageShell';
@@ -18,7 +19,7 @@ import { ChatSessionSidebar } from '../components/chat/ChatSessionSidebar';
 export default function ChatPage() {
   // Stable id for the active chat session so the n8n agent can keep memory
   // across turns. Switching sessions (or starting a new chat) swaps this id.
-  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState(() => generateId());
   const [input, setInput] = useState('');
   // Re-create the transport whenever the session changes so /api/chat receives
   // the current sessionId in its body.
@@ -59,7 +60,7 @@ export default function ChatPage() {
   }
 
   function handleNewChat() {
-    setSessionId(crypto.randomUUID());
+    setSessionId(generateId());
     setMessages([]);
   }
 
