@@ -294,15 +294,17 @@ Intentional adaptations for this Next.js stack — not gaps to "fix":
 - **`import/no-default-export` is OFF** — App Router entrypoints require default exports.
 - **Centralized `tests/` tree** (not colocated beside source) — preserves the 80% Jest
   coverage setup; `scripts/check-test-colocation.js` validates the mirror instead.
-- **Superpowers skills vendored in `.claude/skills/`** — Claude Code on the web can't use the
+- **Superpowers — per-environment, no local duplication** — Claude Code on the web can't use the
   interactive `/plugin` installer, so the [Superpowers](https://github.com/obra/superpowers)
-  skills are **committed** under `.claude/skills/` and auto-discovered in every session (web and
-  local) with no plugin install and no runtime fetch. They mirror upstream (Prettier-ignored to
-  stay byte-identical) and are refreshed by the `update-superpowers-skills` GitHub Action, which
-  runs `scripts/sync-superpowers-skills.sh` and opens a **PR** — the single review gate for
-  upstream changes. The SessionStart hook injects the `using-superpowers` guidance from the
-  **local** committed file (no clone). `extraKnownMarketplaces` + `enabledPlugins` in
-  `.claude/settings.json` additionally let local CLI users `/plugin install` the upstream plugin.
+  skills are **committed** under `.claude/vendor/superpowers/` (NOT auto-discovered; a mirror of
+  upstream, Prettier/ESLint-ignored to stay byte-identical, refreshed by the
+  `update-superpowers-skills` GitHub Action via `scripts/sync-superpowers-skills.sh`, which opens
+  a **PR** — the review gate for upstream changes). On the **web**, the SessionStart hook copies
+  them into `.claude/skills/` (gitignored) and injects the `using-superpowers` guidance — unless
+  the user already has the plugin or a same-named skill. On **local**, the hook doesn't run, so
+  nothing is materialized; users install the real plugin instead (pre-registered via
+  `extraKnownMarketplaces` + `enabledPlugins` in `.claude/settings.json`), which auto-updates and
+  never collides with the vendored copy.
 
 ## Working in this repo
 

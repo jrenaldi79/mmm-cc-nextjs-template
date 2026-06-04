@@ -14,4 +14,4 @@ AGENTS.md
 # Vendored Superpowers skills — mirror of github.com/obra/superpowers. Keep
 # byte-identical to upstream so the update-superpowers-skills workflow produces
 # clean diffs. Managed by scripts/sync-superpowers-skills.sh.
-.claude/skills/
+.claude/vendor/
