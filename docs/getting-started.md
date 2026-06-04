@@ -127,7 +127,25 @@ is safe to skip. Walk through it conversationally:
   [`docs/integrations/n8n.md`](integrations/n8n.md). Students don't edit the
   parser.
 
-## 9. (Optional) Make it yours — the design system
+## 9. (Optional) Connect Zep (knowledge-graph memory)
+
+Only if the student wants to work with a **Zep** knowledge graph (agent memory:
+entities, facts, relationships). This adds two developer tools, not app code — skip it
+otherwise. Full details in [`docs/integrations/zep.md`](integrations/zep.md). Walk
+through it conversationally:
+
+- **CLI (`zepctl`)** — check `zepctl version` first; if missing, install via Homebrew
+  (`brew tap getzep/zepctl https://github.com/getzep/zepctl.git && brew install
+zepctl`). Then authenticate: have them create a Zep project + API key at
+  https://app.getzep.com and run `zepctl config add-profile production` (stores the key
+  in the keychain). Confirm with `zepctl project get`.
+- **Docs MCP (`zep-docs`)** — same **detect → ask → add** rule as the Supabase MCP
+  (step 4): run `claude mcp list`, look for `docs-mcp.getzep.com`, and **only on an
+  explicit yes** run `claude mcp add zep-docs --transport http
+https://docs-mcp.getzep.com/mcp`. It's a public docs endpoint — nothing secret to
+  commit.
+
+## 10. (Optional) Make it yours — the design system
 
 - Your app's look (colors, typography, components) is documented in
   [`DESIGN.md`](../DESIGN.md). It mirrors the live theme in `app/globals.css` and
@@ -148,4 +166,6 @@ is safe to skip. Walk through it conversationally:
 - [ ] `npm test` passes
 - [ ] _(Optional)_ n8n chat connected: `API_KEY` Header Auth + production
       `/webhook/` URL set, `/chat` streams a real reply
+- [ ] _(Optional)_ Zep connected: `zepctl` installed & authenticated
+      (`zepctl project get` works), `zep-docs` MCP added if wanted
 - [ ] **Cleanup done:** this file removed & Project Overview rewritten for the real project
