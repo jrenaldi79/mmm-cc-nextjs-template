@@ -22,6 +22,9 @@ export default function Navigation() {
               <Link href="/charts">📊 Charts</Link>
             </Button>
             <Button variant="ghost" asChild>
+              <Link href="/chat">💬 Chat</Link>
+            </Button>
+            <Button variant="ghost" asChild>
               <Link href="/test-dashboard">🧪 Test Dashboard</Link>
             </Button>
           </nav>

@@ -73,6 +73,16 @@ export default function HomePage() {
                   <Link href="/charts">View Charts Example →</Link>
                 </Button>
               </div>
+
+              <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 mt-4">
+                <p className="text-indigo-800 font-semibold mb-2">💬 Streaming LLM Agent:</p>
+                <p className="text-indigo-700 mb-3">
+                  A chat UI that streams an <strong>n8n</strong> LLM agent response token-by-token (with a placeholder until you connect your webhook).
+                </p>
+                <Button asChild className="bg-indigo-600 hover:bg-indigo-700">
+                  <Link href="/chat">Try the Chat Example →</Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
