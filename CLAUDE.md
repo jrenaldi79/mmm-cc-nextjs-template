@@ -253,7 +253,7 @@ Full rule: [.claude/rules/tdd.md](.claude/rules/tdd.md).
 | Hook | Steps |
 |------|-------|
 | **pre-commit** | `lint-staged` (eslint + prettier on staged) → `check-secrets` → `check-file-sizes` → `check-test-colocation` → `generate-docs` → `validate-docs` |
-| **pre-push** | `validate` + `test` (SHA-cached via `.test-passed`, skipped if HEAD already passed) → `npm audit` (warn-only) |
+| **pre-push** | `validate` + `test` (SHA-cached via `.test-passed`, skipped if HEAD already passed) → `npm audit` (warn-only) → `design:lint` (warn-only) |
 
 ---
 

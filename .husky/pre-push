@@ -7,3 +7,7 @@ else
 fi
 
 npm audit --audit-level=moderate || true
+
+# Design-system lint — warn-only: surfaces DESIGN.md issues but never blocks a
+# push (the @google/design.md CLI is an npx call that may be offline/unreachable).
+npm run design:lint || echo "⚠  design:lint reported issues or could not run — not blocking. Run 'npm run design:lint' for details."
