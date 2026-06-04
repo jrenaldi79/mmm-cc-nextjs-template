@@ -48,6 +48,9 @@ export default function Navigation() {
             <Button variant="ghost" asChild>
               <Link href="/test-dashboard">🧪 Test Dashboard</Link>
             </Button>
+            <Button variant="ghost" asChild>
+              <Link href="/design">🎨 Design System</Link>
+            </Button>
 
             {email && (
               <div className="flex items-center gap-2 pl-2 ml-1 border-l">
