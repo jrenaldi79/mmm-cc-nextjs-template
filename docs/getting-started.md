@@ -139,6 +139,9 @@ through it conversationally:
 zepctl`). Then authenticate: have them create a Zep project + API key at
   https://app.getzep.com and run `zepctl config add-profile production` (stores the key
   in the keychain). Confirm with `zepctl project get`.
+  Set `ZEP_API_KEY` in `.env.local` to also enable chat memory (the `/chat`
+  agent retrieves the user's long-term context and logs each turn to their
+  Zep graph; see [`docs/integrations/zep.md`](integrations/zep.md)).
 - **Docs MCP (`zep-docs`)** — same **detect → ask → add** rule as the Supabase MCP
   (step 4): run `claude mcp list`, look for `docs-mcp.getzep.com`, and **only on an
   explicit yes** run `claude mcp add zep-docs --transport http

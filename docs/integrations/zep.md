@@ -105,6 +105,25 @@ silently** (the student may already have it, and a duplicate server is confusing
 
 ---
 
+## 3. App integration: chat memory
+
+When `ZEP_API_KEY` is set, the chat scaffold (`app/api/chat/route.ts`) uses Zep in
+the **n8n-connected path** (not placeholder mode):
+
+- **Before** calling n8n it fetches the signed-in user's long-term context with
+  `thread.getUserContext(sessionId)` and adds it to the n8n request body as
+  `context`. Wire it into your agent prompt with `{{ $json.body.context }}`.
+- **After** the reply streams back it records the turn (user message + assistant
+  reply) to the user's Zep thread (`sessionId`), ingesting both into the
+  user-level knowledge graph.
+
+The retrieved `context` is passed to n8n only — it is **never** written back to
+Zep, so already-extracted facts aren't re-ingested. Every Zep call is best-effort:
+if the key is unset or Zep is unavailable, the chat works exactly as before. Set
+`ZEP_API_KEY` in `.env.local` (server-side only).
+
+---
+
 ## Notes
 
 - **Per-developer, not committed.** `zepctl`'s key lives in the keychain; the MCP
