@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { createN8nTextStream } from '@/lib/n8n-stream';
+import { createN8nTextStream, N8N_RUN_SEPARATOR } from '@/lib/n8n-stream';
 
 /** Pipe a list of string chunks through the transform and collect the output. */
 async function run(chunks: string[]): Promise<string> {
@@ -55,6 +55,29 @@ describe('createN8nTextStream', () => {
       '\n{"type":"begin"}\n\n{"type":"item","content":"hi"}\n{"type":"other"}\n',
     ]);
     expect(text).toBe('hi');
+  });
+
+  it('separates content from distinct agent runs with the run separator', async () => {
+    // An agent that calls the LLM twice (e.g. an interim "I need to check our
+    // docs" reply, then the final answer) streams two begin/item/end runs in one
+    // response. Each run becomes its own bubble, so mark the boundary between them.
+    const records = [
+      '{"type":"begin","metadata":{"runIndex":0}}',
+      '{"type":"item","content":"I first need to check our company docs."}',
+      '{"type":"end","metadata":{"runIndex":0}}',
+      '{"type":"begin","metadata":{"runIndex":1}}',
+      '{"type":"item","content":"The answer is 42."}',
+      '{"type":"end","metadata":{"runIndex":1}}',
+    ].join('\n');
+
+    expect(await run([records])).toBe(
+      `I first need to check our company docs.${N8N_RUN_SEPARATOR}The answer is 42.`
+    );
+  });
+
+  it('does not emit a leading separator for a single-run response', async () => {
+    // The separator only appears *between* runs, never before the first.
+    expect(await run([NDJSON])).not.toContain(N8N_RUN_SEPARATOR);
   });
 
   it('passes raw (non-JSON) lines through so plain-text workflows still stream', async () => {

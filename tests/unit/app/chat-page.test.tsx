@@ -50,6 +50,7 @@ jest.mock('@/lib/supabase/client', () => ({
 }));
 
 import ChatPage from '@/app/chat/page';
+import { N8N_RUN_SEPARATOR } from '@/lib/n8n-stream';
 
 describe('ChatPage', () => {
   beforeEach(() => {
@@ -141,6 +142,36 @@ describe('ChatPage', () => {
 
     const assistantProse = screen.getByText('Hello!').closest('.prose');
     expect(assistantProse).not.toHaveClass('prose-invert');
+  });
+
+  it('renders each agent run as its own bubble when a message has a run separator', () => {
+    mockChatState = {
+      messages: [
+        {
+          id: '1',
+          role: 'assistant',
+          parts: [
+            {
+              type: 'text',
+              text: `First response${N8N_RUN_SEPARATOR}Final answer`,
+            },
+          ],
+        },
+      ],
+      status: 'ready',
+      error: undefined,
+    };
+
+    render(<ChatPage />);
+
+    // Split into two distinct text nodes — if it were one merged bubble, the raw
+    // separator char would sit between them and neither exact match would resolve.
+    expect(screen.getByText('First response')).toBeInTheDocument();
+    expect(screen.getByText('Final answer')).toBeInTheDocument();
+    // The raw control character must never reach the rendered DOM.
+    expect(
+      screen.queryByText(`First response${N8N_RUN_SEPARATOR}Final answer`)
+    ).not.toBeInTheDocument();
   });
 
   it('sends a message on submit', async () => {
