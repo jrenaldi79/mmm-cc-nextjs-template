@@ -57,6 +57,11 @@ app/
 │   │   └── route.ts  # Proxy the request to the n8n workflow and stream its reply back.
 │   ├── client-errors/
 │   │   └── route.ts  # Receives client-side crash reports and records them server-side via the
+│   ├── memory/
+│   │   ├── search/
+│   │   │   └── route.ts  # POST /api/memory/search — run an auto graph search over the signed-in user's
+│   │   └── summary/
+│   │       └── route.ts  # GET /api/memory/summary — return the signed-in user's long-term memory (their
 │   ├── tasks/
 │   │   ├── [id]/
 │   │   │   └── route.ts
@@ -105,6 +110,15 @@ app/
 ├── login/
 │   ├── actions.ts  # Email/password sign-in. Called as a form action from /login.
 │   └── page.tsx
+├── memory/
+│   ├── components/
+│   │   ├── GraphSearchExplorer.tsx  # Interactive: runs an auto graph search over the student's own Zep graph via
+│   │   ├── HowWeUseZepSection.tsx  # Grounds the concepts in *this* app: how the chat page uses Zep to remember
+│   │   ├── KnowledgeGraphSection.tsx  # Explains a knowledge graph in plain language: instead of storing chat logs as
+│   │   ├── sample-queries.ts  # Starter queries for the graph search explorer. They're phrased the way a
+│   │   ├── UserSummaryCard.tsx  # Interactive: fetches the signed-in student's long-term memory (their Zep
+│   │   └── WhatIsMemorySection.tsx  # Frames the problem first: a plain chatbot forgets everything the moment a
+│   └── page.tsx
 ├── signup/
 │   └── page.tsx
 ├── tasks/
@@ -143,6 +157,7 @@ lib/
 ├── zep/
 │   ├── chat-memory.ts  # Fetch the user's long-term context for a thread, plus (when `userId` is
 │   ├── client.ts  # Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat
+│   ├── graph-search.ts  # Shared Zep helpers for the /memory learning page. Unlike the chat-memory
 │   ├── identity.ts  # Map a Supabase user to the fields Zep's user.add expects.
 │   └── stream-capture.ts  # A pass-through transform that accumulates the streamed assistant text and,
 ├── chat-history.ts  # Map stored n8n LangChain history rows into the UI message shape used by the
@@ -168,6 +183,8 @@ types/
 | `app/page.tsx` |  | `HomePage` |
 | `app/api/chat/route.ts` | Proxy the request to the n8n workflow and stream its reply back. | `maxDuration`, `POST` |
 | `app/api/client-errors/route.ts` | Receives client-side crash reports and records them server-side via the | `POST` |
+| `app/api/memory/search/route.ts` | POST /api/memory/search — run an auto graph search over the signed-in user's | `POST` |
+| `app/api/memory/summary/route.ts` | GET /api/memory/summary — return the signed-in user's long-term memory (their | `GET` |
 | `app/api/tasks/route.ts` |  | `GET`, `POST` |
 | `app/api/tasks/[id]/route.ts` |  | `PATCH`, `DELETE` |
 | `app/api/test-runner/route.ts` |  | `POST` |
@@ -200,6 +217,13 @@ types/
 | `app/design/components/WhyDesignSystemsSection.tsx` | Frames the *problem* before any solution: what an interface looks like with no | `WhyDesignSystemsSection` |
 | `app/login/actions.ts` | Email/password sign-in. Called as a form action from /login. | `login`, `signup` |
 | `app/login/page.tsx` |  | `LoginPage`, `default` |
+| `app/memory/page.tsx` |  | `metadata`, `MemoryPage` |
+| `app/memory/components/GraphSearchExplorer.tsx` | Interactive: runs an auto graph search over the student's own Zep graph via | `GraphSearchExplorer` |
+| `app/memory/components/HowWeUseZepSection.tsx` | Grounds the concepts in *this* app: how the chat page uses Zep to remember | `HowWeUseZepSection` |
+| `app/memory/components/KnowledgeGraphSection.tsx` | Explains a knowledge graph in plain language: instead of storing chat logs as | `KnowledgeGraphSection` |
+| `app/memory/components/sample-queries.ts` | Starter queries for the graph search explorer. They're phrased the way a | `SAMPLE_QUERIES` |
+| `app/memory/components/UserSummaryCard.tsx` | Interactive: fetches the signed-in student's long-term memory (their Zep | `UserSummaryCard` |
+| `app/memory/components/WhatIsMemorySection.tsx` | Frames the problem first: a plain chatbot forgets everything the moment a | `WhatIsMemorySection` |
 | `app/signup/page.tsx` |  | `SignupPage`, `default` |
 | `app/tasks/page.tsx` |  | `TasksPage` |
 | `app/test-dashboard/page.tsx` |  | `TestDashboard` |
@@ -229,6 +253,7 @@ types/
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
 | `lib/zep/chat-memory.ts` | Fetch the user's long-term context for a thread, plus (when `userId` is | `retrieveUserContext`, `ChatTurn`, `recordChatTurn` |
 | `lib/zep/client.ts` | Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat | `getZepClient` |
+| `lib/zep/graph-search.ts` | Shared Zep helpers for the /memory learning page. Unlike the chat-memory | `UserMemory`, `GraphFact`, `GraphEntity`, `GraphEpisode`, `GraphSearchResult` |
 | `lib/zep/identity.ts` | Map a Supabase user to the fields Zep's user.add expects. | `ZepUserFields`, `toZepUser`, `displayName` |
 | `lib/zep/stream-capture.ts` | A pass-through transform that accumulates the streamed assistant text and, | `createCaptureStream` |
 | `types/index.ts` |  | `ApiError` |
