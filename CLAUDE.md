@@ -132,6 +132,7 @@ lib/
 │   ├── middleware.ts  # Refreshes the Supabase auth session on every request and gates access.
 │   └── server.ts  # Supabase client for use on the server: Server Components, Route Handlers, and
 ├── zep/
+│   ├── chat-memory.ts  # Fetch the user's long-term context block for a thread. Best-effort: on any
 │   ├── client.ts  # Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat
 │   └── identity.ts  # Map a Supabase user to the fields Zep's user.add expects.
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
@@ -205,6 +206,7 @@ types/
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
+| `lib/zep/chat-memory.ts` | Fetch the user's long-term context block for a thread. Best-effort: on any | `retrieveUserContext` |
 | `lib/zep/client.ts` | Returns a Zep client when ZEP_API_KEY is set, otherwise null so the chat | `getZepClient` |
 | `lib/zep/identity.ts` | Map a Supabase user to the fields Zep's user.add expects. | `ZepUserFields`, `toZepUser`, `displayName` |
 | `types/index.ts` |  | `ApiError` |
