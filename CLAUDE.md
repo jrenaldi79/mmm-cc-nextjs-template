@@ -55,6 +55,8 @@ app/
 ├── api/
 │   ├── chat/
 │   │   └── route.ts  # Proxy the request to the n8n workflow and stream its reply back.
+│   ├── client-errors/
+│   │   └── route.ts  # Receives client-side crash reports and records them server-side via the
 │   ├── tasks/
 │   │   ├── [id]/
 │   │   │   └── route.ts
@@ -114,8 +116,10 @@ app/
 │   │   └── TestSummaryCard.tsx
 │   ├── page.tsx
 │   └── types.ts
+├── error.tsx  # Route-level error boundary. Next.js renders this when a Server/Client
+├── global-error.tsx  # Global error boundary. Catches errors thrown in the root layout itself, where
 ├── globals.css
-├── layout.tsx
+├── layout.tsx  # Applies the saved theme before paint (see public/theme-init.js) to
 └── page.tsx
 components/
 └── ui/
@@ -144,6 +148,7 @@ lib/
 ├── chat-history.ts  # Map stored n8n LangChain history rows into the UI message shape used by the
 ├── logger.ts  # Minimal structured logger. Prefer this over `console.log` so logs are
 ├── n8n-stream.ts  # Normalize an n8n AI Agent streaming response into a plain text token stream.
+├── report-client-error.ts  # The error shape an App Router error boundary receives: a standard `Error`
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
 types/
 ├── index.ts
@@ -157,9 +162,12 @@ types/
 <!-- AUTO:modules -->
 | Module | Purpose | Key Exports |
 |--------|---------|-------------|
-| `app/layout.tsx` |  | `metadata`, `RootLayout` |
+| `app/error.tsx` | Route-level error boundary. Next.js renders this when a Server/Client | `Error` |
+| `app/global-error.tsx` | Global error boundary. Catches errors thrown in the root layout itself, where | `GlobalError` |
+| `app/layout.tsx` | Applies the saved theme before paint (see public/theme-init.js) to | `metadata`, `RootLayout` |
 | `app/page.tsx` |  | `HomePage` |
 | `app/api/chat/route.ts` | Proxy the request to the n8n workflow and stream its reply back. | `maxDuration`, `POST` |
+| `app/api/client-errors/route.ts` | Receives client-side crash reports and records them server-side via the | `POST` |
 | `app/api/tasks/route.ts` |  | `GET`, `POST` |
 | `app/api/tasks/[id]/route.ts` |  | `PATCH`, `DELETE` |
 | `app/api/test-runner/route.ts` |  | `POST` |
@@ -214,6 +222,7 @@ types/
 | `lib/chat-history.ts` | Map stored n8n LangChain history rows into the UI message shape used by the | `UiMessage`, `historyToUiMessages` |
 | `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
 | `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `N8N_RUN_SEPARATOR`, `createN8nTextStream` |
+| `lib/report-client-error.ts` | The error shape an App Router error boundary receives: a standard `Error` | `reportClientError` |
 | `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `generateId`, `studioCard`, `studioCardHover` |
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |

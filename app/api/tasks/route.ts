@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 import type { TaskInsert } from '@/types/supabase';
 
 export async function GET(): Promise<NextResponse> {
@@ -20,6 +21,7 @@ export async function GET(): Promise<NextResponse> {
       .order('created_at', { ascending: false });
 
     if (error) {
+      logger.error('Failed to fetch tasks', { error: error.message });
       return NextResponse.json(
         { error: 'Failed to fetch tasks', details: error.message },
         { status: 500 }
@@ -28,6 +30,9 @@ export async function GET(): Promise<NextResponse> {
 
     return NextResponse.json({ data, metadata: { count: data?.length || 0 } });
   } catch (error) {
+    logger.error('Unhandled error in GET /api/tasks', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -69,6 +74,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       .single();
 
     if (error) {
+      logger.error('Failed to create task', { error: error.message });
       return NextResponse.json(
         { error: 'Failed to create task', details: error.message },
         { status: 500 }
@@ -77,6 +83,9 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     return NextResponse.json({ data }, { status: 201 });
   } catch (error) {
+    logger.error('Unhandled error in POST /api/tasks', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       {
         error: 'Internal server error',

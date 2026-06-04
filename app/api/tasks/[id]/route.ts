@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 import type { TaskUpdate } from '@/types/supabase';
 
 export async function PATCH(
@@ -40,6 +41,7 @@ export async function PATCH(
       .single();
 
     if (error) {
+      logger.error('Failed to update task', { error: error.message });
       return NextResponse.json(
         { error: 'Failed to update task', details: error.message },
         { status: 500 }
@@ -52,6 +54,9 @@ export async function PATCH(
 
     return NextResponse.json({ data });
   } catch (error) {
+    logger.error('Unhandled error in PATCH /api/tasks/[id]', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -82,6 +87,7 @@ export async function DELETE(
     const { error } = await supabase.from('tasks').delete().eq('id', id);
 
     if (error) {
+      logger.error('Failed to delete task', { error: error.message });
       return NextResponse.json(
         { error: 'Failed to delete task', details: error.message },
         { status: 500 }
@@ -90,6 +96,9 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Task deleted successfully' });
   } catch (error) {
+    logger.error('Unhandled error in DELETE /api/tasks/[id]', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return NextResponse.json(
       {
         error: 'Internal server error',

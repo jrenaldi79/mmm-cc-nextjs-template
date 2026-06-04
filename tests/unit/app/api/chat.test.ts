@@ -3,6 +3,16 @@
  */
 
 import { POST } from '@/app/api/chat/route';
+import { logger } from '@/lib/logger';
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
 
 function makeRequest(body: unknown): Request {
   return new Request('http://localhost/api/chat', {
@@ -31,6 +41,7 @@ describe('POST /api/chat', () => {
     process.env = { ...originalEnv };
     delete process.env.N8N_WEBHOOK_URL;
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-123' } } });
+    (logger.error as jest.Mock).mockClear();
   });
 
   afterEach(() => {
@@ -199,5 +210,36 @@ describe('POST /api/chat', () => {
 
     const res = await POST(makeRequest(userMessage));
     expect(res.status).toBe(502);
+  });
+
+  it('logs server-side when the n8n webhook returns a non-ok status', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        new Response('nope', { status: 500 })
+      ) as unknown as typeof fetch;
+
+    await POST(makeRequest(userMessage));
+
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    const [msg, meta] = (logger.error as jest.Mock).mock.calls[0];
+    expect(msg).toMatch(/n8n webhook/i);
+    expect(meta).toMatchObject({ status: 500 });
+  });
+
+  it('logs server-side when the n8n webhook is unreachable', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+    global.fetch = jest
+      .fn()
+      .mockRejectedValue(new Error('ECONNREFUSED')) as unknown as typeof fetch;
+
+    const res = await POST(makeRequest(userMessage));
+
+    expect(res.status).toBe(502);
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect((logger.error as jest.Mock).mock.calls[0][0]).toMatch(
+      /n8n webhook/i
+    );
   });
 });

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { User } from '@supabase/supabase-js';
 import { createN8nTextStream } from '@/lib/n8n-stream';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 import { getZepClient } from '@/lib/zep/client';
 import { retrieveUserContext, recordChatTurn } from '@/lib/zep/chat-memory';
 import { createCaptureStream } from '@/lib/zep/stream-capture';
@@ -107,11 +108,15 @@ async function proxyToN8n(args: N8nProxyArgs): Promise<Response> {
         messages,
       }),
     });
-  } catch {
+  } catch (error) {
+    logger.error('n8n webhook unreachable', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return jsonError('Could not reach the n8n webhook', 502);
   }
 
   if (!upstream.ok || !upstream.body) {
+    logger.error('n8n webhook returned an error', { status: upstream.status });
     return jsonError(`n8n webhook returned an error (${upstream.status})`, 502);
   }
 

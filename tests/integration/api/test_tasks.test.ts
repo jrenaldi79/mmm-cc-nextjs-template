@@ -5,6 +5,16 @@
 import { GET, POST } from '@/app/api/tasks/route';
 import { PATCH, DELETE } from '@/app/api/tasks/[id]/route';
 import { createClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
 
 // Mock the cookie-aware server client. Each handler calls `await createClient()`
 // then `auth.getUser()` (for the auth guard) and `from('tasks')` for queries.
@@ -101,6 +111,7 @@ describe('Tasks API - GET /api/tasks', () => {
       error: 'Failed to fetch tasks',
       details: 'Database connection failed',
     });
+    expect(logger.error).toHaveBeenCalled();
   });
 
   it('should handle exceptions in GET handler', async () => {
@@ -116,6 +127,7 @@ describe('Tasks API - GET /api/tasks', () => {
       error: 'Internal server error',
       details: 'Unexpected error',
     });
+    expect(logger.error).toHaveBeenCalled();
   });
 });
 
@@ -246,6 +258,7 @@ describe('Tasks API - POST /api/tasks', () => {
       error: 'Failed to create task',
       details: 'Insert failed',
     });
+    expect(logger.error).toHaveBeenCalled();
   });
 
   it('should handle exceptions in POST handler', async () => {
@@ -260,6 +273,7 @@ describe('Tasks API - POST /api/tasks', () => {
     expect(response.status).toBe(500);
     expect(data.error).toBe('Internal server error');
     expect(data.details).toBeDefined();
+    expect(logger.error).toHaveBeenCalled();
   });
 });
 
@@ -431,6 +445,7 @@ describe('Tasks API - PATCH /api/tasks/[id]', () => {
     expect(response.status).toBe(500);
     expect(data.error).toBe('Internal server error');
     expect(data.details).toBeDefined();
+    expect(logger.error).toHaveBeenCalled();
   });
 });
 
@@ -491,6 +506,7 @@ describe('Tasks API - DELETE /api/tasks/[id]', () => {
       error: 'Failed to delete task',
       details: 'Delete failed',
     });
+    expect(logger.error).toHaveBeenCalled();
   });
 
   it('should handle exceptions in DELETE handler', async () => {
@@ -512,5 +528,6 @@ describe('Tasks API - DELETE /api/tasks/[id]', () => {
       error: 'Internal server error',
       details: 'Unexpected deletion error',
     });
+    expect(logger.error).toHaveBeenCalled();
   });
 });
