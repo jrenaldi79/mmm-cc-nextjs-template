@@ -109,4 +109,40 @@ describe('historyToUiMessages', () => {
       },
     ]);
   });
+
+  it('strips the injected USER_SUMMARY block and unwraps user_prompt for human turns', () => {
+    // n8n persists the augmented prompt: the injected <USER_SUMMARY> context plus
+    // the real question wrapped in <user_prompt>. Only the question should show.
+    const content =
+      '<USER_SUMMARY>\nJohn is an MMM student.\n</USER_SUMMARY>\n\n' +
+      '<user_prompt>\nWhich dataset do I work with?\n</user_prompt>';
+    const result = historyToUiMessages([row(1, { type: 'human', content })]);
+    expect(result).toEqual([
+      {
+        id: 'history-1',
+        role: 'user',
+        parts: [{ type: 'text', text: 'Which dataset do I work with?' }],
+      },
+    ]);
+  });
+
+  it('strips a USER_SUMMARY block even without a user_prompt wrapper', () => {
+    const content =
+      '<USER_SUMMARY>some context</USER_SUMMARY>\n\nWhat is churn?';
+    const result = historyToUiMessages([row(1, { type: 'human', content })]);
+    expect(result[0].parts[0].text).toBe('What is churn?');
+  });
+
+  it('skips a human turn that is only injected context after cleaning', () => {
+    const content = '<USER_SUMMARY>just context, no question</USER_SUMMARY>';
+    expect(historyToUiMessages([row(1, { type: 'human', content })])).toEqual(
+      []
+    );
+  });
+
+  it('leaves assistant content untouched (the wrapper is only on human turns)', () => {
+    const content = 'I wrapped <user_prompt>this</user_prompt> in my reply.';
+    const result = historyToUiMessages([row(1, { type: 'ai', content })]);
+    expect(result[0].parts[0].text).toBe(content);
+  });
 });

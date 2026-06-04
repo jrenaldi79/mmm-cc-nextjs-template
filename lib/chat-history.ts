@@ -26,6 +26,19 @@ const ROLE_BY_TYPE: Record<string, UiMessage['role']> = {
   ai: 'assistant',
 };
 
+/**
+ * Strip the memory augmentation n8n persists on a human turn. When Zep context
+ * is injected, the stored `human` message is the augmented prompt: a
+ * `<USER_SUMMARY>…</USER_SUMMARY>` context block plus the real question wrapped
+ * in `<user_prompt>…</user_prompt>`. Show only the question — prefer the
+ * unwrapped `<user_prompt>` content, otherwise drop any `<USER_SUMMARY>` block.
+ */
+function cleanStoredUserContent(content: string): string {
+  const wrapped = content.match(/<user_prompt>([\s\S]*?)<\/user_prompt>/i);
+  if (wrapped) return wrapped[1].trim();
+  return content.replace(/<USER_SUMMARY>[\s\S]*?<\/USER_SUMMARY>/gi, '').trim();
+}
+
 export function historyToUiMessages(rows: N8nChatHistory[]): UiMessage[] {
   return [...rows]
     .sort((a, b) => a.id - b.id)
@@ -49,10 +62,12 @@ function toUiMessage(row: N8nChatHistory): UiMessage | null {
   if (type === 'ai' && Array.isArray(tool_calls) && tool_calls.length > 0) {
     return null;
   }
-  if (content.trim() === '') return null;
+  // Human turns may carry injected Zep context; show only the real prompt.
+  const text = role === 'user' ? cleanStoredUserContent(content) : content;
+  if (text.trim() === '') return null;
   return {
     id: `history-${row.id}`,
     role,
-    parts: [{ type: 'text', text: content }],
+    parts: [{ type: 'text', text }],
   };
 }

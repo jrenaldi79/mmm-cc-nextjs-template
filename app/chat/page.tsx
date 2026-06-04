@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { TextStreamChatTransport } from 'ai';
 import { Send } from 'lucide-react';
@@ -15,12 +15,16 @@ import { PageHero } from '../components/PageHero';
 import { PageShell } from '../components/PageShell';
 import { ChatMessages } from '../components/chat/ChatMessages';
 import { ChatSessionSidebar } from '../components/chat/ChatSessionSidebar';
+import { ChatContextPanel } from '../components/chat/ChatContextPanel';
 
 export default function ChatPage() {
   // Stable id for the active chat session so the n8n agent can keep memory
   // across turns. Switching sessions (or starting a new chat) swaps this id.
   const [sessionId, setSessionId] = useState(() => generateId());
   const [input, setInput] = useState('');
+  // Bumped after each completed turn so the memory panel refetches — Zep updates
+  // the user's long-term summary once recordChatTurn writes the turn.
+  const [contextRefresh, setContextRefresh] = useState(0);
   // Re-create the transport whenever the session changes so /api/chat receives
   // the current sessionId in its body.
   const transport = useMemo(
@@ -33,6 +37,15 @@ export default function ChatPage() {
   });
 
   const isBusy = status === 'submitted' || status === 'streaming';
+  // The most recent user message drives the panel's query-relevant graph search.
+  const latestQuestion = useMemo(() => {
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user');
+    if (!lastUser) return '';
+    return lastUser.parts
+      .map((p) => (p.type === 'text' ? p.text : ''))
+      .join(' ')
+      .trim();
+  }, [messages]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +76,16 @@ export default function ChatPage() {
     setSessionId(generateId());
     setMessages([]);
   }
+
+  // Refresh the memory panel on the falling edge of `isBusy` (a turn just
+  // finished streaming), since that is when the user's Zep memory may change.
+  const wasBusyRef = useRef(false);
+  useEffect(() => {
+    if (wasBusyRef.current && !isBusy) {
+      setContextRefresh((n) => n + 1);
+    }
+    wasBusyRef.current = isBusy;
+  }, [isBusy]);
 
   return (
     <PageShell>
@@ -113,6 +136,10 @@ export default function ChatPage() {
             </form>
           </div>
         </Card>
+        <ChatContextPanel
+          refreshSignal={contextRefresh}
+          question={latestQuestion}
+        />
       </div>
     </PageShell>
   );
