@@ -17,7 +17,7 @@ function getCoverageBarColor(percentage: string) {
 
 export function CoverageCard({ coverage }: { coverage: Coverage }) {
   return (
-    <Card className="mb-6 border-2 border-foreground rounded-2xl shadow-hard">
+    <Card className="border-2 border-foreground rounded-2xl shadow-hard">
       <CardHeader>
         <CardTitle className="font-display">Code Coverage</CardTitle>
       </CardHeader>

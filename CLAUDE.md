@@ -84,6 +84,7 @@ app/
 │   ├── Navigation.tsx
 │   ├── OAuthButtons.tsx  # Social sign-in buttons. OAuth must be initiated from the browser because it
 │   ├── PageHero.tsx  # The shared page header used at the top of every top-level page (Design, Charts,
+│   ├── PageShell.tsx  # The standard page frame for every top-level content page (Design, Charts, Chat,
 │   └── ThemeToggle.tsx
 ├── design/
 │   ├── components/
@@ -160,6 +161,7 @@ types/
 | `app/components/Navigation.tsx` |  | `Navigation` |
 | `app/components/OAuthButtons.tsx` | Social sign-in buttons. OAuth must be initiated from the browser because it | `OAuthButtons` |
 | `app/components/PageHero.tsx` | The shared page header used at the top of every top-level page (Design, Charts, | `PageHero` |
+| `app/components/PageShell.tsx` | The standard page frame for every top-level content page (Design, Charts, Chat, | `PageShell` |
 | `app/components/ThemeToggle.tsx` |  | `ThemeToggle` |
 | `app/components/home/AiInstructionsCard.tsx` |  | `AiInstructionsCard` |
 | `app/components/home/TddFrameworkCard.tsx` |  | `TddFrameworkCard` |
@@ -195,7 +197,7 @@ types/
 | `components/ui/label.tsx` |  | `Label` |
 | `components/ui/select.tsx` | A lightweight select built on the native `<select>` element. | `Select` |
 | `lib/logger.ts` | Minimal structured logger. Prefer this over `console.log` so logs are | `LogLevel`, `logger` |
-| `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `createN8nTextStream` |
+| `lib/n8n-stream.ts` | Normalize an n8n AI Agent streaming response into a plain text token stream. | `N8N_RUN_SEPARATOR`, `createN8nTextStream` |
 | `lib/utils.ts` | Merge Tailwind class names, resolving conflicts (later classes win). | `cn`, `studioCard`, `studioCardHover` |
 | `lib/supabase/client.ts` | Supabase client for use inside Client Components (`'use client'`). | `createClient` |
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Navigation from '../components/Navigation';
+import { PageShell } from '../components/PageShell';
 import { PageHero } from '../components/PageHero';
 import { ConceptsSection } from './components/ConceptsSection';
 import { ColorTokens } from './components/ColorTokens';
@@ -16,30 +16,27 @@ export const metadata: Metadata = {
 
 export default function DesignPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="mx-auto w-full max-w-content space-y-16 px-6 py-12 md:px-9">
-        <PageHero
-          eyebrow="Design System"
-          title={
-            <>
-              The{' '}
-              <span className="font-serif font-normal italic text-primary">
-                living
-              </span>{' '}
-              design system.
-            </>
-          }
-          subtitle="A guided tour of how this app stays good-looking and consistent — what a design system is, the colors and building blocks you have, how new components get added, and how it's all kept on-brand automatically. No experience needed."
-        />
+    <PageShell>
+      <PageHero
+        eyebrow="Design System"
+        title={
+          <>
+            The{' '}
+            <span className="font-serif font-normal italic text-primary">
+              living
+            </span>{' '}
+            design system.
+          </>
+        }
+        subtitle="A guided tour of how this app stays good-looking and consistent — what a design system is, the colors and building blocks you have, how new components get added, and how it's all kept on-brand automatically. No experience needed."
+      />
 
-        <ConceptsSection />
-        <ColorTokens />
-        <TypeAndShapeSection />
-        <ComponentGallery />
-        <EnforcementSection />
-        <AddComponentGuide />
-      </main>
-    </div>
+      <ConceptsSection />
+      <ColorTokens />
+      <TypeAndShapeSection />
+      <ComponentGallery />
+      <EnforcementSection />
+      <AddComponentGuide />
+    </PageShell>
   );
 }

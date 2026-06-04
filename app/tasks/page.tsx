@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import type { Task } from '@/types/supabase';
-import Navigation from '../components/Navigation';
 import { TaskItem } from '../components/tasks/TaskItem';
 import { StudentsInfoCard } from '../components/tasks/StudentsInfoCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { PageHero } from '../components/PageHero';
+import { PageShell } from '../components/PageShell';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function TasksPage() {
@@ -115,99 +115,92 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="mx-auto w-full max-w-content px-6 py-12 md:px-9">
-        <div className="space-y-8">
-          <PageHero
-            eyebrow="Supabase · CRUD"
-            title={
-              <>
-                Supabase{' '}
-                <span className="font-serif font-normal italic text-primary">
-                  Tasks
-                </span>
-              </>
-            }
-            subtitle="This is a sample integration showing how to connect to Supabase and perform CRUD operations."
-          />
-          <Card className="border-2 border-foreground rounded-2xl shadow-hard">
-            <CardContent className="pt-6">
-              {error && (
-                <div className="mb-6 rounded-xl border-2 border-destructive/40 bg-destructive/10 p-4 text-destructive">
-                  <strong>Error:</strong> {error}
-                </div>
-              )}
+    <PageShell>
+      <PageHero
+        eyebrow="Supabase · CRUD"
+        title={
+          <>
+            Supabase{' '}
+            <span className="font-serif font-normal italic text-primary">
+              Tasks
+            </span>
+          </>
+        }
+        subtitle="This is a sample integration showing how to connect to Supabase and perform CRUD operations."
+      />
+      <Card className="border-2 border-foreground rounded-2xl shadow-hard">
+        <CardContent className="pt-6">
+          {error && (
+            <div className="mb-6 rounded-xl border-2 border-destructive/40 bg-destructive/10 p-4 text-destructive">
+              <strong>Error:</strong> {error}
+            </div>
+          )}
 
-              <form
-                onSubmit={handleCreateTask}
-                className="mb-8 rounded-2xl border-2 border-foreground bg-muted/50 p-6"
+          <form
+            onSubmit={handleCreateTask}
+            className="mb-8 rounded-2xl border-2 border-foreground bg-muted/50 p-6"
+          >
+            <h2 className="font-display text-xl font-semibold mb-4">
+              Create New Task
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Input
+                type="text"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                placeholder="Enter task title..."
+                className="flex-1"
+              />
+              <Select
+                value={newTaskPriority}
+                onChange={(e) =>
+                  setNewTaskPriority(
+                    e.target.value as 'low' | 'medium' | 'high'
+                  )
+                }
+                className="sm:w-44"
               >
-                <h2 className="font-display text-xl font-semibold mb-4">
-                  Create New Task
-                </h2>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Input
-                    type="text"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder="Enter task title..."
-                    className="flex-1"
-                  />
-                  <Select
-                    value={newTaskPriority}
-                    onChange={(e) =>
-                      setNewTaskPriority(
-                        e.target.value as 'low' | 'medium' | 'high'
-                      )
-                    }
-                    className="sm:w-44"
-                  >
-                    <option value="low">Low Priority</option>
-                    <option value="medium">Medium Priority</option>
-                    <option value="high">High Priority</option>
-                  </Select>
-                  <Button type="submit">Add Task</Button>
-                </div>
-              </form>
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+              </Select>
+              <Button type="submit">Add Task</Button>
+            </div>
+          </form>
 
-              <div>
-                <h2 className="font-display text-xl font-semibold mb-4">
-                  Tasks ({tasks.length})
-                </h2>
+          <div>
+            <h2 className="font-display text-xl font-semibold mb-4">
+              Tasks ({tasks.length})
+            </h2>
 
-                {isLoading ? (
-                  <div className="text-center py-12">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    <p className="mt-4 text-muted-foreground">
-                      Loading tasks...
-                    </p>
-                  </div>
-                ) : tasks.length === 0 ? (
-                  <div className="text-center py-12 rounded-2xl border-2 border-foreground bg-muted/50">
-                    <p className="text-muted-foreground text-lg">
-                      No tasks yet. Create one above!
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {tasks.map((task) => (
-                      <TaskItem
-                        key={task.id}
-                        task={task}
-                        onToggle={handleToggleComplete}
-                        onDelete={handleDeleteTask}
-                      />
-                    ))}
-                  </div>
-                )}
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <p className="mt-4 text-muted-foreground">Loading tasks...</p>
               </div>
-            </CardContent>
-          </Card>
+            ) : tasks.length === 0 ? (
+              <div className="text-center py-12 rounded-2xl border-2 border-foreground bg-muted/50">
+                <p className="text-muted-foreground text-lg">
+                  No tasks yet. Create one above!
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {tasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onToggle={handleToggleComplete}
+                    onDelete={handleDeleteTask}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
-          <StudentsInfoCard />
-        </div>
-      </div>
-    </div>
+      <StudentsInfoCard />
+    </PageShell>
   );
 }

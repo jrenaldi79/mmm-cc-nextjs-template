@@ -3,7 +3,7 @@ import type { TestSummary } from '../types';
 
 export function TestSummaryCard({ summary }: { summary: TestSummary }) {
   return (
-    <Card className="mb-6 border-2 border-foreground rounded-2xl shadow-hard">
+    <Card className="border-2 border-foreground rounded-2xl shadow-hard">
       <CardHeader>
         <CardTitle className="font-display">Test Results</CardTitle>
       </CardHeader>
