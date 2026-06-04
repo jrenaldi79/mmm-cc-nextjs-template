@@ -82,7 +82,7 @@ describe('Supabase Client Configuration - Error Handling', () => {
     })
   })
 
-  it('should include helpful error message about Replit Secrets', () => {
+  it('should include helpful error message about environment variables', () => {
     jest.isolateModules(() => {
       const envBackup = { ...process.env }
       delete process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -90,7 +90,7 @@ describe('Supabase Client Configuration - Error Handling', () => {
 
       expect(() => {
         require('@/lib/supabase')
-      }).toThrow(/Replit Secrets/)
+      }).toThrow(/environment/)
 
       process.env = envBackup
     })

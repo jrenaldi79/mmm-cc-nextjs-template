@@ -63,16 +63,9 @@ INSERT INTO tasks (title, priority) VALUES
 2. Click **API** in the left sidebar
 3. Copy your **Project URL** and **anon/public key**
 
-#### Using Replit Secrets (Recommended)
+#### Using a .env.local File
 
-1. In your Replit project, open the **Secrets** tab (lock icon in left sidebar)
-2. Add two secrets:
-   - Key: `NEXT_PUBLIC_SUPABASE_URL`, Value: `your_project_url`
-   - Key: `NEXT_PUBLIC_SUPABASE_ANON_KEY`, Value: `your_anon_key`
-
-#### Using .env File (Alternative)
-
-1. Create a `.env` file in the project root
+1. Create a `.env.local` file in the project root (you can copy `.env.example`)
 2. Add your credentials:
 
 ```env
@@ -80,7 +73,9 @@ NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 ```
 
-**⚠️ IMPORTANT:** Never commit the `.env` file to Git! It's already in `.gitignore`.
+**⚠️ IMPORTANT:** Never commit the `.env.local` file to Git! It's already in `.gitignore`.
+
+When deploying, add the same variables in your hosting provider's environment settings.
 
 ### 4. Test the Integration
 
@@ -129,7 +124,7 @@ The example includes a permissive RLS policy for development. **In production**,
 
 ### Environment Variables
 
-- Use Replit Secrets in production (not `.env` files)
+- Use your hosting provider's environment settings in production (not committed `.env` files)
 - Never commit API keys to your repository
 - Use `NEXT_PUBLIC_` prefix only for client-side variables
 - Keep server-only secrets without the prefix
@@ -221,8 +216,8 @@ Delete a task
 **Problem:** The app can't find your Supabase credentials.
 
 **Solution:**
-1. Check that you've added the environment variables (either in Replit Secrets or `.env`)
-2. Restart your development server after adding secrets
+1. Check that you've added the environment variables (in `.env.local` or your host's environment settings)
+2. Restart your development server after adding the variables
 3. Verify the variable names match exactly: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### API Returns 500 Error

@@ -2,6 +2,8 @@
 
 A production-ready starter template for Northwestern MPD2 master's students, designed to accelerate development with TypeScript, Tailwind CSS, and a TDD framework pre-configured.
 
+> 🧩 **This is a GitHub template repository.** Click **"Use this template"** at the top of the GitHub page to create your own copy, then clone it and start building.
+
 ## 🎯 Purpose
 
 This starter template provides MPD2 students with:

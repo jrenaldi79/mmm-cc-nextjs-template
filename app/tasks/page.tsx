@@ -225,7 +225,7 @@ export default function TasksPage() {
               This example demonstrates:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-2">
-              <li><strong>Environment Variables:</strong> Supabase credentials stored in Replit Secrets (accessible via the Secrets tool in the sidebar)</li>
+              <li><strong>Environment Variables:</strong> Supabase credentials stored in environment variables (e.g. a <code className="bg-gray-100 px-2 py-1 rounded">.env.local</code> file)</li>
               <li><strong>API Routes:</strong> RESTful endpoints in <code className="bg-gray-100 px-2 py-1 rounded">app/api/tasks/</code></li>
               <li><strong>CRUD Operations:</strong> Create, Read, Update, Delete tasks</li>
               <li><strong>Type Safety:</strong> TypeScript types for database schema</li>

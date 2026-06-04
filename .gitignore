@@ -128,9 +128,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-# Replit debugger
-.breakpoints
-
-# Replit internal directories (agent uploads, screenshots)
-attached_assets/
