@@ -196,6 +196,36 @@ Some text after JSON
     expect(data.summary.totalTests).toBe(1);
   });
 
+  // Regression: when the route runs from inside `next dev`, the spawned jest
+  // inherits NODE_ENV=development. Jest only defaults NODE_ENV to 'test' when it
+  // is unset, so the suite would otherwise run in development mode — breaking
+  // stream-based tests and surfacing in the UI as false failures. The route must
+  // force NODE_ENV=test so the UI run matches the CLI.
+  it('runs jest with NODE_ENV=test regardless of the inherited environment', async () => {
+    const mockJestOutput = JSON.stringify({
+      success: true,
+      numTotalTests: 1,
+      numPassedTests: 1,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      testResults: [],
+      coverageMap: {},
+    });
+
+    mockExecFile.mockImplementation(
+      (_file: string, _args: string[], _opts: any, callback: Function) => {
+        callback(null, mockJestOutput, '');
+      }
+    );
+
+    const request = new NextRequest('http://localhost:3000/api/test-runner');
+    await POST(request);
+
+    const opts = mockExecFile.mock.calls[0][2];
+    expect(opts.env).toBeDefined();
+    expect(opts.env.NODE_ENV).toBe('test');
+  });
+
   // Regression: `npm test` brackets the Jest JSON with lifecycle banners. The
   // trailing `posttest` banner contains braces (`try{...}catch(e){}`), so a
   // greedy "first `{` … last `}`" match swallows non-JSON text and the parse

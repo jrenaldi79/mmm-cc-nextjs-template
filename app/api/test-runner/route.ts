@@ -78,6 +78,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       {
         maxBuffer: 1024 * 1024 * 10,
         cwd: process.cwd(),
+        // When this route runs from inside `next dev`, the spawned jest inherits
+        // NODE_ENV=development. Jest only defaults NODE_ENV to 'test' when it is
+        // unset, so without this override the suite runs in development mode —
+        // breaking stream-based tests and surfacing in the UI as false failures.
+        // Force 'test' so the UI run matches the CLI (`npm test`).
+        env: { ...process.env, NODE_ENV: 'test' },
       },
       (error, stdout, stderr) => {
         try {
