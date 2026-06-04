@@ -20,9 +20,14 @@ instantiation) so the app still builds without credentials.
 - **RLS enforces all access control.** The `tasks` table is **user-scoped** (`user_id` +
   per-user policies); queries run as the signed-in user via the server client, so users only
   see their own rows. Principle of least privilege.
-- **Schema & migrations**: prefer the **Supabase MCP server** (`apply_migration`,
-  `list_tables`, advisors). Otherwise use the Supabase SQL Editor. Keep migrations under
-  version control.
+- **Schema & migrations**: version-controlled SQL under `supabase/migrations/` is the
+  **single source of truth** for the schema (kept in sync with `types/supabase.ts`). Apply
+  it via the **Supabase MCP server** (`apply_migration`, `list_tables`, advisors), the
+  Supabase CLI (`supabase db push`), or the SQL Editor. Any schema change adds/edits a
+  migration file there. The Supabase MCP is **not** committed to the repo — add it on
+  demand (`claude mcp add --transport http --scope user supabase https://mcp.supabase.com/mcp`,
+  remote + OAuth, no token to commit) after checking it isn't already configured; never
+  point it at production data.
 - **Type safety**: regenerate `types/supabase.ts` after schema changes (Supabase MCP
   `generate_typescript_types` or the Supabase CLI).
 

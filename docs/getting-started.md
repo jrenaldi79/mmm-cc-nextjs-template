@@ -43,21 +43,51 @@ Guide the user through these steps:
 - `SUPABASE_SETUP.md` has the detailed, click-by-click walkthrough — point them
   there if they get stuck.
 
-## 4. Create the database schema (user-scoped)
+## 4. Connect the Supabase MCP (recommended)
+
+Connecting the Supabase MCP lets you (the agent) manage the database directly.
+**Check first, then ask — never install it silently** (the student may already
+have it configured, and a duplicate server is confusing):
+
+1. **Detect.** Run `claude mcp list` (and/or `claude mcp get supabase`) and look
+   for a Supabase server (its URL contains `mcp.supabase.com`). If one is already
+   configured, you're done — use it.
+2. **Ask.** If none is found, ask the student whether they'd like to add it.
+   **Only on an explicit yes**, run:
+
+   ```bash
+   claude mcp add --transport http --scope user supabase https://mcp.supabase.com/mcp
+   ```
+
+   `--scope user` keeps it available across their projects and **out of the
+   repo** (nothing committed). The first call opens a **browser to authorize
+   their Supabase account via OAuth — no token to copy/paste.**
+
+3. **Verify** with `list_tables` (or have the student say "list my Supabase
+   tables").
+
+- Details (scoping to one project with `?project_ref=`, the "never use
+  production data" warning) are in `SUPABASE_SETUP.md` → §1a.
+- **Skipping the MCP?** Fall back to the Supabase **SQL Editor** or the
+  **Supabase CLI** (`supabase db push`) — both apply the same migration next.
+
+## 5. Create the database schema (user-scoped)
 
 - The bundled **Tasks** example needs a `tasks` table with a `user_id` column +
-  per-user RLS. The SQL lives in `SUPABASE_SETUP.md`.
-- **Preferred path — Supabase MCP:** if the Supabase MCP server is connected,
-  you (the agent) can create tables, run migrations (`apply_migration`), and
-  inspect the schema directly — offer to do it for them. If it isn't connected,
-  tell them how to add it (Supabase MCP: https://supabase.com/docs/guides/getting-started/mcp)
-  so you can manage their database, or have them paste the SQL from
-  `SUPABASE_SETUP.md` into the Supabase **SQL Editor**.
-- After schema changes, regenerate `types/supabase.ts` (Supabase MCP
-  `generate_typescript_types`). When the user designs their **own** features,
-  design the schema together and apply it the same way.
+  per-user RLS. The schema is version-controlled at
+  `supabase/migrations/20250101000000_create_tasks_table.sql` — the single
+  source of truth (mirrored in `types/supabase.ts`).
+- **Preferred path — Supabase MCP:** read that `.sql` file and apply it with
+  `apply_migration` (name it `create_tasks_table`) so it's tracked in the
+  project's migration history. Offer to do this for the student.
+- **Otherwise:** paste the file's contents into the Supabase **SQL Editor**, or
+  run `supabase db push` after `supabase link --project-ref <ref>`.
+- After any schema change, regenerate `types/supabase.ts` (Supabase MCP
+  `generate_typescript_types`, or the Supabase CLI). When the student designs
+  their **own** features, design the schema together, add a new migration file
+  under `supabase/migrations/`, and apply it the same way.
 
-## 5. Configure authentication
+## 6. Configure authentication
 
 - The app is **login-controlled** (everything except `/login`, `/signup`,
   `/auth/*` requires a session). Walk the user through `SUPABASE_SETUP.md` →
@@ -66,7 +96,7 @@ Guide the user through these steps:
   - (Optional) Enable **Google**/**GitHub** providers and add the redirect URLs
     (`http://localhost:3000/auth/callback`, `/auth/confirm`).
 
-## 6. Verify everything works
+## 7. Verify everything works
 
 - Run `npm run dev` and open http://localhost:3000 → you should be redirected
   to `/login`.
@@ -74,7 +104,30 @@ Guide the user through these steps:
   create/toggle/delete works. Sign out and confirm you're sent back to `/login`.
 - Run `npm test` — all tests should pass.
 
-## 7. (Optional) Make it yours — the design system
+## 8. (Optional) Connect the n8n chat agent
+
+Only if the student wants the streaming LLM chat at `/chat`. Until they set
+`N8N_WEBHOOK_URL`, the chat works in **placeholder mode** (a mock reply), so this
+is safe to skip. Walk through it conversationally:
+
+- In **n8n**, build a workflow: **Webhook** (POST) → **AI Agent** (streaming
+  response enabled, responding through the webhook). **Activate** the workflow.
+- **Auth**: create a **Header Auth** credential with header name **`API_KEY`**
+  (this exact name — the route expects it) and attach it to the Webhook node.
+  The value is the student's own secret string.
+- In `.env.local`, set:
+  - `N8N_WEBHOOK_URL` → the **production** webhook URL (`/webhook/<id>`, _not_
+    `/webhook-test/<id>` — the test URL only fires once per "Execute workflow"
+    click in the editor).
+  - `N8N_WEBHOOK_SECRET` → the `API_KEY` value from the credential above.
+- Restart `npm run dev` (env vars load at startup), sign in, open `/chat`, and
+  send a message — a streamed reply should render as clean markdown.
+- The route already parses n8n's NDJSON stream and forwards a per-session
+  `sessionId` for agent memory; details in
+  [`docs/integrations/n8n.md`](integrations/n8n.md). Students don't edit the
+  parser.
+
+## 9. (Optional) Make it yours — the design system
 
 - Your app's look (colors, typography, components) is documented in
   [`DESIGN.md`](../DESIGN.md). It mirrors the live theme in `app/globals.css` and
@@ -87,8 +140,12 @@ Guide the user through these steps:
 - [ ] Dependencies installed (`npm install`)
 - [ ] `.env.local` created with Supabase credentials
 - [ ] Supabase project created & connected
-- [ ] Database schema applied (`tasks` table with `user_id` + RLS, + any custom tables)
+- [ ] Supabase MCP connected via OAuth (or SQL Editor / CLI fallback chosen)
+- [ ] Database schema applied from `supabase/migrations/` (`tasks` table with
+      `user_id` + RLS, + any custom tables)
 - [ ] Auth providers configured (Email; optionally Google/GitHub)
 - [ ] App runs locally: signup → `/tasks` → sign out all work end-to-end
 - [ ] `npm test` passes
+- [ ] _(Optional)_ n8n chat connected: `API_KEY` Header Auth + production
+      `/webhook/` URL set, `/chat` streams a real reply
 - [ ] **Cleanup done:** this file removed & Project Overview rewritten for the real project

@@ -1,5 +1,6 @@
 import { createTextStreamResponse, simulateReadableStream } from 'ai';
 import { z } from 'zod';
+import { createN8nTextStream } from '@/lib/n8n-stream';
 
 // Allow streaming responses up to 30 seconds.
 export const maxDuration = 30;
@@ -14,6 +15,9 @@ const uiMessageSchema = z.object({
 
 const chatRequestSchema = z.object({
   messages: z.array(uiMessageSchema).min(1),
+  // Stable per-conversation id so the n8n AI Agent can keep memory across turns.
+  // The client sends one; if absent we generate a fallback.
+  sessionId: z.string().optional(),
 });
 
 type UiMessage = z.infer<typeof uiMessageSchema>;
@@ -60,6 +64,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const userText = latestUserText(parsed.data.messages);
+  const sessionId = parsed.data.sessionId ?? crypto.randomUUID();
   const webhookUrl = process.env.N8N_WEBHOOK_URL;
 
   // ---- Real n8n agent: proxy the workflow and stream its response back ----
@@ -70,12 +75,15 @@ export async function POST(request: Request): Promise<Response> {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // n8n "Header Auth" credential — students configure a header named
+          // API_KEY; its value is the server-side secret (never sent to the browser).
           ...(process.env.N8N_WEBHOOK_SECRET
-            ? { Authorization: `Bearer ${process.env.N8N_WEBHOOK_SECRET}` }
+            ? { API_KEY: process.env.N8N_WEBHOOK_SECRET }
             : {}),
         },
         body: JSON.stringify({
           message: userText,
+          sessionId,
           messages: parsed.data.messages,
         }),
       });
@@ -90,10 +98,11 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
-    // n8n is assumed to stream raw text tokens. If your workflow emits SSE or
-    // NDJSON instead, transform `upstream.body` into a text stream here before
-    // passing it on.
-    const textStream = upstream.body.pipeThrough(new TextDecoderStream());
+    // n8n's AI Agent streams newline-delimited JSON envelopes; extract just the
+    // reply text. Plain-text workflows pass through unchanged (see lib/n8n-stream).
+    const textStream = upstream.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(createN8nTextStream());
     return createTextStreamResponse({ textStream });
   }
 

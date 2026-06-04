@@ -23,16 +23,62 @@ protected routes, and per-user database CRUD operations.
 2. Create a new project
 3. Wait for the database to be provisioned (~2 minutes)
 
+### 1a. Connect the Supabase MCP (recommended)
+
+This lets Claude manage your database directly — create tables, apply
+migrations, inspect the schema, and regenerate types — instead of you pasting
+SQL by hand. The Supabase MCP is the **remote server** at
+`https://mcp.supabase.com/mcp`, authenticated with **OAuth** (a browser window
+authorizes your Supabase account — there is **no access token to copy or
+paste**).
+
+The template does **not** commit an MCP config; you add the server yourself
+(this avoids duplicating one you may already have). First check, then add:
+
+1. **Already configured?** Run `claude mcp list` (or `claude mcp get supabase`).
+   If a server pointing at `mcp.supabase.com` is listed, you're set.
+2. **Add it (user scope):**
+
+   ```bash
+   claude mcp add --transport http --scope user supabase https://mcp.supabase.com/mcp
+   ```
+
+   `--scope user` makes it available across all your projects without committing
+   anything to this repo. The first use opens the OAuth browser flow.
+
+3. **Verify:** ask Claude _"list my Supabase tables using the MCP."_
+
+- **Scope it to one project (recommended).** Append `?project_ref=YOUR_REF` to
+  the URL above, where `YOUR_REF` is the subdomain of your Project URL
+  (`https://YOUR_REF.supabase.co`). Add `&read_only=true` while you're only
+  exploring (drop it when you need to apply migrations).
+
+> ⚠️ **Never point the MCP at production data.** The Supabase MCP is intended for
+> development and testing projects only. Use a dedicated dev project, and prefer
+> `read_only=true` unless you're actively applying migrations.
+
 ### 2. Create the Tasks Table
 
-In your Supabase project dashboard:
+The schema lives in version control as a migration — the **single source of
+truth**, kept in sync with `types/supabase.ts`:
 
-1. Click on **SQL Editor** in the left sidebar
-2. Click **New Query**
-3. Paste the following SQL:
+```
+supabase/migrations/20250101000000_create_tasks_table.sql
+```
+
+Apply it using **any one** of these (they all run the same SQL):
+
+- **Supabase MCP (recommended — let Claude do it):** once the MCP is connected
+  (see [§1a](#1a-connect-the-supabase-mcp-recommended)), ask Claude to apply the
+  migration. It reads the `.sql` file above and calls `apply_migration` (named
+  `create_tasks_table`), so it's tracked in your project's migration history.
+- **Supabase CLI:** `supabase link --project-ref <ref>` then `supabase db push`.
+- **SQL Editor (manual):** open **SQL Editor → New Query** in the dashboard,
+  paste the contents of the migration file, and click **Run**.
+
+For reference, the migration creates a user-scoped table with per-user RLS:
 
 ```sql
--- Create the tasks table, scoped to the signed-in user.
 CREATE TABLE tasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -43,10 +89,8 @@ CREATE TABLE tasks (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Enable Row Level Security (RLS)
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 
--- Per-user policies: each user can only see and modify their own tasks.
 CREATE POLICY "Users can view their own tasks" ON tasks
   FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert their own tasks" ON tasks
@@ -57,15 +101,13 @@ CREATE POLICY "Users can delete their own tasks" ON tasks
   FOR DELETE USING (auth.uid() = user_id);
 ```
 
-> No seed rows are inserted here: tasks belong to a user, so `auth.uid()` must
-> be set (which only happens when a signed-in user inserts via the app). Sign in
-> and create tasks from the `/tasks` page instead.
+> No seed rows are inserted: tasks belong to a user, so `auth.uid()` must be set
+> (which only happens when a signed-in user inserts via the app). Sign in and
+> create tasks from the `/tasks` page instead.
 >
-> **Tip:** If your Supabase project is connected via the **Supabase MCP**, ask
-> Claude to apply this with `apply_migration` (named e.g. `create_tasks_table`)
-> so it's tracked in your migration history.
-
-4. Click **Run** to execute the query
+> **When you change the schema**, edit/add a migration file under
+> `supabase/migrations/`, re-apply it, then regenerate `types/supabase.ts` (MCP
+> `generate_typescript_types`, or the Supabase CLI) so the types stay in sync.
 
 ### 3. Configure Environment Variables
 

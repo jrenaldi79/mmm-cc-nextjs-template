@@ -56,19 +56,28 @@ describe('POST /api/chat', () => {
     expect(res.status).toBe(400);
   });
 
-  it('proxies to the n8n webhook when N8N_WEBHOOK_URL is set', async () => {
-    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
-
+  function streamingFetchMock(text = 'hi from n8n'): jest.Mock {
     const encoder = new TextEncoder();
     const upstreamBody = new ReadableStream<Uint8Array>({
       start(controller) {
-        controller.enqueue(encoder.encode('hi from n8n'));
+        controller.enqueue(encoder.encode(text));
         controller.close();
       },
     });
-    const fetchMock = jest
+    return jest
       .fn()
       .mockResolvedValue(new Response(upstreamBody, { status: 200 }));
+  }
+
+  function lastFetchBody(fetchMock: jest.Mock): Record<string, unknown> {
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    return JSON.parse(init.body as string);
+  }
+
+  it('proxies to the n8n webhook when N8N_WEBHOOK_URL is set', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+
+    const fetchMock = streamingFetchMock();
     global.fetch = fetchMock as unknown as typeof fetch;
 
     const res = await POST(
@@ -83,6 +92,83 @@ describe('POST /api/chat', () => {
     );
     const text = await res.text();
     expect(text).toContain('hi from n8n');
+  });
+
+  it('sends the API_KEY header when N8N_WEBHOOK_SECRET is set', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+    process.env.N8N_WEBHOOK_SECRET = 'super-secret-value';
+
+    const fetchMock = streamingFetchMock();
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await POST(makeRequest(userMessage));
+
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers.API_KEY).toBe('super-secret-value');
+    // The secret must never be sent as a bearer token.
+    expect(headers.Authorization).toBeUndefined();
+  });
+
+  it('omits the API_KEY header when no secret is configured', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+    delete process.env.N8N_WEBHOOK_SECRET;
+
+    const fetchMock = streamingFetchMock();
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await POST(makeRequest(userMessage));
+
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers.API_KEY).toBeUndefined();
+  });
+
+  it('forwards a client-provided sessionId to n8n', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+
+    const fetchMock = streamingFetchMock();
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await POST(
+      makeRequest({
+        sessionId: 'session-abc-123',
+        messages: [{ role: 'user', parts: [{ type: 'text', text: 'ping' }] }],
+      })
+    );
+
+    expect(lastFetchBody(fetchMock).sessionId).toBe('session-abc-123');
+  });
+
+  it('generates a sessionId when the client omits one', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+
+    const fetchMock = streamingFetchMock();
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await POST(makeRequest(userMessage));
+
+    const sessionId = lastFetchBody(fetchMock).sessionId;
+    expect(typeof sessionId).toBe('string');
+    expect((sessionId as string).length).toBeGreaterThan(0);
+  });
+
+  it('parses n8n NDJSON streaming chunks into plain reply text', async () => {
+    process.env.N8N_WEBHOOK_URL = 'https://n8n.example/webhook/agent';
+
+    const ndjson =
+      '{"type":"begin","metadata":{}}\n' +
+      '{"type":"item","content":"2 ","metadata":{}}\n' +
+      '{"type":"item","content":"+ 2 equals 4.","metadata":{}}\n' +
+      '{"type":"end","metadata":{}}\n';
+    global.fetch = streamingFetchMock(ndjson) as unknown as typeof fetch;
+
+    const res = await POST(makeRequest(userMessage));
+    const text = await res.text();
+
+    expect(text).toBe('2 + 2 equals 4.');
+    // The raw JSON envelopes must not leak into the reply.
+    expect(text).not.toContain('"type"');
   });
 
   it('returns 502 when the n8n webhook errors', async () => {

@@ -23,9 +23,36 @@ token-by-token. Files: `app/api/chat/route.ts` (server) and `app/chat/page.tsx`
   - `zod` — request-body validation.
   - `react-markdown` + `remark-gfm` — render streamed assistant markdown
     safely (no `dangerouslySetInnerHTML`).
-- **n8n config**: Enable streaming on the AI Agent / "Respond to Webhook"
-  node. Its chunk format isn't standardized, so **normalize n8n's chunks into
-  a plain text stream inside the route handler** (the scaffold assumes raw
-  text tokens; adapt the `pipeThrough` if your workflow emits SSE/NDJSON).
+- **Authentication — Header Auth (`API_KEY`)**: the route authenticates to n8n
+  by sending an **`API_KEY` request header** whose value is
+  `N8N_WEBHOOK_SECRET`. In n8n, add a **Header Auth credential** with header
+  name `API_KEY` and attach it to the Webhook node. (The header name is fixed to
+  `API_KEY` in `app/api/chat/route.ts` — the shared convention for this
+  template. It is **not** sent as a bearer token.) If `N8N_WEBHOOK_SECRET` is
+  unset, no auth header is sent.
+- **Session memory (`sessionId`)**: the chat page generates a stable
+  `sessionId` per browser session (`crypto.randomUUID()`) and sends it in the
+  request body; the route forwards it to n8n. Wire it into your AI Agent's
+  **memory** node (e.g. keyed by `{{ $json.body.sessionId }}`) so the agent
+  remembers earlier turns in the same conversation.
+- **Response format — NDJSON (handled for you)**: n8n's AI Agent streams
+  **newline-delimited JSON**, one record per line:
+  `{"type":"begin",...}` / `{"type":"item","content":"…"}` / `{"type":"end",...}`.
+  `lib/n8n-stream.ts` (`createN8nTextStream`) parses this in the route —
+  concatenating the `content` of `item` records (escaped `\n` decoded into real
+  newlines) — so the chat bubble shows clean markdown, not raw JSON. Plain-text
+  workflows (non-JSON lines) pass through unchanged, so you normally **don't**
+  need to touch the parser.
+- **n8n config**: On the **AI Agent** node, enable the streaming response
+  option and respond through the webhook. **Activate** the workflow (toggle it
+  **Active**) so the production webhook is live.
+- **Webhook URL — use the production URL**: set `N8N_WEBHOOK_URL` to the
+  **`/webhook/<id>`** (production) URL — it's always live while the workflow is
+  Active. The **`/webhook-test/<id>`** URL only accepts **one** request per
+  click of **"Execute workflow"** in the editor (it returns
+  `404 "webhook not registered"` otherwise) — handy for one-off manual tests,
+  not for the running app.
 - **Env**: `N8N_WEBHOOK_URL` (and optional `N8N_WEBHOOK_SECRET`) live in
-  `.env.local`; placeholders are in `.env.example`.
+  `.env.local`; placeholders are in `.env.example`. Env changes require a dev
+  server restart. Note `/api/chat` is login-gated, so test it from the chat UI
+  while signed in (not an anonymous `curl` to the Next.js route).
