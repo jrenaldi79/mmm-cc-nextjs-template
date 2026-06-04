@@ -113,6 +113,23 @@ describe('POST /api/chat — Zep memory', () => {
     expect(recordChatTurn).not.toHaveBeenCalled();
   });
 
+  it('does not record a turn when the assistant reply is blank', async () => {
+    (getZepClient as jest.Mock).mockReturnValue({ __zep: true });
+    (retrieveUserContext as jest.Mock).mockResolvedValue('CTX');
+    (recordChatTurn as jest.Mock).mockResolvedValue(undefined);
+    global.fetch = streamingFetchMock('   ') as unknown as typeof fetch;
+
+    const res = await POST(
+      makeRequest({
+        sessionId: 'sess-1',
+        messages: [{ role: 'user', parts: [{ type: 'text', text: 'ping' }] }],
+      })
+    );
+    await res.text();
+
+    expect(recordChatTurn).not.toHaveBeenCalled();
+  });
+
   it('does not touch Zep when the key is unset (getZepClient → null)', async () => {
     (getZepClient as jest.Mock).mockReturnValue(null);
     const fetchMock = streamingFetchMock();

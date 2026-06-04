@@ -30,6 +30,11 @@ describe('retrieveUserContext', () => {
     const client = fakeClient(jest.fn().mockReturnValue(new Promise(() => {}))); // never resolves
     await expect(retrieveUserContext(client, 'thread-1', 20)).resolves.toBe('');
   });
+
+  it('returns empty string when getUserContext resolves without a context field', async () => {
+    const client = fakeClient(jest.fn().mockResolvedValue({}));
+    await expect(retrieveUserContext(client, 'thread-1')).resolves.toBe('');
+  });
 });
 
 function fakeWriteClient() {

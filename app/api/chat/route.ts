@@ -120,7 +120,7 @@ async function proxyToN8n(args: N8nProxyArgs): Promise<Response> {
     ? baseTextStream.pipeThrough(
         createCaptureStream(async (assistantText) => {
           const user = await userPromise;
-          if (user && userText.trim()) {
+          if (user && userText.trim() && assistantText.trim()) {
             await recordChatTurn(zep, {
               supabaseUser: user,
               threadId: sessionId,

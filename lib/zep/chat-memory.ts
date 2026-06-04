@@ -60,8 +60,10 @@ export interface ChatTurn {
 async function ignoreErrors(fn: () => Promise<unknown>): Promise<void> {
   try {
     await fn();
-  } catch {
-    /* already exists or transient — best-effort */
+  } catch (error) {
+    // Usually "already exists" on repeat turns; log at debug so a real
+    // misconfiguration (bad key, network) is still diagnosable.
+    logger.debug('Zep user/thread ensure skipped', { error: String(error) });
   }
 }
 
