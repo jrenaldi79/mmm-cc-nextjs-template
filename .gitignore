@@ -131,3 +131,7 @@ dist
 
 # Pre-push test cache (SHA of last commit whose tests passed)
 .test-passed
+
+# Superpowers skills are materialized here on the web at session start from
+# .claude/vendor/superpowers/ (see .claude/hooks/session-start.sh). Not committed.
+.claude/skills/
