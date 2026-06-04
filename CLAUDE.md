@@ -136,7 +136,7 @@ lib/
 └── utils.ts  # Merge Tailwind class names, resolving conflicts (later classes win).
 types/
 ├── index.ts
-└── supabase.ts
+└── supabase.ts  # A single LangChain message as stored in n8n_chat_histories.message.
 <!-- /AUTO:tree -->
 
 ---
@@ -203,7 +203,7 @@ types/
 | `lib/supabase/middleware.ts` | Refreshes the Supabase auth session on every request and gates access. | `updateSession` |
 | `lib/supabase/server.ts` | Supabase client for use on the server: Server Components, Route Handlers, and | `createClient` |
 | `types/index.ts` |  | `ApiError` |
-| `types/supabase.ts` |  | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
+| `types/supabase.ts` | A single LangChain message as stored in n8n_chat_histories.message. | `Json`, `Database`, `Task`, `TaskInsert`, `TaskUpdate` |
 <!-- /AUTO:modules -->
 
 ---
